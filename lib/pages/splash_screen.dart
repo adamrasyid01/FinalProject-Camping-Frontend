@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_camping_frontend/pages/home_screen.dart';
-import 'package:flutter_camping_frontend/pages/login_screen.dart';
+import 'package:flutter_camping_frontend/pages/home_page.dart';
+import 'package:flutter_camping_frontend/pages/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(Duration(seconds: 3));
 
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+        context, MaterialPageRoute(builder: (context) => const HomePage()));
   }
 
   @override
