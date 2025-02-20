@@ -6,7 +6,6 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-    // Jika ingin mendukung terbalik juga
   ]).then((_) {
     runApp(const MyApp());
   });
