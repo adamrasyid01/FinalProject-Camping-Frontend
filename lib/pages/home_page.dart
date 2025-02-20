@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/pages/beranda_page.dart';
 import 'package:flutter_camping_frontend/pages/bookmark_page.dart';
+import 'package:flutter_camping_frontend/pages/profile_page.dart';
+import 'package:flutter_camping_frontend/pages/rekomendasi_page.dart';
 import 'package:flutter_camping_frontend/utils/text_styles.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -17,6 +19,8 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     BerandaPage(),
     BookmarkPage(),
+    RekomendasiPage(),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -39,7 +43,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
           child: GNav(
             onTabChange: _onItemTapped,
             selectedIndex: _selectedIndex,
@@ -47,7 +51,7 @@ class _HomePageState extends State<HomePage> {
             activeColor: Colors.white,
             tabBackgroundColor: Color(0xFF274F66),
             gap: 4,
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(8),
             tabs: [
               GButton(
                 icon: Icons.home,
@@ -55,9 +59,21 @@ class _HomePageState extends State<HomePage> {
                 textStyle:
                     AppTextStyle.semiBold16.copyWith(color: Colors.white),
               ),
-              GButton(icon: Icons.bookmark, text: 'Bookmark'),
-              GButton(icon: Icons.thumb_up_sharp, text: 'Rekomendasi'),
-              GButton(icon: Icons.person, text: 'Profile'),
+              GButton(
+                  icon: Icons.bookmark,
+                  text: 'Bookmark',
+                  textStyle:
+                      AppTextStyle.semiBold16.copyWith(color: Colors.white)),
+              GButton(
+                  icon: Icons.thumb_up_sharp,
+                  text: 'Rekomendasi',
+                  textStyle:
+                      AppTextStyle.semiBold16.copyWith(color: Colors.white)),
+              GButton(
+                  icon: Icons.person,
+                  text: 'Profile',
+                  textStyle:
+                      AppTextStyle.semiBold16.copyWith(color: Colors.white)),
             ],
           ),
         ),

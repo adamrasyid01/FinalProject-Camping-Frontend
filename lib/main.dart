@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/pages/splash_screen.dart';
-import 'package:flutter_camping_frontend/widgets/custom_button.dart';
 
 void main() {
   runApp(const MyApp());

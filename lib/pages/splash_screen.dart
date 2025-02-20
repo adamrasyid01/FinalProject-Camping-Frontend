@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/pages/home_page.dart';
-import 'package:flutter_camping_frontend/pages/login_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
