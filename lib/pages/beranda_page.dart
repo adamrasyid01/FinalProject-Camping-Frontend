@@ -20,7 +20,8 @@ class BerandaPage extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 8.0),
                         child: Text("HHAHA"),
                       ),
-                      Text("Halo Adam Rasyid")
+                      Text("Halo Adam Rasyid",
+                          style: TextStyle(fontFamily: 'Inter', fontSize: 16)),
                     ],
                   ),
                   Text("Halo Adam Rasyid"),
