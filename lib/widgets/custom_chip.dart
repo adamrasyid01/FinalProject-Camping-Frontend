@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_camping_frontend/utils/text_styles.dart';
 
 class CustomChip extends StatelessWidget {
   final String label;
@@ -17,7 +18,7 @@ class CustomChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF14777D) : Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -25,9 +26,9 @@ class CustomChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
+          style: (isSelected ? AppTextStyle.bold14 : AppTextStyle.regular14)
+              .copyWith(
             color: isSelected ? Colors.white : const Color(0xFF8A8A8E),
-            fontWeight: FontWeight.bold,
           ),
         ),
       ),
