@@ -18,7 +18,7 @@ class CustomChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF14777D) : Colors.white,
           borderRadius: BorderRadius.circular(20),
