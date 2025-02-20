@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/pages/beranda_page.dart';
 import 'package:flutter_camping_frontend/pages/bookmark_page.dart';
+import 'package:flutter_camping_frontend/utils/text_styles.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -45,7 +46,12 @@ class _HomePageState extends State<HomePage> {
             gap: 4,
             padding: EdgeInsets.all(12),
             tabs: [
-              GButton(icon: Icons.home, text: 'Beranda'),
+              GButton(
+                icon: Icons.home,
+                text: 'Beranda',
+                textStyle:
+                    AppTextStyle.semiBold16.copyWith(color: Colors.white),
+              ),
               GButton(icon: Icons.bookmark, text: 'Bookmark'),
               GButton(icon: Icons.thumb_up_sharp, text: 'Rekomendasi'),
               GButton(icon: Icons.person, text: 'Profile'),
