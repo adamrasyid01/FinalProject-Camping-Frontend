@@ -22,13 +22,14 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      print(_selectedIndex);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -40,6 +41,8 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20),
           child: GNav(
+            onTabChange: _onItemTapped,
+            selectedIndex: _selectedIndex,
             color: Color(0xFFBFBFBF),
             activeColor: Colors.white,
             tabBackgroundColor: Color(0xFF274F66),
