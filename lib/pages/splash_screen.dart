@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/pages/home_page.dart';
+import 'package:go_router/go_router.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -34,10 +35,10 @@ class _SplashScreenState extends State<SplashScreen> {
   // }
 
   void navigateToHome() async {
-    await Future.delayed(Duration(seconds: 3));
-
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const HomePage()));
+    Future.delayed(const Duration(seconds: 3), () {
+      // ignore: use_build_context_synchronously
+      context.go('/home'); // Pindah ke halaman utama setelah delay
+    });
   }
 
   @override

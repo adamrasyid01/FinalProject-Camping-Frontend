@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_camping_frontend/utils/text_styles.dart';
+import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 
 class CustomChip extends StatelessWidget {
   final String label;

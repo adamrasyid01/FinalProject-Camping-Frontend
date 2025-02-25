@@ -3,7 +3,7 @@ import 'package:flutter_camping_frontend/pages/beranda_page.dart';
 import 'package:flutter_camping_frontend/pages/bookmark_page.dart';
 import 'package:flutter_camping_frontend/pages/profile_page.dart';
 import 'package:flutter_camping_frontend/pages/rekomendasi_page.dart';
-import 'package:flutter_camping_frontend/utils/text_styles.dart';
+import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 class HomePage extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/models/list_wisata_model.dart';
-import 'package:flutter_camping_frontend/utils/text_styles.dart';
-import 'package:flutter_camping_frontend/widgets/custom_chip.dart';
-import 'package:flutter_camping_frontend/widgets/custom_list_wisata.dart';
-import 'package:flutter_camping_frontend/widgets/search_input.dart';
+import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_chip.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_list_wisata.dart';
+import 'package:flutter_camping_frontend/core/widgets/search_input.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class BerandaPage extends StatefulWidget {
