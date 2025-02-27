@@ -10,11 +10,7 @@ abstract class UserRemoteDataSource {
 class UserRemoteDataSourceImplementation extends UserRemoteDataSource {
   @override
   Future<User> login(String email, String password) async{
-    try {
-      
-    } catch (e) {
-      
-    }
+    throw UnimplementedError();
   }
 
   @override
