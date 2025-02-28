@@ -1,5 +1,3 @@
-
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter_camping_frontend/core/error/failure.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/entities/user.dart';
@@ -7,7 +5,7 @@ import 'package:flutter_camping_frontend/features/authentication/domain/reposito
 
 class GetCurrentUser {
   final UserRepository userRepository;
-  const GetCurrentUser(this.userRepository);
+  const GetCurrentUser({required this.userRepository});
 
   Future<Either<Failure, User>> execute() async {
     return await userRepository.getCurrentUser();

@@ -33,7 +33,7 @@ class DioClient {
       Response response = await _dio.get(url);
       return response;
     } catch (e) {
-      throw e;
+      throw Exception('Error: $e');
     }
   }
 

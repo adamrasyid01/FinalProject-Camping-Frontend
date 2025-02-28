@@ -6,7 +6,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text("Ini Login Page"),
+      body: Center(child: Text("Ini Login Page")),
     );
   }
 }

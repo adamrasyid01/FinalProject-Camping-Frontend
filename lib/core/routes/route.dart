@@ -1,5 +1,7 @@
+import 'package:flutter_camping_frontend/features/authentication/presentation/pages/login_page.dart';
 import 'package:flutter_camping_frontend/pages/home_page.dart';
-import 'package:flutter_camping_frontend/pages/splash_screen.dart';
+import 'package:flutter_camping_frontend/features/splash/presentation/pages/splash_screen.dart';
+
 import 'package:go_router/go_router.dart';
 
 class RouteCamping {
@@ -10,6 +12,12 @@ class RouteCamping {
             pageBuilder: (context, state) => const NoTransitionPage(
                   child: SplashScreen(),
                 )),
+        GoRoute(
+            path: "/login",
+            name: "login",
+            pageBuilder: (context, state) => const NoTransitionPage(
+                  child: LoginPage(),
+                )),  
         GoRoute(
             path: "/home",
             name: "homepage",

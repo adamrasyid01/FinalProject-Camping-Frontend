@@ -4,7 +4,7 @@ import 'package:flutter_camping_frontend/features/authentication/domain/reposito
 
 class Logout {
   final UserRepository userRepository;
-  const Logout(this.userRepository);
+  const Logout({required this.userRepository});
 
   Future<Either<Failure, void>> execute() async {
     return await userRepository.logout();

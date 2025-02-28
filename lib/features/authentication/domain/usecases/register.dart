@@ -1,5 +1,3 @@
-
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter_camping_frontend/core/error/failure.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/entities/user.dart';
@@ -7,10 +5,10 @@ import 'package:flutter_camping_frontend/features/authentication/domain/reposito
 
 class Register {
   final UserRepository userRepository;
-  const Register(this.userRepository); 
+  const Register({required this.userRepository});
 
-  Future<Either<Failure, User>> execute(String name, String email, String password) async {
+  Future<Either<Failure, User>> execute(
+      String name, String email, String password) async {
     return await userRepository.register(name, email, password);
   }
-
 }
