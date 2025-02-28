@@ -45,6 +45,10 @@ class AppTextStyle {
   );
 
   // REGULAR
+  static TextStyle regular15 = GoogleFonts.inter(
+    fontSize: 15,
+    fontWeight: FontWeight.normal,
+  );
   static TextStyle regular14 = GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.normal,
