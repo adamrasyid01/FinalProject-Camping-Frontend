@@ -26,35 +26,49 @@ class AuthenticationBloc
   }) : super(AuthenticationStateInitial()) {
     on<AuthenticationEventLogin>((event, emit) async {
       emit(AuthenticationStateLoading());
-      Either<Failure, User> result = await login.execute(event.email, event.password,);
+      Either<Failure, User> result = await login.execute(
+        event.email,
+        event.password,
+      );
       result.fold(
         (failure) => emit(AuthenticationStateError("Error")),
         (success) => emit(AuthenticationStateSuccess(success)),
-      )
-;   });
+      );
+    });
     on<AuthenticationEventGetCurrentUser>((event, emit) async {
       emit(AuthenticationStateLoading());
       Either<Failure, User> result = await getCurrentUser.execute();
       result.fold(
         (failure) => emit(AuthenticationStateError("Error")),
         (success) => emit(AuthenticationStateSuccess(success)),
-      )
-;   });
+      );
+    });
     on<AuthenticationEventLogout>((event, emit) async {
       emit(AuthenticationStateLoading());
+
       Either<Failure, void> result = await logout.execute();
       result.fold(
         (failure) => emit(AuthenticationStateError("Error")),
         (_) => emit(AuthenticationStateInitial()),
-      )
-;   });
+      );
+    });
     on<AuthenticationEventRegister>((event, emit) async {
       emit(AuthenticationStateLoading());
-      Either<Failure, User> result = await register.execute(event.name, event.email, event.password,);
+
+      Either<Failure, User> result = await register.execute(
+        event.name,
+        event.email,
+        event.password,
+        event.passwordConfirmation,
+      );
+
+      // Debugging: Cetak hasil response API
+      print("Result: $result");
+
       result.fold(
         (failure) => emit(AuthenticationStateError("Error")),
         (success) => emit(AuthenticationStateSuccess(success)),
-      )
-;   });
+      );
+    });
   }
 }

@@ -18,7 +18,7 @@ class SplashRepositoryImplementation extends SplashRepository {
         return Right(false); // User belum login
       }
     } catch (e) {
-      return Left(Failure()); // Tangani error
+      return Left(ServerFailure('Server ERROR')); // Tangani error
     }
   }
 }

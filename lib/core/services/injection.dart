@@ -1,4 +1,5 @@
 import 'package:flutter_camping_frontend/core/networks/dio_client.dart';
+import 'package:flutter_camping_frontend/features/authentication/data/datasources/user_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/repositories/user_repository_implementation.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/repositories/user_repository.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/get_current_user.dart';
@@ -33,7 +34,7 @@ Future<void> init() async {
       logout: myInjection(),
       register: myInjection()));
 
-  // REPOSITORY
+  // USECASES
   myInjection.registerLazySingleton(() => Login(userRepository: myInjection()));
   myInjection
       .registerLazySingleton(() => Register(userRepository: myInjection()));
@@ -42,9 +43,12 @@ Future<void> init() async {
   myInjection.registerLazySingleton(
       () => GetCurrentUser(userRepository: myInjection()));
 
+  // Repository
+  myInjection.registerLazySingleton<UserRepository>(() =>
+      UserRepositoryImplementation(userRemoteDataSource: myInjection()));
   // Datasource
-  myInjection.registerLazySingleton<UserRepository>(
-      () => UserRepositoryImplementation(userRemoteDataSource: myInjection()));
+  myInjection.registerLazySingleton<UserRemoteDataSource>(
+      () => UserRemoteDataSourceImplementation(dio: myInjection()));
 
   // FEATURE - SPLASH
   // BLOC

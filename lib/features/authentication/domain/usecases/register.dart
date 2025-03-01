@@ -8,7 +8,7 @@ class Register {
   const Register({required this.userRepository});
 
   Future<Either<Failure, User>> execute(
-      String name, String email, String password) async {
-    return await userRepository.register(name, email, password);
+      String name, String email, String password, String passwordConfirmation) async {
+    return await userRepository.register(name, email, password, passwordConfirmation);
   }
 }

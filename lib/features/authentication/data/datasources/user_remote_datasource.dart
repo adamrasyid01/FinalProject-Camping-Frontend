@@ -7,25 +7,27 @@ import 'package:flutter_camping_frontend/features/authentication/domain/entities
 
 abstract class UserRemoteDataSource {
   Future<User> login(String email, String password);
-  Future<User> register(String name, String email, String password);
+  Future<User> register(
+      String name, String email, String password, String passwordConfirmation);
   Future<User> logout();
   Future<User> getCurrentUser();
 }
 
 class UserRemoteDataSourceImplementation extends UserRemoteDataSource {
-  final DioClient _dio;
+  final DioClient dio;
 
-  UserRemoteDataSourceImplementation(this._dio);
+  UserRemoteDataSourceImplementation({required this.dio});
   @override
   Future<UserModel> login(String email, String password) async {
     try {
-      final response = await _dio.postRequest(
+      final response = await dio.postRequest(
         ApiEndpoints.login,
         data: {
           'email': email,
           'password': password,
         },
       );
+
       return UserModel.fromJson(response.data);
     } catch (e) {
       throw const GeneralException(message: "gagal Login");
@@ -33,35 +35,46 @@ class UserRemoteDataSourceImplementation extends UserRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String name, String email, String password) async{
-   try {
-      final response = await _dio.postRequest(
+  Future<UserModel> register(String name, String email, String password,
+      String passwordConfirmation) async {
+    try {
+      final response = await dio.postRequest(
         ApiEndpoints.register,
         data: {
+          'name': name,
           'email': email,
           'password': password,
+          'password_confirmation': passwordConfirmation,
         },
       );
-      return UserModel.fromJson(response.data);
+
+      // print("Response dari server: ${response}");
+
+      if (response.statusCode == 200) {
+        return UserModel.fromJson(response.data);
+      } else {
+        throw GeneralException(
+        message: "Gagal registrasi: ${response.statusMessage}");
+      }
     } catch (e) {
-      throw const GeneralException(message: "gagal Login");
+      throw const GeneralException(message: "gagal Register");
     }
   }
 
   @override
-  Future<UserModel> logout() async{
+  Future<UserModel> logout() async {
     try {
-      await _dio.postRequest(ApiEndpoints.logout);
+      await dio.postRequest(ApiEndpoints.logout);
       return UserModel.fromJson({});
     } catch (e) {
-      throw const GeneralException(message: "gagal Logout"); 
+      throw const GeneralException(message: "gagal Logout");
     }
   }
 
   @override
-  Future<UserModel> getCurrentUser() async{
+  Future<UserModel> getCurrentUser() async {
     try {
-      await _dio.getRequest(ApiEndpoints.currentUser);
+      await dio.getRequest(ApiEndpoints.currentUser);
       return UserModel.fromJson({});
     } catch (e) {
       throw const GeneralException(message: "gagal GetCurrentUser");
