@@ -4,6 +4,7 @@ import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_textfield.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -56,7 +57,7 @@ class RegisterPage extends StatelessWidget {
                     label: 'Password',
                     hintText: 'Password',
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   CustomTextfield(
                     inputController: TextEditingController(),
                     label: 'Konfirmasi Password',
@@ -72,23 +73,28 @@ class RegisterPage extends StatelessWidget {
               onPressed: () {},
             ),
             const SizedBox(height: 4),
-            Center(
-              child: RichText(
-                text: TextSpan(
-                  text: "Sudah mempunyai akun? ",
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // ✅ Pusatkan teks secara horizontal
+              children: [
+                Text(
+                  "Sudah mempunyai akun? ",
                   style: AppTextStyle.regular14.copyWith(
                     color: myColor.black,
                   ),
-                  children: [
-                    TextSpan(
-                      text: "Login",
-                      style: AppTextStyle.bold14.copyWith(
-                        color: myColor.greenCustom,
-                      ),
-                    ),
-                  ],
                 ),
-              ),
+                GestureDetector(
+                  onTap: () {
+                    context.go('/login');
+                  },
+                  child: Text(
+                    "Login",
+                    style: AppTextStyle.bold14.copyWith(
+                      color: myColor.greenCustom,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8)
           ],

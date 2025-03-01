@@ -4,6 +4,7 @@ import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_textfield.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -60,24 +61,30 @@ class LoginPage extends StatelessWidget {
               onPressed: () {},
             ),
             const SizedBox(height: 10),
-            Center(
-              child: RichText(
-                text: TextSpan(
-                  text: "Belum mempunyai akun? ",
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // ✅ Pusatkan teks secara horizontal
+              children: [
+                Text(
+                  "Belum mempunyai akun? ",
                   style: AppTextStyle.regular14.copyWith(
                     color: myColor.black,
                   ),
-                  children: [
-                    TextSpan(
-                      text: "Register",
-                      style: AppTextStyle.bold14.copyWith(
-                        color: myColor.greenCustom,
-                      ),
-                    ),
-                  ],
                 ),
-              ),
+                GestureDetector(
+                  onTap: () {
+                    context.go('/register');
+                  },
+                  child: Text(
+                    "Register",
+                    style: AppTextStyle.bold14.copyWith(
+                      color: myColor.greenCustom,
+                    ),
+                  ),
+                ),
+              ],
             ),
+
             const SizedBox(height: 20)
           ],
         ),

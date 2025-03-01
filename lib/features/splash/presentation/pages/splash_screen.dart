@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
         if (state is SplashStateLoggedIn) {
           context.go('/home');
         } else if (state is SplashStateNotLoggedIn) {
-          context.go('/register');
+          context.go('/login');
         }
       },
       child: const Scaffold(
