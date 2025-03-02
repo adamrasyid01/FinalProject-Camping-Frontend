@@ -1,4 +1,5 @@
 import 'package:flutter_camping_frontend/core/networks/dio_client.dart';
+import 'package:flutter_camping_frontend/core/services/token_storage.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/datasources/user_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/repositories/user_repository_implementation.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/repositories/user_repository.dart';
@@ -26,6 +27,9 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   myInjection.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
 
+  // TOKEN STORAGE SERVICE
+  myInjection.registerLazySingleton<TokenStorage>(() => TokenStorage());
+
   // FEATURE - AUTH
   // BLOC
   myInjection.registerLazySingleton(() => AuthenticationBloc(
@@ -44,20 +48,22 @@ Future<void> init() async {
       () => GetCurrentUser(userRepository: myInjection()));
 
   // Repository
-  myInjection.registerLazySingleton<UserRepository>(() =>
-      UserRepositoryImplementation(userRemoteDataSource: myInjection()));
+  myInjection.registerLazySingleton<UserRepository>(
+      () => UserRepositoryImplementation(userRemoteDataSource: myInjection()));
   // Datasource
-  myInjection.registerLazySingleton<UserRemoteDataSource>(
-      () => UserRemoteDataSourceImplementation(dio: myInjection()));
+  myInjection.registerLazySingleton<UserRemoteDataSource>(() =>
+      UserRemoteDataSourceImplementation(
+          dio: myInjection(), tokenStorage: myInjection()));
 
   // FEATURE - SPLASH
   // BLOC
   myInjection.registerLazySingleton(
-      () => SplashCubit(splashRepository: myInjection()));
-  // Repository
+      () => SplashCubit(checkUserLoggedin: myInjection()));
+
+  // USECASES
   myInjection.registerLazySingleton(
       () => CheckUserLoggedin(splashRepository: myInjection()));
-  // Datasource
+  // Repository
   myInjection.registerLazySingleton<SplashRepository>(
-      () => SplashRepositoryImplementation());
+      () => SplashRepositoryImplementation(tokenStorage: myInjection()));
 }

@@ -15,12 +15,6 @@ class UserRepositoryImplementation extends UserRepository {
   Future<Either<Failure, User>> getCurrentUser() async {
     try {
       User user = await userRemoteDataSource.getCurrentUser();
-
-      // Simpan ke shared preferences
-      final prefs = await SharedPreferences.getInstance();
-      String userJson = jsonEncode(user.toString()); // Gunakan `toJson()`
-      await prefs.setString('user', userJson);
-
       return Right(user);
     } catch (e, stacktrace) {
       print("Error di getCurrentUser: $e");
@@ -42,10 +36,10 @@ class UserRepositoryImplementation extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, User>> logout() async {
+  Future<Either<Failure, void>> logout() async {
     try {
-      User user = await userRemoteDataSource.logout();
-      return Right(user);
+      await userRemoteDataSource.logout();
+      return Right(null);
     } catch (e, stacktrace) {
       print("Error di logout: $e");
       print("Stacktrace: $stacktrace");
@@ -54,8 +48,8 @@ class UserRepositoryImplementation extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, User>> register(String name, String password,
-      String email, String passwordConfirmation) async {
+  Future<Either<Failure, User>> register(String name, String email,
+      String password, String passwordConfirmation) async {
     try {
       User user = await userRemoteDataSource.register(
           name, email, password, passwordConfirmation);

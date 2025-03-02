@@ -11,7 +11,7 @@ class AuthenticationEventLogin extends AuthenticationEvent {
   final String email;
   final String password;
 
-  AuthenticationEventLogin(this.email, this.password);
+  AuthenticationEventLogin({required this.email, required this.password});
 
   @override
   List<Object> get props => [email, password];

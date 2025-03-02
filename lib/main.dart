@@ -31,20 +31,18 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (context) => myInjection<SplashCubit>()),
       ],
-      child: Builder(
-        builder: (context) {
-          return SafeArea(
-            child: MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              title: 'Camping App',
-              theme: ThemeData(
-                primarySwatch: Colors.blue,
-              ),
-              routerConfig: RouteCamping().router,
+      child: Builder(builder: (context) {
+        return SafeArea(
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'Camping App',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
             ),
-          );
-        }
-      ),
+            routerConfig: RouteCamping().router,
+          ),
+        );
+      }),
     );
   }
 }

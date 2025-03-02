@@ -1,24 +1,25 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_camping_frontend/core/error/failure.dart';
+import 'package:flutter_camping_frontend/core/services/token_storage.dart';
 import 'package:flutter_camping_frontend/features/splash/domain/repositories/splash_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashRepositoryImplementation extends SplashRepository {
-  @override
-  Future<Either<Failure, bool>> checkUserLoggedin() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      String? userJson = prefs.getString('user');
+  final TokenStorage tokenStorage;
 
-      if (userJson != null && userJson.isNotEmpty) {
-        print("BENER dari implementation splash");
-        return Right(true); // User sudah login
+  SplashRepositoryImplementation({required this.tokenStorage});
+  @override
+  Future<Either<Failure, void>> checkUserLoggedin() async {
+    try {
+      String? token =
+          await tokenStorage.getToken(); // Gunakan TokenStorageService
+
+      if (token != null && token.isNotEmpty) {
+        return Right(null);
       } else {
-        print("SALAH dari implementation splash");
-        return Right(false); // User belum login
+        return Left(ServerFailure('Tidak Punya token'));
       }
     } catch (e) {
-      return Left(ServerFailure('Server ERROR')); // Tangani error
+      return Left(ServerFailure('Gagal mendapatkan status login'));
     }
   }
 }

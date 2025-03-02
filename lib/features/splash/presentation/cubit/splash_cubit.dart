@@ -1,32 +1,29 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_camping_frontend/features/splash/domain/repositories/splash_repository.dart';
+import 'package:flutter_camping_frontend/core/error/failure.dart';
+import 'package:flutter_camping_frontend/features/splash/domain/usecases/check_user_loggedin.dart';
+import 'package:dartz/dartz.dart';
 
 part 'splash_state.dart';
 
 class SplashCubit extends Cubit<SplashState> {
-  final SplashRepository splashRepository;
+  final CheckUserLoggedin checkUserLoggedin;
 
-  SplashCubit({required this.splashRepository}) : super(SplashInitial());
+  SplashCubit({required this.checkUserLoggedin}) : super(SplashInitial());
 
-  Future<void> checkUserLoggedIn() async {
+  Future<Either<Failure, void>> checkUserLoggedIn() async {
     emit(SplashStateLoading());
 
-    // await Future.delayed(Duration(seconds: 2)); // Tambahkan delay di sini
-
-    final result = await splashRepository.checkUserLoggedin();
+    final result = await checkUserLoggedin.execute();
 
     result.fold(
-      (failure) => emit(SplashStateNotLoggedIn("Error")), // Jika gagal
+      (failure) =>
+          emit(SplashStateNotLoggedIn("Terjadi kesalahan")), // Jika gagal
       (isLoggedIn) async {
         await Future.delayed(Duration(seconds: 1));
-
-        if (isLoggedIn) {
-          emit(SplashStateLoggedIn("Success")); // Jika user sudah login
-        } else {
-          emit(SplashStateNotLoggedIn("Error")); // Jika user belum login
-        }
+        emit(SplashStateLoggedIn("Login Berhasil")); // Jika berhasil
       },
     );
+      return result;
   }
 }
