@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_camping_frontend/core/error/failure.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/datasources/user_remote_datasource.dart';
+import 'package:flutter_camping_frontend/features/authentication/data/models/user_model.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/entities/user.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/repositories/user_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class UserRepositoryImplementation extends UserRepository {
   final UserRemoteDataSource userRemoteDataSource;
@@ -14,7 +15,7 @@ class UserRepositoryImplementation extends UserRepository {
   @override
   Future<Either<Failure, User>> getCurrentUser() async {
     try {
-      User user = await userRemoteDataSource.getCurrentUser();
+      UserModel user = await userRemoteDataSource.getCurrentUser();
       return Right(user);
     } catch (e, stacktrace) {
       print("Error di getCurrentUser: $e");
@@ -26,7 +27,7 @@ class UserRepositoryImplementation extends UserRepository {
   @override
   Future<Either<Failure, User>> login(String username, String password) async {
     try {
-      User user = await userRemoteDataSource.login(username, password);
+      UserModel user = await userRemoteDataSource.login(username, password);
       return Right(user);
     } catch (e, stacktrace) {
       print("Error di login: $e");
@@ -51,7 +52,7 @@ class UserRepositoryImplementation extends UserRepository {
   Future<Either<Failure, User>> register(String name, String email,
       String password, String passwordConfirmation) async {
     try {
-      User user = await userRemoteDataSource.register(
+      UserModel user = await userRemoteDataSource.register(
           name, email, password, passwordConfirmation);
       return Right(user);
     } catch (e, stacktrace) {

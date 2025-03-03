@@ -18,13 +18,18 @@ class CampingLocationModel extends CampingLocation {
           totalCamps: totalCamps,
         );
 
-  factory CampingLocationModel.fromJson(
-      Map<String, dynamic> json, String token) {
+  factory CampingLocationModel.fromJson(Map<String, dynamic> json) {
     return CampingLocationModel(
       id: json['id'],
       name: json['name'],
       imageUrl: json['image_url'],
       totalCamps: json['total_camps'],
     );
+  }
+  static List<CampingLocationModel> fromJsonList(List data) {
+    if (data.isEmpty) return [];
+    return data
+        .map((singleData) => CampingLocationModel.fromJson(singleData))
+        .toList();
   }
 }

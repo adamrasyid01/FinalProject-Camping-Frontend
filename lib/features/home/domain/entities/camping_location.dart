@@ -5,7 +5,6 @@ class CampingLocation extends Equatable {
   final String name;
   final String imageUrl;
   final int totalCamps;
-  
 
   const CampingLocation(
       {required this.id,

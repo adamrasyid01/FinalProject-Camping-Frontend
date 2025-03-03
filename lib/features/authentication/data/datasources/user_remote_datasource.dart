@@ -6,11 +6,11 @@ import 'package:flutter_camping_frontend/features/authentication/data/models/use
 import 'package:flutter_camping_frontend/features/authentication/domain/entities/user.dart';
 
 abstract class UserRemoteDataSource {
-  Future<User> login(String email, String password);
-  Future<User> register(
+  Future<UserModel> login(String email, String password);
+  Future<UserModel> register(
       String name, String email, String password, String passwordConfirmation);
   Future<void> logout();
-  Future<User> getCurrentUser();
+  Future<UserModel> getCurrentUser();
 }
 
 class UserRemoteDataSourceImplementation extends UserRemoteDataSource {
