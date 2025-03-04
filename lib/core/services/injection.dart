@@ -1,9 +1,9 @@
 import 'package:flutter_camping_frontend/core/networks/dio_client.dart';
+import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/datasources/user_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/repositories/user_repository_implementation.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/repositories/user_repository.dart';
-import 'package:flutter_camping_frontend/features/authentication/domain/usecases/get_current_user.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/login.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/logout.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/register.dart';
@@ -30,13 +30,13 @@ Future<void> init() async {
   // TOKEN STORAGE SERVICE
   myInjection.registerLazySingleton<TokenStorage>(() => TokenStorage());
 
+  // SERVICE - SAVE USER
+  myInjection.registerLazySingleton<SaveUser>(() => SaveUser());
+
   // FEATURE - AUTH
   // BLOC
   myInjection.registerLazySingleton(() => AuthenticationBloc(
-      getCurrentUser: myInjection(),
-      login: myInjection(),
-      logout: myInjection(),
-      register: myInjection()));
+      login: myInjection(), logout: myInjection(), register: myInjection()));
 
   // USECASES
   myInjection.registerLazySingleton(() => Login(userRepository: myInjection()));
@@ -44,8 +44,6 @@ Future<void> init() async {
       .registerLazySingleton(() => Register(userRepository: myInjection()));
   myInjection
       .registerLazySingleton(() => Logout(userRepository: myInjection()));
-  myInjection.registerLazySingleton(
-      () => GetCurrentUser(userRepository: myInjection()));
 
   // Repository
   myInjection.registerLazySingleton<UserRepository>(
@@ -53,7 +51,9 @@ Future<void> init() async {
   // Datasource
   myInjection.registerLazySingleton<UserRemoteDataSource>(() =>
       UserRemoteDataSourceImplementation(
-          dio: myInjection(), tokenStorage: myInjection()));
+          dio: myInjection(),
+          tokenStorage: myInjection(),
+          saveUser: myInjection()));
 
   // FEATURE - SPLASH
   // BLOC

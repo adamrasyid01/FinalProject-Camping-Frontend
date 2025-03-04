@@ -1,6 +1,7 @@
 import 'package:flutter_camping_frontend/core/error/exception.dart';
 import 'package:flutter_camping_frontend/core/networks/api_endpoints.dart';
 import 'package:flutter_camping_frontend/core/networks/dio_client.dart';
+import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/models/user_model.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/entities/user.dart';
@@ -10,15 +11,15 @@ abstract class UserRemoteDataSource {
   Future<UserModel> register(
       String name, String email, String password, String passwordConfirmation);
   Future<void> logout();
-  Future<UserModel> getCurrentUser();
 }
 
 class UserRemoteDataSourceImplementation extends UserRemoteDataSource {
   final DioClient dio;
   final TokenStorage tokenStorage;
+  final SaveUser saveUser;
 
   UserRemoteDataSourceImplementation(
-      {required this.dio, required this.tokenStorage});
+      {required this.dio, required this.tokenStorage, required this.saveUser});
   @override
   Future<UserModel> login(String email, String password) async {
     try {
@@ -32,11 +33,23 @@ class UserRemoteDataSourceImplementation extends UserRemoteDataSource {
 
       final token = response.data['result']['access_token'];
       final userJson = response.data['result']['user'];
+      final username = userJson['name'];
+      final userEmail = userJson['email'];
+
+      // Debugging
+      print("🔎 Token: $token");
+      print("🔎 User JSON: $userJson");
+      print("🔎 Username: $username");
+      print("🔎 User Email: $userEmail");
+
+      // Simpan Username & Email ke SharedPreferences
+      await saveUser.saveUsername(username);
+      await saveUser.saveEmail(userEmail);
 
       // Simpan token ke TokenStorageService
       await tokenStorage.saveToken(token);
 
-      return UserModel.fromJson(userJson, token);
+      return UserModel.fromJson(userJson);
     } catch (e) {
       throw const GeneralException(message: "gagal Login");
     }
@@ -64,7 +77,7 @@ class UserRemoteDataSourceImplementation extends UserRemoteDataSource {
         // Simpan token ke TokenStorageService
         await tokenStorage.saveToken(token);
 
-        return UserModel.fromJson(userJson, token);
+        return UserModel.fromJson(userJson);
       } else {
         throw GeneralException(
             message: "Gagal registrasi: ${response.statusMessage}");
@@ -83,24 +96,6 @@ class UserRemoteDataSourceImplementation extends UserRemoteDataSource {
       await tokenStorage.removeToken();
     } catch (e) {
       throw const GeneralException(message: "gagal Logout");
-    }
-  }
-
-  @override
-  Future<UserModel> getCurrentUser() async {
-    try {
-      final token = await tokenStorage.getToken();
-      if (token == null) {
-        throw GeneralException(
-            message: "Token tidak ditemukan, silakan login.");
-      }
-
-      final response = await dio.getRequest(ApiEndpoints.currentUser);
-      final userJson = response.data['result']['user'];
-
-      return UserModel.fromJson(userJson, token);
-    } catch (e) {
-      throw GeneralException(message: "Gagal GetCurrentUser: ${e.toString()}");
     }
   }
 }

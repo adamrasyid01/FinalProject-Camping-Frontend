@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_camping_frontend/pages/beranda_page.dart';
+import 'package:flutter_camping_frontend/features/home/presentation/pages/beranda_page.dart';
 import 'package:flutter_camping_frontend/pages/bookmark_page.dart';
 import 'package:flutter_camping_frontend/pages/profile_page.dart';
 import 'package:flutter_camping_frontend/pages/rekomendasi_page.dart';

@@ -6,23 +6,10 @@ import 'package:flutter_camping_frontend/features/authentication/data/models/use
 import 'package:flutter_camping_frontend/features/authentication/domain/entities/user.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/repositories/user_repository.dart';
 
-
 class UserRepositoryImplementation extends UserRepository {
   final UserRemoteDataSource userRemoteDataSource;
 
   UserRepositoryImplementation({required this.userRemoteDataSource});
-
-  @override
-  Future<Either<Failure, User>> getCurrentUser() async {
-    try {
-      UserModel user = await userRemoteDataSource.getCurrentUser();
-      return Right(user);
-    } catch (e, stacktrace) {
-      print("Error di getCurrentUser: $e");
-      print("Stacktrace: $stacktrace");
-      return Left(ServerFailure('Server Failure'));
-    }
-  }
 
   @override
   Future<Either<Failure, User>> login(String username, String password) async {

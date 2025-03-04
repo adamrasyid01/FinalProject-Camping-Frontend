@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/models/list_wisata_model.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_chip.dart';
@@ -14,7 +15,24 @@ class BerandaPage extends StatefulWidget {
 }
 
 class _BerandaPageState extends State<BerandaPage> {
+  final SaveUser saveUser = SaveUser();
+  String? username;
   int selectedFilterIndex = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    final user = await saveUser.getUsername();
+    print("Username dari storage: $user");
+    setState(() {
+      username = user ?? "Guest HHH"; // Jika username null, tampilkan "Guest"
+    });
+  }
 
   final List<String> filters = ['Semua', 'Terfavorit', 'Camping Terbanyak'];
   static const urlPrefix =
@@ -71,7 +89,7 @@ class _BerandaPageState extends State<BerandaPage> {
                         padding: const EdgeInsets.only(right: 8.0),
                         child: SvgPicture.asset('assets/icons/campHome.svg'),
                       ),
-                      Text("Halo Adam Rasyid",
+                      Text("Halo $username",
                           style: AppTextStyle.semiBold16.copyWith(
                             color: Color(0xFF274F66),
                           )),

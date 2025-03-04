@@ -2,10 +2,6 @@ part of 'authentication_bloc.dart';
 
 abstract class AuthenticationEvent extends Equatable {}
 
-class AuthenticationEventGetCurrentUser extends AuthenticationEvent {
-  @override
-  List<Object> get props => [];
-}
 
 class AuthenticationEventLogin extends AuthenticationEvent {
   final String email;
