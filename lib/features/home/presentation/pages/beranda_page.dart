@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/core/services/save_user.dart';
+import 'package:flutter_camping_frontend/core/services/token_storage.dart';
+import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_camping_frontend/models/list_wisata_model.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_chip.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_wisata.dart';
 import 'package:flutter_camping_frontend/core/widgets/search_input.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
@@ -16,6 +19,7 @@ class BerandaPage extends StatefulWidget {
 
 class _BerandaPageState extends State<BerandaPage> {
   final SaveUser saveUser = SaveUser();
+  final TokenStorage tokenStorage = TokenStorage();
   String? username;
   int selectedFilterIndex = 0;
 
@@ -24,6 +28,7 @@ class _BerandaPageState extends State<BerandaPage> {
     // TODO: implement initState
     super.initState();
     _loadUsername();
+    _fetchDataCamping();
   }
 
   Future<void> _loadUsername() async {
@@ -34,47 +39,16 @@ class _BerandaPageState extends State<BerandaPage> {
     });
   }
 
-  final List<String> filters = ['Semua', 'Terfavorit', 'Camping Terbanyak'];
-  static const urlPrefix =
-      'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
+  void _fetchDataCamping() {
+    context.read<HomeBloc>().add(HomeEventGetCampingLocations());
+  }
 
-  static const locations = [
-    ListWisataModel(
-      name: 'Mount Rushmore',
-      place: 'U.S.A',
-      imageUrl: '$urlPrefix/01-mount-rushmore.jpg',
-    ),
-    ListWisataModel(
-      name: 'Gardens By The Bay',
-      place: 'Singapore',
-      imageUrl: '$urlPrefix/02-singapore.jpg',
-    ),
-    ListWisataModel(
-      name: 'Machu Picchu',
-      place: 'Peru',
-      imageUrl: '$urlPrefix/03-machu-picchu.jpg',
-    ),
-    ListWisataModel(
-      name: 'Vitznau',
-      place: 'Switzerland',
-      imageUrl: '$urlPrefix/04-vitznau.jpg',
-    ),
-    ListWisataModel(
-      name: 'Bali',
-      place: 'Indonesia',
-      imageUrl: '$urlPrefix/05-bali.jpg',
-    ),
-    ListWisataModel(
-      name: 'Mexico City',
-      place: 'Mexico',
-      imageUrl: '$urlPrefix/06-mexico-city.jpg',
-    ),
-  ];
+  final List<String> filters = ['Semua', 'Terfavorit', 'Camping Terbanyak'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: SingleChildScrollView(
         child: Column(
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -108,6 +82,11 @@ class _BerandaPageState extends State<BerandaPage> {
                       },
                     ),
                   ),
+                  // ElevatedButton(
+                  //     onPressed: () async {
+                  //       print(await tokenStorage.getToken());
+                  //     },
+                  //     child: Text("Cari Camping")),
                   Text("Eksplor Tempat Camping",
                       style: AppTextStyle.semiBold16),
                 ],
@@ -130,18 +109,32 @@ class _BerandaPageState extends State<BerandaPage> {
             const SizedBox(
               height: 12,
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: locations.length,
-                itemBuilder: (context, index) {
-                  final location = locations[index];
-                  return CustomListWisata(
-                    imageUrl: location.imageUrl,
-                    name: location.name,
-                    country: location.place,
+            BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (state is HomeStateLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              ),
+                } else if (state is HomeStateError) {
+                  return Center(child: Text(state.message));
+                } else if (state is HomeStateSuccess) {
+                  final locations = state.campingLocation;
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: locations.length,
+                    itemBuilder: (context, index) {
+                      final location = locations[index];
+                      return CustomListWisata(
+                        imageUrl: location.imageUrl,
+                        name: location.name,
+                        totalCamps: location.totalCamps,
+                      );
+                    },
+                  );
+                }
+                return const Center(child: Text("Tidak ada data tersedia"));
+              },
             ),
           ],
         ),

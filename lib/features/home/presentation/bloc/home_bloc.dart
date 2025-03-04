@@ -11,7 +11,7 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
  final GetCampingLocation getCampingLocation;
   HomeBloc({required this.getCampingLocation}) : super(HomeStateInitial()) {
-    on<HomeEventGetCurrentUser>((event, emit) async {
+    on<HomeEventGetCampingLocations>((event, emit) async {
       emit(HomeStateLoading());
       Either<Failure, List<CampingLocation>> result = await getCampingLocation.execute();
       result.fold(

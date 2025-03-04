@@ -5,12 +5,12 @@ class CustomListWisata extends StatelessWidget {
     super.key,
     required this.imageUrl,
     required this.name,
-    required this.country,
+    required this.totalCamps,
   });
 
   final String imageUrl;
   final String name;
-  final String country;
+  final int totalCamps;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class CustomListWisata extends StatelessWidget {
             ),
           ),
           Text(
-            country,
+            '${totalCamps} Camping Ditemukan',
             style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
         ],

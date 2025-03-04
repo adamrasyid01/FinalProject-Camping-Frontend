@@ -5,6 +5,7 @@ import 'package:flutter_camping_frontend/core/routes/route.dart';
 import 'package:flutter_camping_frontend/core/services/injection.dart';
 import 'package:flutter_camping_frontend/core/services/observer.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_camping_frontend/features/splash/presentation/cubit/splash_cubit.dart';
 
 void main() async {
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
           create: (context) => myInjection<AuthenticationBloc>(),
         ),
         BlocProvider(create: (context) => myInjection<SplashCubit>()),
+        BlocProvider(create: (context) => myInjection<HomeBloc>(),)
       ],
       child: Builder(builder: (context) {
         return SafeArea(

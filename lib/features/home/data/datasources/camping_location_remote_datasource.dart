@@ -13,16 +13,15 @@ abstract class CampingLocationRemoteDataSource {
 class CampingLocationRemoteDatasourceImplementation
     extends CampingLocationRemoteDataSource {
   final DioClient dio;
-  final TokenStorage tokenStorage;
 
-  CampingLocationRemoteDatasourceImplementation(
-      {required this.dio, required this.tokenStorage});
+  CampingLocationRemoteDatasourceImplementation({required this.dio});
   @override
   Future<List<CampingLocationModel>> getCampingLocation() async {
     try {
       // final token = await tokenStorage.getToken();
       final response = await dio.getRequest(ApiEndpoints.campingLocations);
-      return CampingLocationModel.fromJsonList(response.data);
+      // print(response.data['result']);
+      return CampingLocationModel.fromJsonList(response.data['result']);
     } catch (e) {
       throw ServerFailure(e.toString());
     }

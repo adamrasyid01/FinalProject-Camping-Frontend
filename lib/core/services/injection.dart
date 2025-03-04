@@ -8,6 +8,11 @@ import 'package:flutter_camping_frontend/features/authentication/domain/usecases
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/logout.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/register.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:flutter_camping_frontend/features/home/data/datasources/camping_location_remote_datasource.dart';
+import 'package:flutter_camping_frontend/features/home/data/repositories/camping_location_repository_implementation.dart';
+import 'package:flutter_camping_frontend/features/home/domain/repositories/camping_location_repository.dart';
+import 'package:flutter_camping_frontend/features/home/domain/usecases/get_camping_location.dart';
+import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_camping_frontend/features/splash/data/repositories/splash_repository_implementation.dart';
 import 'package:flutter_camping_frontend/features/splash/domain/repositories/splash_repository.dart';
 import 'package:flutter_camping_frontend/features/splash/domain/usecases/check_user_loggedin.dart';
@@ -66,4 +71,19 @@ Future<void> init() async {
   // Repository
   myInjection.registerLazySingleton<SplashRepository>(
       () => SplashRepositoryImplementation(tokenStorage: myInjection()));
+
+  // FEATURE - HOME
+  // BLOC
+  myInjection
+      .registerLazySingleton(() => HomeBloc(getCampingLocation: myInjection()));
+  // USECASES
+  myInjection.registerLazySingleton(
+      () => GetCampingLocation(campingLocationRepository: myInjection()));
+  // Repository
+  myInjection.registerLazySingleton<CampingLocationRepository>(() =>
+      CampingLocationRepositoryImplementation(
+          campingLocationDataSource: myInjection()));
+  // Datasource
+  myInjection.registerLazySingleton<CampingLocationRemoteDataSource>(
+      () => CampingLocationRemoteDatasourceImplementation(dio: myInjection()));
 }
