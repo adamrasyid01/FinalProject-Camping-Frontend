@@ -6,4 +6,5 @@ class MyColor {
   final Color accentColor = const Color(0xFFB3B3B3);
   final Color black = const Color(0xFF000000);
   final Color greenCustom = const Color(0xFF284B63);
+  final Color customOrange = const Color(0xFFC2A83E);
 }

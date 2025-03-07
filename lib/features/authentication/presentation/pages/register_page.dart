@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
-import 'package:flutter_camping_frontend/core/services/injection.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_textfield.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';

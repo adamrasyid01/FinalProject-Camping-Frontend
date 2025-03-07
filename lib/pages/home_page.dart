@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/pages/beranda_page.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/presentation/pages/rekomendasi_page.dart';
 import 'package:flutter_camping_frontend/pages/bookmark_page.dart';
 import 'package:flutter_camping_frontend/pages/profile_page.dart';
-import 'package:flutter_camping_frontend/pages/rekomendasi_page.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
-import 'package:flutter_camping_frontend/models/list_wisata_model.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_chip.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_wisata.dart';

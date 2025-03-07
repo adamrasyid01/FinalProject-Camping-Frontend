@@ -1,9 +1,13 @@
 import 'package:flutter_camping_frontend/features/authentication/domain/entities/user.dart';
 
 class UserModel extends User {
+  @override
   final int id;
+  @override
   final String name;
+  @override
   final String email;
+  @override
   final String? profilePhotoUrl;
 
   const UserModel({

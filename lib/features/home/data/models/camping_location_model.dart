@@ -1,9 +1,13 @@
 import 'package:flutter_camping_frontend/features/home/domain/entities/camping_location.dart';
 
 class CampingLocationModel extends CampingLocation {
+  @override
   final int id;
+  @override
   final String name;
+  @override
   final String imageUrl;
+  @override
   final int totalCamps;
 
   const CampingLocationModel({

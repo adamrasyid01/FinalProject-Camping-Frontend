@@ -4,7 +4,6 @@ import 'package:flutter_camping_frontend/core/networks/dio_client.dart';
 import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/models/user_model.dart';
-import 'package:flutter_camping_frontend/features/authentication/domain/entities/user.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> login(String email, String password);

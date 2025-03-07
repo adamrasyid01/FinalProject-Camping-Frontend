@@ -68,7 +68,7 @@ class CustomListWisata extends StatelessWidget {
             ),
           ),
           Text(
-            '${totalCamps} Camping Ditemukan',
+            '$totalCamps Camping Ditemukan',
             style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
         ],
