@@ -5,7 +5,7 @@ class UserPreferenceCriteriaModel extends UserPreferenceCriteria {
     required int id,
     required int user_preference_id,
     required int criteria_id,
-    required int weight,
+    required double weight,
   }) : super(
           id: id,
           user_preference_id: user_preference_id,
@@ -33,7 +33,7 @@ class UserPreferenceCriteriaModel extends UserPreferenceCriteria {
     };
   }
 
-  // Konversi list dari JSON
+  // Konversi list dari JSON ke list model
   static List<UserPreferenceCriteriaModel> fromJsonList(List data) {
     if (data.isEmpty) return [];
     return data

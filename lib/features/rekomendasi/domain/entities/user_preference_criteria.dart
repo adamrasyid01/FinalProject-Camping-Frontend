@@ -4,7 +4,7 @@ class UserPreferenceCriteria extends Equatable {
   final int id;
   final int user_preference_id;
   final int criteria_id;
-  final int weight;
+  final double weight;
 
   UserPreferenceCriteria({
     required this.id,
