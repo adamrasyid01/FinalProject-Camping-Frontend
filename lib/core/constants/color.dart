@@ -7,4 +7,6 @@ class MyColor {
   final Color black = const Color(0xFF000000);
   final Color greenCustom = const Color(0xFF284B63);
   final Color customOrange = const Color(0xFFC2A83E);
+  final Color customGrey = const Color(0xFFF6F6F6);
+  final Color darkGrey = const Color(0xFF838383);
 }

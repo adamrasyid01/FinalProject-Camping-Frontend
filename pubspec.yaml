@@ -73,6 +73,7 @@ flutter:
   assets:
     - assets/icons/campHome.svg
     - assets/images/adamCampiio.svg
+    - assets/images/dapatkanRekomendasi.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

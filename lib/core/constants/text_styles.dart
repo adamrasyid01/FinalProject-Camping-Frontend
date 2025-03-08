@@ -57,4 +57,11 @@ class AppTextStyle {
     fontSize: 12,
     fontWeight: FontWeight.normal,
   );
+
+  // POPPINS
+
+  static TextStyle poppinsSemiBold14 = GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  );
 }

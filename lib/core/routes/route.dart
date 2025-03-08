@@ -1,5 +1,7 @@
 import 'package:flutter_camping_frontend/features/authentication/presentation/pages/login_page.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/pages/register_page.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/presentation/pages/prioritas_kriteria_page.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/presentation/pages/rekomendasi_page.dart';
 import 'package:flutter_camping_frontend/pages/home_page.dart';
 import 'package:flutter_camping_frontend/features/splash/presentation/pages/splash_screen.dart';
 
@@ -30,6 +32,25 @@ class RouteCamping {
             name: "homepage",
             pageBuilder: (context, state) => const NoTransitionPage(
                   child: HomePage(),
-                ))
+                )),
+
+        // Parent Route: /rekomendasi
+        GoRoute(
+          path: "/rekomendasi",
+          name: "rekomendasi",
+          pageBuilder: (context, state) => const NoTransitionPage(
+            child: RekomendasiPage(),
+          ),
+          routes: [
+            // Child Route: /rekomendasi/prioritas-kriteria
+            GoRoute(
+              path: "prioritas-kriteria",
+              name: "prioritas_kriteria",
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: PrioritasKriteriaPage(),
+              ),
+            ),
+          ],
+        ),
       ]);
 }
