@@ -9,4 +9,7 @@ class ApiEndpoints {
 
   // Camping Locations Endpoints
   static const String campingLocations = '$baseUrl/home';
+
+  // User Preference Criteria Endpoints
+  static const String userPreferenceCriteria = '$baseUrl/user-preference-criteria';
 }

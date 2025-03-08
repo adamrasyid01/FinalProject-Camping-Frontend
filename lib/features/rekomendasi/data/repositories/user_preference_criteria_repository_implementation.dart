@@ -13,16 +13,19 @@ class UserPreferenceCriteriaRepositoryImplementation
   UserPreferenceCriteriaRepositoryImplementation(
       {required this.userPreferenceCriteriaRemoteDatasource});
   @override
-  Future<Either<Failure, UserPreferenceCriteria>> saveUserPreferenceCriteria(
-      UserPreferenceCriteria criteria) async {
+  Future<Either<Failure, List<UserPreferenceCriteria>>> saveUserPreferenceCriteria(
+      List<UserPreferenceCriteria> criteria) async {
     try {
-      final criteriaModel = UserPreferenceCriteriaModel(
-          id: criteria.id,
-          user_preference_id: criteria.user_preference_id,
-          criteria_id: criteria.criteria_id,
-          weight: criteria.weight);
+       // Konversi List<UserPreferenceCriteria> menjadi List<UserPreferenceCriteriaModel>
+      final criteriaModels = criteria
+          .map((criteria) => UserPreferenceCriteriaModel(
+              criteria_id: criteria.criteria_id, weight: criteria.weight))
+          .toList();
+
+      // Kirim daftar preferensi ke data source
       final result = await userPreferenceCriteriaRemoteDatasource
-          .saveUserPreferenceCriteria(criteriaModel);
+          .saveUserPreferenceCriteria(criteriaModels);
+
       return Right(result);
     } catch (e, stacktrace) {
       print("Error Saat menyimpan Preferensi Pengguna: $e");

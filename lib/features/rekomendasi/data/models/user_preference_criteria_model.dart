@@ -2,13 +2,10 @@ import 'package:flutter_camping_frontend/features/rekomendasi/domain/entities/us
 
 class UserPreferenceCriteriaModel extends UserPreferenceCriteria {
   UserPreferenceCriteriaModel({
-    required int id,
-    required int user_preference_id,
+   
     required int criteria_id,
     required double weight,
   }) : super(
-          id: id,
-          user_preference_id: user_preference_id,
           criteria_id: criteria_id,
           weight: weight,
         );
@@ -16,8 +13,6 @@ class UserPreferenceCriteriaModel extends UserPreferenceCriteria {
   // Factory constructor untuk membuat instance dari JSON
   factory UserPreferenceCriteriaModel.fromJson(Map<String, dynamic> json) {
     return UserPreferenceCriteriaModel(
-      id: json['id'],
-      user_preference_id: json['user_preference_id'],
       criteria_id: json['criteria_id'],
       weight: json['weight'],
     );
@@ -26,8 +21,6 @@ class UserPreferenceCriteriaModel extends UserPreferenceCriteria {
   // Konversi instance ke JSON
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'user_preference_id': user_preference_id,
       'criteria_id': criteria_id,
       'weight': weight,
     };

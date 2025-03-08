@@ -18,7 +18,7 @@ class RekomendasiStateError extends RekomendasiState {
   List<Object> get props => [message];
 }
 class RekomendasiStateSuccess extends RekomendasiState {
-  final UserPreferenceCriteria userPreferenceCriteria;
+  final List<UserPreferenceCriteria> userPreferenceCriteria;
 
   RekomendasiStateSuccess(this.userPreferenceCriteria);
 
