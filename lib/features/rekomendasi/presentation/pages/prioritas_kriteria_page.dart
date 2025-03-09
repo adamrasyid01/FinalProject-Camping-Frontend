@@ -54,7 +54,7 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            context.go("/rekomendasi");
+            context.pop();
           },
         ),
         bottom: PreferredSize(
