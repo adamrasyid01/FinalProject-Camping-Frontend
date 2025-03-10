@@ -8,6 +8,7 @@ import 'package:flutter_camping_frontend/core/widgets/custom_list_wisata.dart';
 import 'package:flutter_camping_frontend/core/widgets/search_input.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
@@ -116,7 +117,7 @@ class _BerandaPageState extends State<BerandaPage> {
                   );
                 } else if (state is HomeStateError) {
                   return Center(child: Text(state.message));
-                } else if (state is HomeStateSuccess) {
+                } else if (state is HomeStateSuccessCampingLocation) {
                   final locations = state.campingLocation;
                   return ListView.builder(
                     shrinkWrap: true,
@@ -124,10 +125,15 @@ class _BerandaPageState extends State<BerandaPage> {
                     itemCount: locations.length,
                     itemBuilder: (context, index) {
                       final location = locations[index];
-                      return CustomListWisata(
-                        imageUrl: location.imageUrl,
-                        name: location.name,
-                        totalCamps: location.totalCamps,
+                      return GestureDetector(
+                        onTap: () {
+                          context.push('/camping-site/${location.id}');
+                        },
+                        child: CustomListWisata(
+                          imageUrl: location.imageUrl,
+                          name: location.name,
+                          totalCamps: location.totalCamps,
+                        ),
                       );
                     },
                   );

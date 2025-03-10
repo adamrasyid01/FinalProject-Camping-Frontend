@@ -4,6 +4,7 @@ import 'package:flutter_camping_frontend/features/rekomendasi/presentation/pages
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/pages/rekomendasi_page.dart';
 import 'package:flutter_camping_frontend/pages/home_page.dart';
 import 'package:flutter_camping_frontend/features/splash/presentation/pages/splash_screen.dart';
+import 'package:flutter_camping_frontend/features/home/presentation/pages/camping_site_page.dart';
 
 import 'package:go_router/go_router.dart';
 
@@ -33,6 +34,13 @@ class RouteCamping {
             pageBuilder: (context, state) => const NoTransitionPage(
                   child: HomePage(),
                 )),
+        GoRoute(
+          path: '/camping-site/:id',
+          builder: (context, state) {
+            final int id = int.parse(state.pathParameters['id']!);
+            return CampingSitePage(locationId: id);
+          },
+        ),
 
         // Parent Route: /rekomendasi
         GoRoute(

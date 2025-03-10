@@ -9,9 +9,13 @@ import 'package:flutter_camping_frontend/features/authentication/domain/usecases
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/register.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/data/datasources/camping_location_remote_datasource.dart';
+import 'package:flutter_camping_frontend/features/home/data/datasources/camping_site_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/home/data/repositories/camping_location_repository_implementation.dart';
+import 'package:flutter_camping_frontend/features/home/data/repositories/camping_site_repository_implementation.dart';
 import 'package:flutter_camping_frontend/features/home/domain/repositories/camping_location_repository.dart';
+import 'package:flutter_camping_frontend/features/home/domain/repositories/camping_site_repository.dart';
 import 'package:flutter_camping_frontend/features/home/domain/usecases/get_camping_location.dart';
+import 'package:flutter_camping_frontend/features/home/domain/usecases/get_camping_site.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/datasources/user_preference_criteria_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/repositories/user_preference_criteria_repository_implementation.dart';
@@ -78,9 +82,10 @@ Future<void> init() async {
       () => SplashRepositoryImplementation(tokenStorage: myInjection()));
 
   // FEATURE - HOME
+  // CAMPING - LOCATION
   // BLOC
   myInjection
-      .registerLazySingleton(() => HomeBloc(getCampingLocation: myInjection()));
+      .registerLazySingleton(() => HomeBloc(getCampingLocation: myInjection(), getCampingSite: myInjection()));
   // USECASES
   myInjection.registerLazySingleton(
       () => GetCampingLocation(campingLocationRepository: myInjection()));
@@ -92,6 +97,17 @@ Future<void> init() async {
   myInjection.registerLazySingleton<CampingLocationRemoteDataSource>(
       () => CampingLocationRemoteDatasourceImplementation(dio: myInjection()));
 
+  // CAMPING - SITES
+  // USECASES
+  myInjection.registerLazySingleton(() => GetCampingSite(campingSiteRepository: myInjection()));
+  // Repository
+  myInjection.registerLazySingleton<CampingSiteRepository>(() =>
+      CampingSiteRepositoryImplementation(campingSiteRemoteDataSource: myInjection()));
+  // Datasource
+  myInjection.registerLazySingleton<CampingSiteRemoteDataSource>(
+      () => CampingSiteRemoteDataSourceImplementation(dio: myInjection()));
+
+      
   // FEATURE - SAVE USERPREFERENCE CRUTERIA
   // BLOC
   myInjection.registerLazySingleton(

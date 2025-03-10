@@ -21,11 +21,19 @@ class HomeStateError extends HomeState {
   List<Object> get props => [message];
 }
 
-class HomeStateSuccess extends HomeState {
+class HomeStateSuccessCampingLocation extends HomeState {
   final List<CampingLocation> campingLocation;
 
-  HomeStateSuccess(this.campingLocation);
+  HomeStateSuccessCampingLocation(this.campingLocation);
 
   @override
   List<Object> get props => [campingLocation];
+}
+class HomeStateSuccessCampingSite extends HomeState {
+  final List<CampingSite> campingSite;
+
+  HomeStateSuccessCampingSite(this.campingSite);
+
+  @override
+  List<Object> get props => [campingSite];
 }
