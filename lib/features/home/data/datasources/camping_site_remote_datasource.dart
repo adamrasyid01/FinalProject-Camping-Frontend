@@ -17,9 +17,12 @@ class CampingSiteRemoteDataSourceImplementation
   @override
   Future<List<CampingSiteModel>> getCampingSite(int locationId) async {
     try {
-     
-      final response = await dio.getRequest(ApiEndpoints.campingSites);
-      return CampingSiteModel.fromJsonList(response.data['result']);
+      final response =
+          await dio.getRequest(ApiEndpoints.campingSites(locationId));
+      // Ambil daftar camping_sites dari dalam result
+      final campingSitesData = response.data['result']['camping_sites'];
+      
+      return CampingSiteModel.fromJsonList(campingSitesData);
     } catch (e) {
       throw ServerFailure(e.toString());
     }

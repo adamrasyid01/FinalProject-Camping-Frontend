@@ -40,6 +40,7 @@ class _BerandaPageState extends State<BerandaPage> {
   }
 
   void _fetchDataCamping() {
+    print("Fetching data camping...");
     context.read<HomeBloc>().add(HomeEventGetCampingLocations());
   }
 
@@ -127,7 +128,10 @@ class _BerandaPageState extends State<BerandaPage> {
                       final location = locations[index];
                       return GestureDetector(
                         onTap: () {
-                          context.push('/camping-site/${location.id}');
+                          // print(location.id);
+                          context.go(
+                            '/camping-site/${location.id}',
+                          );
                         },
                         child: CustomListWisata(
                           imageUrl: location.imageUrl,

@@ -37,3 +37,12 @@ class HomeStateSuccessCampingSite extends HomeState {
   @override
   List<Object> get props => [campingSite];
 }
+
+class HomeStateSuccessCampingLocationWithSites extends HomeState{
+  final CampingLocationWithSites campingLocationWithSites;
+
+  HomeStateSuccessCampingLocationWithSites(this.campingLocationWithSites);
+
+  @override
+  List<Object> get props => [campingLocationWithSites];
+}

@@ -13,3 +13,10 @@ class HomeEventGetCampingSite extends HomeEvent{
   @override
   List<Object> get props => [locationId];
 }
+
+class HomeEventGetCampingLocationWithSites extends HomeEvent{
+  final int locationId;
+  HomeEventGetCampingLocationWithSites({required this.locationId});
+  @override
+  List<Object> get props => [locationId];
+}

@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
             title: 'Camping App',
             theme: ThemeData(
               primarySwatch: Colors.blue,
+              scaffoldBackgroundColor: Colors.white,
             ),
             routerConfig: RouteCamping().router,
           ),

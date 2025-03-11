@@ -37,6 +37,8 @@ class RouteCamping {
         GoRoute(
           path: '/camping-site/:id',
           builder: (context, state) {
+            print(
+                "ID dari pathParameters: ${state.pathParameters['id']}"); // Debugging
             final int id = int.parse(state.pathParameters['id']!);
             return CampingSitePage(locationId: id);
           },
