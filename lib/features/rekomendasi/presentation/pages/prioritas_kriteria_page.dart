@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
-import 'package:flutter_camping_frontend/features/rekomendasi/domain/entities/user_preference_criteria.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/rekomendasi_bloc.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/data/models/user_preference_criteria_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_slider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:flutter_camping_frontend/core/services/preference.dart';
 
 class PrioritasKriteriaPage extends StatefulWidget {
   const PrioritasKriteriaPage({super.key});
@@ -16,23 +19,49 @@ class PrioritasKriteriaPage extends StatefulWidget {
 }
 
 class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
+  UserPreference userPreference = UserPreference();
   double keamanan = 0.5;
   double kenyamanan = 0.5;
   double kebersihan = 0.5;
   double kemudahanTransportasi = 0.5;
 
-  void _savePreferences() {
+  @override
+  void initState() {
+    super.initState();
+    _loadUserPreferences();
+    userPreference.loadPreferences();
+  }
+
+  Future<void> _savePreferences() async {
     final rekomendasiBloc = context.read<RekomendasiBloc>();
 
-    List<UserPreferenceCriteria> preferences = [
-      UserPreferenceCriteria(criteria_id: 1, weight: keamanan),
-      UserPreferenceCriteria(criteria_id: 2, weight: kenyamanan),
-      UserPreferenceCriteria(criteria_id: 3, weight: kebersihan),
-      UserPreferenceCriteria(criteria_id: 4, weight: kemudahanTransportasi),
+    List<UserPreferenceCriteriaModel> preferences = [
+      UserPreferenceCriteriaModel(criteria_id: 1, weight: keamanan),
+      UserPreferenceCriteriaModel(criteria_id: 2, weight: kenyamanan),
+      UserPreferenceCriteriaModel(criteria_id: 3, weight: kebersihan),
+      UserPreferenceCriteriaModel(
+          criteria_id: 4, weight: kemudahanTransportasi),
     ];
 
+    // Simpan ke SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String encodedData =
+        jsonEncode(preferences.map((e) => e.toJson()).toList());
+    await prefs.setString("user_preferences", encodedData);
     rekomendasiBloc
         .add(RekomendasiEventSaveUserPreferenceCriteria(preferences));
+
+    context.pop();
+  }
+
+  Future<void> _loadUserPreferences() async {
+    await userPreference.loadPreferences();
+    setState(() {
+      keamanan = userPreference.keamanan ?? 0.5;
+      kenyamanan = userPreference.kenyamanan ?? 0.5;
+      kebersihan = userPreference.kebersihan ?? 0.5;
+      kemudahanTransportasi = userPreference.kemudahanTransportasi ?? 0.5;
+    });
   }
 
   @override
@@ -128,11 +157,6 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
                     "Error: ${state.message}",
                     style: TextStyle(color: Colors.red),
                   );
-                } else if (state is RekomendasiStateSuccess) {
-                  return Text(
-                    "Data berhasil disimpan!",
-                    style: TextStyle(color: Colors.green),
-                  );
                 }
                 return CustomButton(
                   btnText: "Temukan Rekomendasi",
@@ -145,5 +169,6 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
         ),
       ),
     );
+    // Coba Buat Sharedpreference
   }
 }

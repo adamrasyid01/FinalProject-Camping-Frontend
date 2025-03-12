@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static const baseUrl = 'http://192.168.100.51:8000/api';
+  static const baseUrl = 'http://192.168.104.118:8000/api';
 
   // Auth Endpoints
   static const String login = '$baseUrl/login';
@@ -11,7 +11,8 @@ class ApiEndpoints {
   static const String campingLocations = '$baseUrl/home';
 
   // User Preference Criteria Endpoints
-  static const String userPreferenceCriteria = '$baseUrl/user-preference-criteria';
+  static const String userPreferenceCriteria =
+      '$baseUrl/user-preference-criteria';
 
   // Camping Sites Endpoints
   static String campingSites(int id) => '$baseUrl/camping-locations/$id/sites';
