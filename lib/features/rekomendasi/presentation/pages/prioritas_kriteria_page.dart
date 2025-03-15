@@ -6,7 +6,6 @@ import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/rekomendasi_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/models/user_preference_criteria_model.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_camping_frontend/core/widgets/custom_slider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:flutter_camping_frontend/core/services/preference.dart';
@@ -20,34 +19,50 @@ class PrioritasKriteriaPage extends StatefulWidget {
 
 class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
   UserPreference userPreference = UserPreference();
-  double keamanan = 0.5;
-  double kenyamanan = 0.5;
-  double kebersihan = 0.5;
-  double kemudahanTransportasi = 0.5;
+
+  /// Mapping ID ke Nama Kriteria
+  final Map<String, int> criteriaMapping = {
+    'Keamanan': 1,
+    'Kenyamanan': 2,
+    'Kebersihan': 3,
+    'Kemudahan Transportasi': 4,
+  };
+
+  List<Map<String, dynamic>> myTiles = [
+    {'name': 'Keamanan', 'weight': 9.0},
+    {'name': 'Kenyamanan', 'weight': 7.0},
+    {'name': 'Kebersihan', 'weight': 5.0},
+    {'name': 'Kemudahan Transportasi', 'weight': 3.0},
+  ];
 
   @override
   void initState() {
     super.initState();
     _loadUserPreferences();
-    userPreference.loadPreferences();
   }
 
   Future<void> _savePreferences() async {
     final rekomendasiBloc = context.read<RekomendasiBloc>();
 
-    List<UserPreferenceCriteriaModel> preferences = [
-      UserPreferenceCriteriaModel(criteria_id: 1, weight: keamanan),
-      UserPreferenceCriteriaModel(criteria_id: 2, weight: kenyamanan),
-      UserPreferenceCriteriaModel(criteria_id: 3, weight: kebersihan),
-      UserPreferenceCriteriaModel(
-          criteria_id: 4, weight: kemudahanTransportasi),
-    ];
+    print("myTiles setelah update weight: $myTiles");
+
+    // Konversi ke Model UserPreferenceCriteriaModel sesuai urutan myTiles saat ini
+    List<UserPreferenceCriteriaModel> preferences = myTiles
+        .map((tile) => UserPreferenceCriteriaModel(
+              criteria_id: criteriaMapping[tile['name']]!,
+              weight: tile['weight'], // Menggunakan nilai yang ada
+            ))
+        .toList();
+
+    print("Event dikirim ke Bloc dengan data: $preferences");
 
     // Simpan ke SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String encodedData =
         jsonEncode(preferences.map((e) => e.toJson()).toList());
     await prefs.setString("user_preferences", encodedData);
+
+    // Kirim ke Bloc
     rekomendasiBloc
         .add(RekomendasiEventSaveUserPreferenceCriteria(preferences));
 
@@ -55,12 +70,10 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
   }
 
   Future<void> _loadUserPreferences() async {
-    await userPreference.loadPreferences();
+    List<Map<String, dynamic>> preferences =
+        await userPreference.getPreferences();
     setState(() {
-      keamanan = userPreference.keamanan ?? 0.5;
-      kenyamanan = userPreference.kenyamanan ?? 0.5;
-      kebersihan = userPreference.kebersihan ?? 0.5;
-      kemudahanTransportasi = userPreference.kemudahanTransportasi ?? 0.5;
+      myTiles = preferences;
     });
   }
 
@@ -87,11 +100,11 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
           },
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(0.5), // Ketebalan garis
+          preferredSize: Size.fromHeight(0.5),
           child: Divider(
             height: 1,
             thickness: 1,
-            color: MyColor().secondaryColor, // Warna garis
+            color: MyColor().secondaryColor,
           ),
         ),
       ),
@@ -124,26 +137,32 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
                     ),
                   ),
                   SizedBox(height: 24),
-                  CustomSlider(
-                    title: "Keamanan",
-                    value: keamanan,
-                    onChanged: (value) => setState(() => keamanan = value),
-                  ),
-                  CustomSlider(
-                    title: "Kenyamanan",
-                    value: kenyamanan,
-                    onChanged: (value) => setState(() => kenyamanan = value),
-                  ),
-                  CustomSlider(
-                    title: "Kebersihan",
-                    value: kebersihan,
-                    onChanged: (value) => setState(() => kebersihan = value),
-                  ),
-                  CustomSlider(
-                    title: "Kemudahan Transportasi",
-                    value: kemudahanTransportasi,
-                    onChanged: (value) =>
-                        setState(() => kemudahanTransportasi = value),
+                  SizedBox(
+                    height: 400,
+                    child: ReorderableListView(
+                      children: [
+                        for (int i = 0; i < myTiles.length; i++)
+                          ListTile(
+                            key: Key('$i'),
+                            title: Text(myTiles[i]['name']),
+                          ),
+                      ],
+                      onReorder: (int oldIndex, int newIndex) {
+                        setState(() {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          final item = myTiles.removeAt(oldIndex);
+                          myTiles.insert(newIndex, item);
+
+                          // Update weight berdasarkan posisi baru
+                          for (int i = 0; i < myTiles.length; i++) {
+                            myTiles[i]['weight'] =
+                                9.0 - (i * 2.0); // Misal, menyesuaikan skala
+                          }
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -169,6 +188,5 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
         ),
       ),
     );
-    // Coba Buat Sharedpreference
   }
 }
