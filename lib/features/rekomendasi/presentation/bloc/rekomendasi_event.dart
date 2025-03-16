@@ -9,3 +9,5 @@ class RekomendasiEventSaveUserPreferenceCriteria extends RekomendasiEvent {
   @override
   List<Object> get props => [userPreferenceCriteria];
 }
+
+

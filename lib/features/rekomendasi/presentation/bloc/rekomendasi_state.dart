@@ -25,3 +25,4 @@ class RekomendasiStateSuccess extends RekomendasiState {
   @override
   List<Object> get props => [userPreferenceCriteria];
 }
+

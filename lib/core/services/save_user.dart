@@ -9,7 +9,7 @@ class SaveUser {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_usernameKey, username);
     print("✅ Username disimpan: $username");
-  }
+}
 
   /// 🔹 Simpan email ke SharedPreferences
   Future<void> saveEmail(String email) async {

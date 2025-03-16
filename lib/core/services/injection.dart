@@ -1,4 +1,5 @@
 import 'package:flutter_camping_frontend/core/networks/dio_client.dart';
+import 'package:flutter_camping_frontend/core/services/preference.dart';
 import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
 import 'package:flutter_camping_frontend/features/authentication/data/datasources/user_remote_datasource.dart';
@@ -26,6 +27,7 @@ import 'package:flutter_camping_frontend/features/rekomendasi/data/datasources/u
 import 'package:flutter_camping_frontend/features/rekomendasi/data/repositories/user_preference_criteria_repository_implementation.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/domain/repositories/user_preference_criteria_repository.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/domain/usecases/save_user_preference_criteria.dart';
+
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/rekomendasi_bloc.dart';
 import 'package:flutter_camping_frontend/features/splash/data/repositories/splash_repository_implementation.dart';
 import 'package:flutter_camping_frontend/features/splash/domain/repositories/splash_repository.dart';
@@ -48,6 +50,10 @@ Future<void> init() async {
 
   // TOKEN STORAGE SERVICE
   myInjection.registerLazySingleton<TokenStorage>(() => TokenStorage());
+
+  // USER PREFERENCE SERVICE
+  myInjection.registerLazySingleton<UserPreferenceService>(
+      () => UserPreferenceService());
 
   // SERVICE - SAVE USER
   myInjection.registerLazySingleton<SaveUser>(() => SaveUser());
@@ -131,8 +137,9 @@ Future<void> init() async {
 
   // FEATURE - SAVE USERPREFERENCE CRITERIA
   // BLOC
-  myInjection.registerLazySingleton(
-      () => RekomendasiBloc(saveUserPreferenceCriteria: myInjection()));
+  myInjection.registerLazySingleton(() => RekomendasiBloc(
+        saveUserPreferenceCriteria: myInjection(),
+      ));
   // USECASES
   myInjection.registerLazySingleton(() => SaveUserPreferenceCriteria(
       userPreferenceCriteriaRepository: myInjection()));

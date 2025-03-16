@@ -33,4 +33,6 @@ class UserPreferenceCriteriaRepositoryImplementation
       return Left(ServerFailure('Server Failure'));
     }
   }
+
+
 }

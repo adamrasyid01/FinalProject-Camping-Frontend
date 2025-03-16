@@ -18,7 +18,7 @@ class PrioritasKriteriaPage extends StatefulWidget {
 }
 
 class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
-  UserPreference userPreference = UserPreference();
+  final UserPreferenceService userPreference = UserPreferenceService();
 
   /// Mapping ID ke Nama Kriteria
   final Map<String, int> criteriaMapping = {

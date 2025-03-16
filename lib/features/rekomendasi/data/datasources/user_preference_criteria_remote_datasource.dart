@@ -48,4 +48,6 @@ class UserPreferenceCriteriaRemoteDataSourceImplementation
       throw ServerFailure(e.toString());
     }
   }
+
+
 }

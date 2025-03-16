@@ -11,4 +11,6 @@ class SaveUserPreferenceCriteria {
   Future<Either<Failure, List<UserPreferenceCriteria>>> execute(List<UserPreferenceCriteria> criteria) async {
     return await userPreferenceCriteriaRepository.saveUserPreferenceCriteria(criteria);
   }
+
+  
 }

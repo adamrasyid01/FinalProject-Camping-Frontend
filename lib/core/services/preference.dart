@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/models/user_preference_criteria_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserPreference {
+class UserPreferenceService {
   Future<List<Map<String, dynamic>>> getPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? encodedData = prefs.getString("user_preferences");
