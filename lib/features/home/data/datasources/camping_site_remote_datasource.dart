@@ -21,9 +21,11 @@ class CampingSiteRemoteDataSourceImplementation
           await dio.getRequest(ApiEndpoints.campingSites(locationId));
       // Ambil daftar camping_sites dari dalam result
       final campingSitesData = response.data['result']['camping_sites'];
-      
+      print(campingSitesData);
+
       return CampingSiteModel.fromJsonList(campingSitesData);
-    } catch (e) {
+    } catch (e, stacktrace) {
+      print(stacktrace);
       throw ServerFailure(e.toString());
     }
   }

@@ -28,6 +28,8 @@ class CampingCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
+      color: MyColor().customWhite,
+      shadowColor: MyColor().customGrey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

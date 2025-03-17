@@ -19,14 +19,12 @@ class CampingSiteModel extends CampingSite {
     required this.imageUrl,
     required this.locationId,
     required this.rating,
-  
   }) : super(
           id: id,
           name: name,
           imageUrl: imageUrl,
           locationId: locationId,
           rating: rating,
-
         );
 
   factory CampingSiteModel.fromJson(Map<String, dynamic> json) {
@@ -38,10 +36,17 @@ class CampingSiteModel extends CampingSite {
       rating: json['rating'],
     );
   }
-  static List<CampingSiteModel> fromJsonList(List data) {
-    if (data.isEmpty) return [];
-    return data
-        .map((singleData) => CampingSiteModel.fromJson(singleData))
-        .toList();
+  static List<CampingSiteModel> fromJsonList(List<dynamic> jsonList) {
+    return jsonList
+        .map((json) {
+          try {
+            return CampingSiteModel.fromJson(json);
+          } catch (e) {
+            print("Error parsing list: $e");
+            return null;
+          }
+        })
+        .whereType<CampingSiteModel>()
+        .toList(); // Hapus item yang null
   }
 }

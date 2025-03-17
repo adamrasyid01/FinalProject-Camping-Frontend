@@ -18,10 +18,10 @@ class CampingLocationRemoteDatasourceImplementation
       // final token = await tokenStorage.getToken();
       final response = await dio.getRequest(ApiEndpoints.campingLocations);
       // print(response.data['result']);
+     
       return CampingLocationModel.fromJsonList(response.data['result']);
     } catch (e) {
       throw ServerFailure(e.toString());
-      
     }
   }
 }

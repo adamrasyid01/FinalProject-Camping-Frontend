@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_camping_frontend/core/services/save_name_camp_location.dart';
 import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
@@ -20,6 +21,8 @@ class BerandaPage extends StatefulWidget {
 class _BerandaPageState extends State<BerandaPage> {
   final SaveUser saveUser = SaveUser();
   final TokenStorage tokenStorage = TokenStorage();
+  final SaveNameCampLocation saveNameCampLocation = SaveNameCampLocation();
+
   String? username;
   int selectedFilterIndex = 0;
 
@@ -127,8 +130,12 @@ class _BerandaPageState extends State<BerandaPage> {
                     itemBuilder: (context, index) {
                       final location = locations[index];
                       return GestureDetector(
-                        onTap: () {
+                        onTap: () async{
                           // print(location.id);
+                          
+                          await saveNameCampLocation.saveCampLocationName(location.name);
+                          // Simpan Nama Loaction ke CampingSite
+
                           context.go(
                             '/camping-site/${location.id}',
                           );
