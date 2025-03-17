@@ -60,7 +60,7 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String encodedData =
         jsonEncode(preferences.map((e) => e.toJson()).toList());
-    await prefs.setString("user_preferences", encodedData);
+  await prefs.setString("user_preferences", encodedData);
 
     // Kirim ke Bloc
     rekomendasiBloc
@@ -113,8 +113,7 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
+              child: Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 12.0),
@@ -136,9 +135,9 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 24),
+                  SizedBox(height: 4),
                   SizedBox(
-                    height: 400,
+                    height: 300,
                     child: ReorderableListView(
                       children: [
                         for (int i = 0; i < myTiles.length; i++)
