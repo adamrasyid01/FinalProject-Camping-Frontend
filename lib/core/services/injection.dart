@@ -8,6 +8,7 @@ import 'package:flutter_camping_frontend/features/authentication/domain/usecases
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/logout.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/register.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:flutter_camping_frontend/features/bloc/bookmark_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/data/datasources/camping_location_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/home/data/datasources/camping_site_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/home/data/repositories/camping_location_repository_implementation.dart';
@@ -127,4 +128,10 @@ Future<void> init() async {
   myInjection.registerLazySingleton<UserPreferenceCriteriaRemoteDatasource>(
       () => UserPreferenceCriteriaRemoteDataSourceImplementation(
           dio: myInjection()));
+
+
+  // FEATURE - BOOKMARK
+  // BLOC
+  myInjection.registerLazySingleton(() => BookmarkBloc());
+
 }

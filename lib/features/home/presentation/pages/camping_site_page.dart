@@ -4,6 +4,7 @@ import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/services/save_name_camp_location.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
+import 'package:flutter_camping_frontend/features/bloc/bookmark_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 
 import 'package:go_router/go_router.dart';
@@ -27,9 +28,9 @@ class _CampingSitePageState extends State<CampingSitePage> {
   }
 
   void _fetchCampingLocationSites() {
-    context
-        .read<HomeBloc>()
-        .add(HomeEventGetCampingSite(locationId: widget.locationId));
+    context.read<HomeBloc>().add(
+          HomeEventGetCampingSite(locationId: widget.locationId),
+        );
   }
 
   @override
@@ -42,17 +43,10 @@ class _CampingSitePageState extends State<CampingSitePage> {
               return FutureBuilder<String?>(
                 future: saveNameCampLocation.getCampLocationName(),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text(
-                      _campingLocationName,
-                      style: AppTextStyle.medium20,
-                    );
-                  } else {
-                    return Text(
-                      snapshot.data ?? _campingLocationName,
-                      style: AppTextStyle.medium20,
-                    );
-                  }
+                  return Text(
+                    snapshot.data ?? _campingLocationName,
+                    style: AppTextStyle.medium20,
+                  );
                 },
               );
             }
@@ -88,20 +82,30 @@ class _CampingSitePageState extends State<CampingSitePage> {
                 itemCount: campingData.length,
                 itemBuilder: (context, index) {
                   final site = campingData[index];
-                  // print('COBA SITE NYA ${site.id}');
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: CampingCard(
-                      key: ValueKey(site.id),
-                      imageUrl: site.imageUrl,
-                      title: site.name,
-                      location: '${site.location}, Jawa Timur, Indonesia',
-                      rating: site.rating,
-                      reviews: site.reviews,
-                      onDetailPressed: () {
-                        context.push('/camping-detail/${site.id}');
-                      },
-                    ),
+
+                  return BlocBuilder<BookmarkBloc, BookmarkState>(
+                    builder: (context, bookmarkState) {
+                      final isBookmarked = bookmarkState is BookmarkSuccess &&
+                          bookmarkState.bookmarkedSites.contains(site);
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: CampingCard(
+                          key: ValueKey(site.id),
+                          imageUrl: site.imageUrl,
+                          title: site.name,
+                          location: '${site.location}, Jawa Timur, Indonesia',
+                          rating: site.rating,
+                          reviews: site.reviews,
+                          isBookmarked: isBookmarked,
+                          onBookmarkPressed: () {
+                            context.read<BookmarkBloc>().add(
+                                  BookmarkEventToggle(site),
+                                );
+                          },
+                        ),
+                      );
+                    },
                   );
                 },
               ),
