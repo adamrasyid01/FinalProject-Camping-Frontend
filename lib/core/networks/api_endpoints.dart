@@ -1,6 +1,6 @@
 class ApiEndpoints {
   // Menggunakan Hotspot
-  static const baseUrl = 'http://192.168.216.118:8000/api';
+  static const baseUrl = 'http://192.168.151.118:8000/api';
 
   // Menggunakana Wifi Rumah
   // static const baseUrl = 'http://192.168.100.51:8000/api';

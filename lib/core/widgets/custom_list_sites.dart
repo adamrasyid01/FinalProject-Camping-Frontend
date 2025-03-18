@@ -10,6 +10,7 @@ class CampingCard extends StatelessWidget {
   final String title;
   final String location;
   final double rating;
+  final int reviews;
   final VoidCallback onDetailPressed;
 
   const CampingCard({
@@ -18,6 +19,7 @@ class CampingCard extends StatelessWidget {
     required this.title,
     required this.location,
     required this.rating,
+    required this.reviews,
     required this.onDetailPressed,
   });
 
@@ -71,21 +73,18 @@ class CampingCard extends StatelessWidget {
                       style: AppTextStyle.bold14
                           .copyWith(color: MyColor().customOrange),
                     ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "($reviews)", // Tambahkan tanda kurung di sini
+                      style: AppTextStyle.bold14
+                          .copyWith(color: MyColor().customOrange),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
           // Tombol
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            child: CustomButton(
-              btnText: "Lihat Detail",
-              onPressed: () {},
-              btnColor: MyColor().customWhite,
-              btnTextColor: MyColor().lightGrey,
-            ),
-          )
         ],
       ),
     );

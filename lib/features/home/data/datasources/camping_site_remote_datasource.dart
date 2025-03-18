@@ -23,7 +23,7 @@ class CampingSiteRemoteDataSourceImplementation
       final campingSitesData = response.data['result']['camping_sites'];
       print(campingSitesData);
 
-      return CampingSiteModel.fromJsonList(campingSitesData);
+      return CampingSiteModel.fromJsonList(campingSitesData).cast<CampingSiteModel>();
     } catch (e, stacktrace) {
       print(stacktrace);
       throw ServerFailure(e.toString());

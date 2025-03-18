@@ -88,14 +88,16 @@ class _CampingSitePageState extends State<CampingSitePage> {
                 itemCount: campingData.length,
                 itemBuilder: (context, index) {
                   final site = campingData[index];
+                  // print('COBA SITE NYA ${site.id}');
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: CampingCard(
                       key: ValueKey(site.id),
                       imageUrl: site.imageUrl,
                       title: site.name,
-                      location: '$_campingLocationName, Jawa Timur, Indonesia',
+                      location: '${site.location}, Jawa Timur, Indonesia',
                       rating: site.rating,
+                      reviews: site.reviews,
                       onDetailPressed: () {
                         context.push('/camping-detail/${site.id}');
                       },
