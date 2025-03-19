@@ -6,3 +6,21 @@ abstract class BookmarksEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class BookmarksEventGetBookmarks extends BookmarksEvent {
+  
+
+  const BookmarksEventGetBookmarks();
+
+  @override
+  List<Object> get props => [];
+}
+
+class BookmarksEventInsertBookmark extends BookmarksEvent {
+  final int campingSiteId;
+
+  const BookmarksEventInsertBookmark(this.campingSiteId);
+
+  @override
+  List<Object> get props => [campingSiteId];
+}

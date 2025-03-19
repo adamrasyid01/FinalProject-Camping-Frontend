@@ -5,7 +5,7 @@ import 'package:flutter_camping_frontend/core/routes/route.dart';
 import 'package:flutter_camping_frontend/core/services/injection.dart';
 import 'package:flutter_camping_frontend/core/services/observer.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
-import 'package:flutter_camping_frontend/features/bloc/bookmark_bloc.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/rekomendasi_bloc.dart';
 import 'package:flutter_camping_frontend/features/splash/presentation/cubit/splash_cubit.dart';
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
           create: (context) => myInjection<HomeBloc>(),
         ),
         BlocProvider(create: (context) => myInjection<RekomendasiBloc>()),
-        BlocProvider(create: (context) => myInjection<BookmarkBloc>()),
+        BlocProvider(create: (context) => myInjection<BookmarksBloc>()),
       ],
       child: Builder(builder: (context) {
         return SafeArea(

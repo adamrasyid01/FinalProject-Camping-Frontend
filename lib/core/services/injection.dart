@@ -8,7 +8,12 @@ import 'package:flutter_camping_frontend/features/authentication/domain/usecases
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/logout.dart';
 import 'package:flutter_camping_frontend/features/authentication/domain/usecases/register.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
-import 'package:flutter_camping_frontend/features/bloc/bookmark_bloc.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/data/datasources/bookmark_remote_datasource.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/data/repositories/bookmark_repository_impl.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/domain/repositories/bookmark_repository.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/domain/usecases/get_bookmarked_sites.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/domain/usecases/insert_bookmark.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/data/datasources/camping_location_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/home/data/datasources/camping_site_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/home/data/repositories/camping_location_repository_implementation.dart';
@@ -132,6 +137,13 @@ Future<void> init() async {
 
   // FEATURE - BOOKMARK
   // BLOC
-  myInjection.registerLazySingleton(() => BookmarkBloc());
+  myInjection.registerLazySingleton(() => BookmarksBloc(getBookmarkedSites: myInjection(), insertBookmark: myInjection()));
+  // USECASES
+  myInjection.registerLazySingleton(() => GetBookmarkedSites(bookmarksRepository: myInjection()));
+  myInjection.registerLazySingleton(() => InsertBookmark(bookmarksRepository: myInjection()));
+  // Repository
+  myInjection.registerLazySingleton<BookmarkRepository>(() => BookmarkRepositoryImpl(bookmarkRemoteDatasource: myInjection()));
+  // Datasource
+  myInjection.registerLazySingleton<BookmarkRemoteDatasource>(() => BookmarkRemoteDatasourceImpl(dio: myInjection()));
 
 }

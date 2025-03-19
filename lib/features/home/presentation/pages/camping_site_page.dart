@@ -4,9 +4,8 @@ import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/services/save_name_camp_location.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
-import 'package:flutter_camping_frontend/features/bloc/bookmark_bloc.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
-
 import 'package:go_router/go_router.dart';
 
 class CampingSitePage extends StatefulWidget {
@@ -18,7 +17,7 @@ class CampingSitePage extends StatefulWidget {
 }
 
 class _CampingSitePageState extends State<CampingSitePage> {
-  String _campingLocationName = "Loading...";
+  final String _campingLocationName = "Loading...";
   final SaveNameCampLocation saveNameCampLocation = SaveNameCampLocation();
 
   @override
@@ -30,6 +29,13 @@ class _CampingSitePageState extends State<CampingSitePage> {
   void _fetchCampingLocationSites() {
     context.read<HomeBloc>().add(
           HomeEventGetCampingSite(locationId: widget.locationId),
+        );
+    context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
+  }
+
+  void _insertBookmarks(int campingSiteId) {
+    context.read<BookmarksBloc>().add(
+          BookmarksEventInsertBookmark(campingSiteId),
         );
   }
 
@@ -60,33 +66,43 @@ class _CampingSitePageState extends State<CampingSitePage> {
           onPressed: () => context.go('/home'),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(0.5), // Ketebalan garis
+          preferredSize: const Size.fromHeight(0.5),
           child: Divider(
             height: 1,
             thickness: 1,
-            color: MyColor().secondaryColor, // Warna garis
+            color: MyColor().secondaryColor,
           ),
         ),
       ),
-      body: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
-          if (state is HomeStateLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is HomeStateError) {
-            return Center(child: Text(state.message));
-          } else if (state is HomeStateSuccessCampingSite) {
-            final campingData = state.campingSite;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListView.builder(
-                itemCount: campingData.length,
-                itemBuilder: (context, index) {
-                  final site = campingData[index];
+      body: BlocConsumer<BookmarksBloc, BookmarksState>(
+        listener: (context, state) async {
+          if (state is BookmarkInsertSuccess) {
+            context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Bookmark added")),
+            );
+          }
+        },
+        builder: (context, bookmarksState) {
+          return BlocBuilder<HomeBloc, HomeState>(
+            builder: (context, state) {
+              if (state is HomeStateLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is HomeStateError) {
+                return Center(child: Text(state.message));
+              } else if (state is HomeStateSuccessCampingSite) {
+                final campingData = state.campingSite;
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: ListView.builder(
+                    itemCount: campingData.length,
+                    itemBuilder: (context, index) {
+                      final site = campingData[index];
 
-                  return BlocBuilder<BookmarkBloc, BookmarkState>(
-                    builder: (context, bookmarkState) {
-                      final isBookmarked = bookmarkState is BookmarkSuccess &&
-                          bookmarkState.bookmarkedSites.contains(site);
+                      // Pastikan bookmarksState valid
+                      final isBookmarked = bookmarksState is BookmarksSuccess &&
+                          bookmarksState.bookmarkedSites.contains(site);
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12.0),
@@ -99,19 +115,17 @@ class _CampingSitePageState extends State<CampingSitePage> {
                           reviews: site.reviews,
                           isBookmarked: isBookmarked,
                           onBookmarkPressed: () {
-                            context.read<BookmarkBloc>().add(
-                                  BookmarkEventToggle(site),
-                                );
+                            _insertBookmarks(site.id);
                           },
                         ),
                       );
                     },
-                  );
-                },
-              ),
-            );
-          }
-          return const Center(child: Text("Data tidak ditemukan"));
+                  ),
+                );
+              }
+              return const Center(child: Text("Data tidak ditemukan"));
+            },
+          );
         },
       ),
     );
