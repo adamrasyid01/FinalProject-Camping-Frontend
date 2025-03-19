@@ -23,4 +23,10 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deleteBookmark(int campingSiteId) async {
+    final result = await bookmarkRemoteDatasource.deleteBookmark(campingSiteId);
+    return Right(result);
+  }
 }

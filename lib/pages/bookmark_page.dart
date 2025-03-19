@@ -24,41 +24,58 @@ class _BookmarkPageState extends State<BookmarkPage> {
       appBar: AppBar(
         title: const Text("Bookmarks"),
       ),
-      body: BlocBuilder<BookmarksBloc, BookmarksState>(
-        builder: (context, state) {
-          if (state is BookmarksLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is BookmarkError) {
-            return Center(child: Text(state.message));
-          } else if (state is BookmarksSuccess) {
-            final bookmarkedSites = state.bookmarkedSites;
-
-            if (bookmarkedSites.isEmpty) {
-              return const Center(child: Text("Tidak ada bookmark."));
-            }
-
-            return ListView.builder(
-              itemCount: bookmarkedSites.length,
-              itemBuilder: (context, index) {
-                final site = bookmarkedSites[index];
-
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CampingCard(
-                    imageUrl: site.imageUrl,
-                    title: site.name,
-                    location: site.location,
-                    rating: site.rating,
-                    reviews: site.reviews,
-                    isBookmarked: true,
-                    onBookmarkPressed: () {},
-                  ),
-                );
-              },
+      body: BlocListener<BookmarksBloc, BookmarksState>(
+        listener: (context, state) {
+          if (state is BookmarkDeleteSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Bookmark deleted"),
+                duration: Duration(seconds: 2), // Durasi lebih singkat
+              ),
             );
+            context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
           }
-          return const Center(child: Text("Tidak ada bookmark."));
         },
+        child: BlocBuilder<BookmarksBloc, BookmarksState>(
+          builder: (context, state) {
+            if (state is BookmarksLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is BookmarkError) {
+              return Center(child: Text(state.message));
+            } else if (state is BookmarksSuccess) {
+              final bookmarkedSites = state.bookmarkedSites;
+
+              if (bookmarkedSites.isEmpty) {
+                return const Center(child: Text("Tidak ada bookmark."));
+              }
+
+              return ListView.builder(
+                itemCount: bookmarkedSites.length,
+                itemBuilder: (context, index) {
+                  final site = bookmarkedSites[index];
+
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CampingCard(
+                      imageUrl: site.imageUrl,
+                      title: site.name,
+                      location: site.location,
+                      rating: site.rating,
+                      reviews: site.reviews,
+                      isBookmarked: true,
+                      onBookmarkPressed: () {
+                        context
+                            .read<BookmarksBloc>()
+                            .add(BookmarksEventDeleteBookmark(site.id));
+                      },
+                    ),
+                  );
+                },
+              );
+            }
+            return const Center(child: Text("Tidak ada bookmark."));
+          },
+        ),
       ),
     );
   }

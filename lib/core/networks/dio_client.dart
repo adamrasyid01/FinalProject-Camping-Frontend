@@ -69,4 +69,14 @@ class DioClient {
       throw Exception('Unexpected error: $e');
     }
   }
+  // Method DELETE
+  Future<Response> deleteRequest(String url, {Map<String, dynamic>? data}) async {
+    try {
+      return await _dio.delete(url, data: data);
+    } on DioException catch (e) {
+      throw Exception('Dio error: ${e.response?.data ?? e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error: $e');
+    }
+  }
 }

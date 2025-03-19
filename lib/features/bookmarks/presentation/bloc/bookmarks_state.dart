@@ -34,3 +34,8 @@ class BookmarkInsertSuccess extends BookmarksState {
   @override
   List<Object> get props => [];
 }
+
+class BookmarkDeleteSuccess extends BookmarksState {
+  @override
+  List<Object> get props => [];
+}

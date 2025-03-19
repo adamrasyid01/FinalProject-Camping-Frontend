@@ -8,4 +8,5 @@ import 'package:flutter_camping_frontend/features/home/domain/entities/camping_s
 abstract class BookmarkRepository {
   Future<Either<Failure, List<CampingSite>>> getBookmarkedSites();
   Future<Either<Failure, void>> insertBookmark(int campingSiteId);
+  Future<Either<Failure, void>> deleteBookmark(int campingSiteId);
 }

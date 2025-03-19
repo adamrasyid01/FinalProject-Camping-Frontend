@@ -8,8 +8,6 @@ abstract class BookmarksEvent extends Equatable {
 }
 
 class BookmarksEventGetBookmarks extends BookmarksEvent {
-  
-
   const BookmarksEventGetBookmarks();
 
   @override
@@ -20,6 +18,15 @@ class BookmarksEventInsertBookmark extends BookmarksEvent {
   final int campingSiteId;
 
   const BookmarksEventInsertBookmark(this.campingSiteId);
+
+  @override
+  List<Object> get props => [campingSiteId];
+}
+
+class BookmarksEventDeleteBookmark extends BookmarksEvent {
+  final int campingSiteId;
+
+  const BookmarksEventDeleteBookmark(this.campingSiteId);
 
   @override
   List<Object> get props => [campingSiteId];

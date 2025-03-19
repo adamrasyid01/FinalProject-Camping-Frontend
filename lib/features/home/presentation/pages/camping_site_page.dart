@@ -33,10 +33,19 @@ class _CampingSitePageState extends State<CampingSitePage> {
     context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
   }
 
-  void _insertBookmarks(int campingSiteId) {
-    context.read<BookmarksBloc>().add(
-          BookmarksEventInsertBookmark(campingSiteId),
-        );
+  void _toggleBookmark(int campingSiteId, bool isBookmarked) {
+    final bookmarksBloc = context.read<BookmarksBloc>();
+
+    if (isBookmarked) {
+      bookmarksBloc.add(BookmarksEventDeleteBookmark(campingSiteId));
+    } else {
+      bookmarksBloc.add(BookmarksEventInsertBookmark(campingSiteId));
+    }
+
+    // Setelah proses selesai, perbarui daftar bookmark
+    Future.delayed(const Duration(milliseconds: 300), () {
+      bookmarksBloc.add(BookmarksEventGetBookmarks());
+    });
   }
 
   @override
@@ -77,9 +86,18 @@ class _CampingSitePageState extends State<CampingSitePage> {
       body: BlocConsumer<BookmarksBloc, BookmarksState>(
         listener: (context, state) async {
           if (state is BookmarkInsertSuccess) {
-            context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Bookmark added")),
+              const SnackBar(
+                content: Text("Bookmark added"),
+                duration: Duration(seconds: 1), // Lebih cepat hilang
+              ),
+            );
+          } else if (state is BookmarkDeleteSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Bookmark deleted"),
+                duration: Duration(seconds: 1), // Lebih cepat hilang
+              ),
             );
           }
         },
@@ -115,7 +133,7 @@ class _CampingSitePageState extends State<CampingSitePage> {
                           reviews: site.reviews,
                           isBookmarked: isBookmarked,
                           onBookmarkPressed: () {
-                            _insertBookmarks(site.id);
+                            _toggleBookmark(site.id, isBookmarked);
                           },
                         ),
                       );

@@ -25,4 +25,5 @@ class ApiEndpoints {
 
   // Bookmark Endpoint
   static const String bookmarks = '$baseUrl/bookmarks';
+  static String deleteBookmark(int campingSiteId) =>'$baseUrl/bookmarks/$campingSiteId';
 }

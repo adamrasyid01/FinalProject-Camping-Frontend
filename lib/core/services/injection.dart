@@ -11,6 +11,7 @@ import 'package:flutter_camping_frontend/features/authentication/presentation/bl
 import 'package:flutter_camping_frontend/features/bookmarks/data/datasources/bookmark_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/data/repositories/bookmark_repository_impl.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/domain/repositories/bookmark_repository.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/domain/usecases/delete_bookmark.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/domain/usecases/get_bookmarked_sites.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/domain/usecases/insert_bookmark.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
@@ -137,10 +138,11 @@ Future<void> init() async {
 
   // FEATURE - BOOKMARK
   // BLOC
-  myInjection.registerLazySingleton(() => BookmarksBloc(getBookmarkedSites: myInjection(), insertBookmark: myInjection()));
+  myInjection.registerLazySingleton(() => BookmarksBloc(getBookmarkedSites: myInjection(), insertBookmark: myInjection(), deleteBookmark: myInjection()));
   // USECASES
   myInjection.registerLazySingleton(() => GetBookmarkedSites(bookmarksRepository: myInjection()));
   myInjection.registerLazySingleton(() => InsertBookmark(bookmarksRepository: myInjection()));
+  myInjection.registerLazySingleton(() => DeleteBookmark(bookmarkRepository: myInjection()));
   // Repository
   myInjection.registerLazySingleton<BookmarkRepository>(() => BookmarkRepositoryImpl(bookmarkRemoteDatasource: myInjection()));
   // Datasource

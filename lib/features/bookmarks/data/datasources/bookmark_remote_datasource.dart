@@ -7,6 +7,7 @@ import 'package:flutter_camping_frontend/features/home/data/models/camping_site_
 abstract class BookmarkRemoteDatasource {
   Future<List<CampingSiteModel>> getBookmarkedSites();
   Future<void> insertBookmark(int campingSiteId);
+  Future<void> deleteBookmark(int campingSiteId);
 }
 
 class BookmarkRemoteDatasourceImpl implements BookmarkRemoteDatasource {
@@ -35,6 +36,16 @@ class BookmarkRemoteDatasourceImpl implements BookmarkRemoteDatasource {
     } catch (e) {
       // Handle the error appropriately, e.g., log it or rethrow it
       throw ServerFailure("Failed to insert bookmark");
+    }
+  }
+
+  @override
+  Future<void> deleteBookmark(int campingSiteId) async {
+    try {
+      await dio.deleteRequest(ApiEndpoints.deleteBookmark(campingSiteId));
+    } catch (e) {
+      // Handle the error appropriately, e.g., log it or rethrow it
+      throw ServerFailure("Failed to delete bookmark");
     }
   }
 }
