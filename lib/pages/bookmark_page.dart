@@ -44,7 +44,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
               return Center(child: Text(state.message));
             } else if (state is BookmarksSuccess) {
               final bookmarkedSites = state.bookmarkedSites;
-
               if (bookmarkedSites.isEmpty) {
                 return const Center(child: Text("Tidak ada bookmark."));
               }

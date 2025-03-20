@@ -13,7 +13,9 @@ class BookmarksBloc extends Bloc<BookmarksEvent, BookmarksState> {
   final InsertBookmark insertBookmark;
   final DeleteBookmark deleteBookmark;
   BookmarksBloc(
-      {required this.getBookmarkedSites, required this.insertBookmark, required this.deleteBookmark})
+      {required this.getBookmarkedSites,
+      required this.insertBookmark,
+      required this.deleteBookmark})
       : super(BookmarksInitial()) {
     on<BookmarksEventGetBookmarks>((event, emit) async {
       final result = await getBookmarkedSites.execute();
@@ -24,7 +26,7 @@ class BookmarksBloc extends Bloc<BookmarksEvent, BookmarksState> {
     });
 
     on<BookmarksEventInsertBookmark>((event, emit) async {
-      emit(BookmarksLoading());
+      // emit(BookmarksLoading());
       final result = await insertBookmark.execute(event.campingSiteId);
       result.fold(
         (failure) => emit(BookmarkError(failure.message)),
@@ -33,7 +35,7 @@ class BookmarksBloc extends Bloc<BookmarksEvent, BookmarksState> {
     });
 
     on<BookmarksEventDeleteBookmark>((event, emit) async {
-      emit(BookmarksLoading());
+      // emit(BookmarksLoading());
       final result = await deleteBookmark.call(event.campingSiteId);
       result.fold(
         (failure) => emit(BookmarkError(failure.message)),
