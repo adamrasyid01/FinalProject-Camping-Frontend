@@ -85,7 +85,6 @@ class _BerandaPageState extends State<BerandaPage> {
                       color: MyColor().primaryColor,
                     ),
                   ),
-                 
                   Text(
                     "Eksplor Tempat Camping",
                     style: AppTextStyle.semiBold16,
