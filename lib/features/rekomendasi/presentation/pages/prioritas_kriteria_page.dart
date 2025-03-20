@@ -60,7 +60,7 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String encodedData =
         jsonEncode(preferences.map((e) => e.toJson()).toList());
-  await prefs.setString("user_preferences", encodedData);
+    await prefs.setString("user_preferences", encodedData);
 
     // Kirim ke Bloc
     rekomendasiBloc
@@ -139,11 +139,35 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
                   SizedBox(
                     height: 300,
                     child: ReorderableListView(
+                      proxyDecorator: (Widget child, int index,
+                          Animation<double> animation) {
+                        return Material(
+                          elevation: 4,
+                          color: Colors.transparent,
+                          child: child,
+                        );
+                      },
+                      buildDefaultDragHandles:
+                          false, // Matikan drag handle bawaan
                       children: [
                         for (int i = 0; i < myTiles.length; i++)
-                          ListTile(
-                            key: Key('$i'),
-                            title: Text(myTiles[i]['name']),
+                          ReorderableDragStartListener(
+                            key: ValueKey(i),
+                            index: i,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                              margin: EdgeInsets.symmetric(vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Text(
+                                myTiles[i]['name'],
+                                style: AppTextStyle.medium18,
+                              ),
+                            ),
                           ),
                       ],
                       onReorder: (int oldIndex, int newIndex) {
@@ -156,8 +180,7 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
 
                           // Update weight berdasarkan posisi baru
                           for (int i = 0; i < myTiles.length; i++) {
-                            myTiles[i]['weight'] =
-                                9.0 - (i * 2.0); // Misal, menyesuaikan skala
+                            myTiles[i]['weight'] = 9.0 - (i * 2.0);
                           }
                         });
                       },
