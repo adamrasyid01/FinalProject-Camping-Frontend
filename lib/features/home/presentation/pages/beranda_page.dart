@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/services/save_name_camp_location.dart';
 import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
@@ -6,7 +7,7 @@ import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bl
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_chip.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_wisata.dart';
-import 'package:flutter_camping_frontend/core/widgets/search_input.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -28,7 +29,6 @@ class _BerandaPageState extends State<BerandaPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadUsername();
     _fetchDataCamping();
@@ -36,25 +36,22 @@ class _BerandaPageState extends State<BerandaPage> {
 
   Future<void> _loadUsername() async {
     final user = await saveUser.getUsername();
-    print("Username dari storage: $user");
     setState(() {
-      username = user ?? "Guest HHH"; // Jika username null, tampilkan "Guest"
+      username = user ?? "Guest";
     });
   }
 
   void _fetchDataCamping() {
-    print("Fetching data camping...");
     context.read<HomeBloc>().add(HomeEventGetCampingLocations());
   }
 
-  final List<String> filters = ['Semua', 'Terfavorit', 'Camping Terbanyak'];
+  final List<String> filters = ['Semua', 'Urutan Nama', 'Camping Terbanyak'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
@@ -65,58 +62,54 @@ class _BerandaPageState extends State<BerandaPage> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: SvgPicture.asset('assets/icons/campHome.svg'),
+                        child: SvgPicture.asset(
+                          'assets/icons/homeCamp.svg',
+                          width: 32, // Tambahkan ukuran agar tidak overflow
+                          height: 32,
+                        ),
                       ),
-                      Text("Halo $username",
+                      Expanded(
+                        child: Text(
+                          "Halo $username",
                           style: AppTextStyle.semiBold16.copyWith(
                             color: Color(0xFF274F66),
-                          )),
+                          ),
+                          overflow: TextOverflow.ellipsis, // Hindari overflow
+                        ),
+                      ),
                     ],
                   ),
                   Text(
                     "Anda mau pergi camping di mana?",
-                    style: AppTextStyle.bold24,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: SearchInput(
-                      hintText: "Cari tempat camping",
-                      onChanged: (value) {
-                        print(value);
-                      },
+                    style: AppTextStyle.bold24.copyWith(
+                      color: MyColor().primaryColor,
                     ),
                   ),
-                  // ElevatedButton(
-                  //     onPressed: () async {
-                  //       print(await tokenStorage.getToken());
-                  //     },
-                  //     child: Text("Cari Camping")),
-                  Text("Eksplor Tempat Camping",
-                      style: AppTextStyle.semiBold16),
-                ],
-              ),
-            ),
-            // Text("Filter") Biar bisa di scroll horizontal
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(
-                children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: buildFilterBeranda(),
+                 
+                  Text(
+                    "Eksplor Tempat Camping",
+                    style: AppTextStyle.semiBold16,
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(
-              height: 12,
+            // Bagian filter (pastikan bisa scroll horizontal)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: buildFilterBeranda(),
+              ),
             ),
+
+            const SizedBox(height: 12),
+
+            // List tempat camping (hindari overflow dengan shrinkWrap)
             BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
                 if (state is HomeStateLoading) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is HomeStateError) {
@@ -124,21 +117,17 @@ class _BerandaPageState extends State<BerandaPage> {
                 } else if (state is HomeStateSuccessCampingLocation) {
                   final locations = state.campingLocation;
                   return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true, // Hindari error overflow
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Tidak scroll sendiri
                     itemCount: locations.length,
                     itemBuilder: (context, index) {
                       final location = locations[index];
                       return GestureDetector(
-                        onTap: () async{
-                          // print(location.id);
-                          
-                          await saveNameCampLocation.saveCampLocationName(location.name);
-                          // Simpan Nama Loaction ke CampingSite
-
-                          context.go(
-                            '/camping-site/${location.id}',
-                          );
+                        onTap: () async {
+                          await saveNameCampLocation
+                              .saveCampLocationName(location.name);
+                          context.go('/camping-site/${location.id}');
                         },
                         child: CustomListWisata(
                           imageUrl: location.imageUrl,
@@ -158,7 +147,7 @@ class _BerandaPageState extends State<BerandaPage> {
     );
   }
 
-  Row buildFilterBeranda() {
+  Widget buildFilterBeranda() {
     return Row(
       children: List.generate(filters.length, (index) {
         return Padding(

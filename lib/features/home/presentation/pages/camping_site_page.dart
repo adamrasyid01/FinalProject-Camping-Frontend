@@ -7,6 +7,7 @@ import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_camping_frontend/core/widgets/search_input.dart';
 
 class CampingSitePage extends StatefulWidget {
   final int locationId;
@@ -50,6 +51,7 @@ class _CampingSitePageState extends State<CampingSitePage> {
 
   @override
   Widget build(BuildContext context) {
+    final MyColor myColor = MyColor();
     return Scaffold(
       appBar: AppBar(
         title: BlocBuilder<HomeBloc, HomeState>(
@@ -89,14 +91,14 @@ class _CampingSitePageState extends State<CampingSitePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("Bookmark added"),
-                duration: Duration(seconds: 1), // Lebih cepat hilang
+                duration: Duration(seconds: 1),
               ),
             );
           } else if (state is BookmarkDeleteSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("Bookmark deleted"),
-                duration: Duration(seconds: 1), // Lebih cepat hilang
+                duration: Duration(seconds: 1),
               ),
             );
           }
@@ -113,31 +115,71 @@ class _CampingSitePageState extends State<CampingSitePage> {
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListView.builder(
-                    itemCount: campingData.length,
-                    itemBuilder: (context, index) {
-                      final site = campingData[index];
-
-                      // Pastikan bookmarksState valid
-                      final isBookmarked = bookmarksState is BookmarksSuccess &&
-                          bookmarksState.bookmarkedSites.contains(site);
-
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: CampingCard(
-                          key: ValueKey(site.id),
-                          imageUrl: site.imageUrl,
-                          title: site.name,
-                          location: '${site.location}, Jawa Timur, Indonesia',
-                          rating: site.rating,
-                          reviews: site.reviews,
-                          isBookmarked: isBookmarked,
-                          onBookmarkPressed: () {
-                            _toggleBookmark(site.id, isBookmarked);
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: SearchInput(
+                          hintText: "Cari tempat camping",
+                          onChanged: (value) {
+                            print(value);
+                            // Tambahkan logika filter jika diperlukan
                           },
                         ),
-                      );
-                    },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6.0),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white, // Warna latar belakang
+                            borderRadius: BorderRadius.circular(
+                                20), // Border radius sesuai gambar
+                            border: Border.all(
+                              color: myColor.customOrange, // Warna border
+                              width: 1, // Ketebalan border
+                            ),
+                          ),
+                          child: Text(
+                            "Klik pada kotak camping untuk membuka link pada aplikasi atau website Google Maps",
+                            style: AppTextStyle.regular12.copyWith(
+                              color:
+                                  myColor.customOrange, // Warna teks deskripsi
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: campingData.length,
+                          itemBuilder: (context, index) {
+                            final site = campingData[index];
+
+                            final isBookmarked = bookmarksState
+                                    is BookmarksSuccess &&
+                                bookmarksState.bookmarkedSites.contains(site);
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: CampingCard(
+                                key: ValueKey(site.id),
+                                imageUrl: site.imageUrl,
+                                title: site.name,
+                                location:
+                                    '${site.location}, Jawa Timur, Indonesia',
+                                rating: site.rating,
+                                reviews: site.reviews,
+                                isBookmarked: isBookmarked,
+                                onBookmarkPressed: () {
+                                  _toggleBookmark(site.id, isBookmarked);
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }

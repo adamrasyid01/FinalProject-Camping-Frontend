@@ -49,19 +49,39 @@ class _LoginPageState extends State<LoginPage> {
                     SvgPicture.asset('assets/images/adamCampiio.svg'),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("LOGIN", style: AppTextStyle.bold20),
-                          Text(
-                            "Silakan masukkan data diri Anda untuk masuk. ",
-                            style: AppTextStyle.regular12.copyWith(
-                              color: myColor.accentColor,
-                            ),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white, // Warna latar belakang
+                          borderRadius: BorderRadius.circular(
+                              20), // Border radius sesuai gambar
+                          border: Border.all(
+                            color: myColor.customOrange, // Warna border
+                            width: 1, // Ketebalan border
                           ),
-                        ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "LOGIN",
+                              style: AppTextStyle.bold14.copyWith(
+                                color: myColor.customOrange, // Warna teks login
+                              ),
+                            ),
+                            Text(
+                              "Silakan masukkan data diri Anda untuk masuk.",
+                              style: AppTextStyle.regular12.copyWith(
+                                color: myColor
+                                    .customOrange, // Warna teks deskripsi
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+
                     CustomTextfield(
                       inputController: _emailController,
                       label: 'Email',
