@@ -63,7 +63,10 @@ class _BookmarkPageState extends State<BookmarkPage> {
               if (bookmarkedSites.isEmpty) {
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(16.0, 30.0, 16.0, 0),
-                  child: EmptyCampingWidget(),
+                  child: EmptyCampingWidget(
+                    message:
+                        "Anda masih belum memiliki tempat camping yang tersimpan.",
+                  ),
                 );
               }
 
@@ -91,7 +94,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                 },
               );
             }
-            return const Center(child: Text("Tidak ada bookmark."));
+            return const SizedBox();
           },
         ),
       ),

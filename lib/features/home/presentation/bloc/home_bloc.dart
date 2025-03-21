@@ -14,7 +14,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetCampingLocation getCampingLocation;
   final GetCampingSite getCampingSite;
 
-
   HomeBloc({
     required this.getCampingLocation,
     required this.getCampingSite,
@@ -32,14 +31,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // Get Camping Sites
     on<HomeEventGetCampingSite>((event, emit) async {
       emit(HomeStateLoading());
-      final result = await getCampingSite.execute(event.locationId);
-    
+      final result =
+          await getCampingSite.execute(event.locationId, search: event.search);
+
       result.fold(
         (failure) => emit(HomeStateError(failure.message)),
         (sites) => emit(HomeStateSuccessCampingSite(sites)),
       );
     });
-
-    
   }
 }

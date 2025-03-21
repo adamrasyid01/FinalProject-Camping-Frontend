@@ -4,11 +4,13 @@ import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class EmptyCampingWidget extends StatelessWidget {
-  const EmptyCampingWidget({super.key});
+  final String message;
+  EmptyCampingWidget({super.key, this.message = "Kosong"});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -20,7 +22,7 @@ class EmptyCampingWidget extends StatelessWidget {
           SvgPicture.asset("assets/icons/emptyBookmark.svg"),
           const SizedBox(height: 16),
           Text(
-            "Anda masih belum memiliki tempat camping yang tersimpan.",
+            message,
             textAlign: TextAlign.left,
             style: AppTextStyle.regular12.copyWith(
                 color: MyColor().customOrange), // Gunakan AppTextStyle

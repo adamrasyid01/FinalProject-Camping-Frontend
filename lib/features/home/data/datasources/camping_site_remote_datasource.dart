@@ -5,7 +5,7 @@ import 'package:flutter_camping_frontend/core/networks/api_endpoints.dart';
 import 'package:flutter_camping_frontend/features/home/data/models/camping_site_model.dart';
 
 abstract class CampingSiteRemoteDataSource {
-  Future<List<CampingSiteModel>> getCampingSite(int locationId);
+  Future<List<CampingSiteModel>> getCampingSite(int locationId, {String? search});
 }
 
 class CampingSiteRemoteDataSourceImplementation
@@ -15,17 +15,18 @@ class CampingSiteRemoteDataSourceImplementation
   CampingSiteRemoteDataSourceImplementation({required this.dio});
 
   @override
-  Future<List<CampingSiteModel>> getCampingSite(int locationId) async {
+  Future<List<CampingSiteModel>> getCampingSite(int locationId, {String? search}) async {
     try {
       final response =
-          await dio.getRequest(ApiEndpoints.campingSites(locationId));
+          await dio.getRequest(ApiEndpoints.campingSites(locationId, search: search));
+          print('INI URLNYA GIMANA ${dio.getRequest(ApiEndpoints.campingSites(locationId, search: search))}');
       // Ambil daftar camping_sites dari dalam result
       final campingSitesData = response.data['result']['camping_sites'];
-      print(campingSitesData);
+      // print(campingSitesData);
 
       return CampingSiteModel.fromJsonList(campingSitesData).cast<CampingSiteModel>();
-    } catch (e, stacktrace) {
-      print(stacktrace);
+    } catch (e) {
+      // print(stacktrace);
       throw ServerFailure(e.toString());
     }
   }

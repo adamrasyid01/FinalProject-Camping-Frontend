@@ -1,9 +1,9 @@
 class ApiEndpoints {
   // Menggunakan Hotspot
-  static const baseUrl = 'http://192.168.138.118:8000/api';
+  // static const baseUrl = 'http://192.168.138.118:8000/api';
 
   // Menggunakana Wifi Rumah
-  // static const baseUrl = 'http://192.168.100.51:8000/api';
+  static const baseUrl = 'http://192.168.100.51:8000/api';
 
   // static const baseUrl = 'http://10.252.134.8:8000/api';
 
@@ -21,7 +21,14 @@ class ApiEndpoints {
       '$baseUrl/user-preference-criteria';
 
   // Camping Sites Endpoints
-  static String campingSites(int id) => '$baseUrl/camping-locations/$id/sites';
+  static String campingSites(int id, {String? search}) {
+    String url = '$baseUrl/camping-locations/$id/sites';
+    if (search != null && search.isNotEmpty) {
+      url += '?search=$search';
+    }
+
+    return url;
+  }
 
   // Bookmark Endpoint
   static const String bookmarks = '$baseUrl/bookmarks';

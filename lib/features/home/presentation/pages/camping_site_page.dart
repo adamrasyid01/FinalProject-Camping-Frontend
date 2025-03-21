@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/services/save_name_camp_location.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
+import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,8 +21,10 @@ class CampingSitePage extends StatefulWidget {
 }
 
 class _CampingSitePageState extends State<CampingSitePage> {
+  final TextEditingController _searchController = TextEditingController();
   final String _campingLocationName = "Loading...";
   final SaveNameCampLocation saveNameCampLocation = SaveNameCampLocation();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -112,6 +117,7 @@ class _CampingSitePageState extends State<CampingSitePage> {
                 return Center(child: Text(state.message));
               } else if (state is HomeStateSuccessCampingSite) {
                 final campingData = state.campingSite;
+
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -120,10 +126,21 @@ class _CampingSitePageState extends State<CampingSitePage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: SearchInput(
+                          controller: _searchController,
                           hintText: "Cari tempat camping",
                           onChanged: (value) {
-                            print(value);
-                            // Tambahkan logika filter jika diperlukan
+                            // print('🔍 Search Value: $value');
+
+                            _debounce?.cancel();
+                            _debounce =
+                                Timer(const Duration(milliseconds: 500), () {
+                              context.read<HomeBloc>().add(
+                                    HomeEventGetCampingSite(
+                                      locationId: widget.locationId,
+                                      search: value.isNotEmpty ? value : null,
+                                    ),
+                                  );
+                            });
                           },
                         ),
                       ),
@@ -150,35 +167,42 @@ class _CampingSitePageState extends State<CampingSitePage> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: campingData.length,
-                          itemBuilder: (context, index) {
-                            final site = campingData[index];
+                      if (campingData.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: EmptyCampingWidget(
+                              message: "Data tidak ditemukan"),
+                        )
+                      else
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: campingData.length,
+                            itemBuilder: (context, index) {
+                              final site = campingData[index];
 
-                            final isBookmarked = bookmarksState
-                                    is BookmarksSuccess &&
-                                bookmarksState.bookmarkedSites.contains(site);
+                              final isBookmarked = bookmarksState
+                                      is BookmarksSuccess &&
+                                  bookmarksState.bookmarkedSites.contains(site);
 
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12.0),
-                              child: CampingCard(
-                                key: ValueKey(site.id),
-                                imageUrl: site.imageUrl,
-                                title: site.name,
-                                location:
-                                    '${site.location}, Jawa Timur, Indonesia',
-                                rating: site.rating,
-                                reviews: site.reviews,
-                                isBookmarked: isBookmarked,
-                                onBookmarkPressed: () {
-                                  _toggleBookmark(site.id, isBookmarked);
-                                },
-                              ),
-                            );
-                          },
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: CampingCard(
+                                  key: ValueKey(site.id),
+                                  imageUrl: site.imageUrl,
+                                  title: site.name,
+                                  location:
+                                      '${site.location}, Jawa Timur, Indonesia',
+                                  rating: site.rating,
+                                  reviews: site.reviews,
+                                  isBookmarked: isBookmarked,
+                                  onBookmarkPressed: () {
+                                    _toggleBookmark(site.id, isBookmarked);
+                                  },
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 );

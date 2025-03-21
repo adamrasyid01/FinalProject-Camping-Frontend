@@ -3,6 +3,7 @@ import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/services/save_name_camp_location.dart';
 import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
+import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_chip.dart';
@@ -64,8 +65,6 @@ class _BerandaPageState extends State<BerandaPage> {
                         padding: const EdgeInsets.only(right: 8.0),
                         child: SvgPicture.asset(
                           'assets/icons/homeCamp.svg',
-                          width: 32, // Tambahkan ukuran agar tidak overflow
-                          height: 32,
                         ),
                       ),
                       Expanded(
@@ -137,7 +136,7 @@ class _BerandaPageState extends State<BerandaPage> {
                     },
                   );
                 }
-                return const Center(child: Text("Tidak ada data tersedia"));
+                return EmptyCampingWidget( message: "Data Camping Tidak Ada, Mohon Hubungi Admin",);
               },
             ),
           ],
