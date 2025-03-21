@@ -135,7 +135,7 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
                       ),
                     ),
                     child: Text(
-                      "Terdapat 4 kriteria terkait pemilihan lokasi camping. Silahkan isi seberapa penting kriteria berdasarkan preferensi Anda dengan menggeser perbandingan di bawah ini.",
+                      "Ada 4 kriteria dalam memilih lokasi camping. Seret dan letakkan perbandingan di posisi yang diinginkan—posisi pertama menunjukkan kriteria yang paling penting. ",
                       style: AppTextStyle.regular12.copyWith(
                         color: myColor.customOrange,
                       ),
