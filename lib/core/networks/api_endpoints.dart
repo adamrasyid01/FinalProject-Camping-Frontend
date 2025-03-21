@@ -1,6 +1,6 @@
 class ApiEndpoints {
   // Menggunakan Hotspot
-  static const baseUrl = 'http://192.168.26.118:8000/api';
+  static const baseUrl = 'http://192.168.138.118:8000/api';
 
   // Menggunakana Wifi Rumah
   // static const baseUrl = 'http://192.168.100.51:8000/api';
@@ -25,5 +25,6 @@ class ApiEndpoints {
 
   // Bookmark Endpoint
   static const String bookmarks = '$baseUrl/bookmarks';
-  static String deleteBookmark(int campingSiteId) =>'$baseUrl/bookmarks/$campingSiteId';
+  static String deleteBookmark(int campingSiteId) =>
+      '$baseUrl/bookmarks/$campingSiteId';
 }

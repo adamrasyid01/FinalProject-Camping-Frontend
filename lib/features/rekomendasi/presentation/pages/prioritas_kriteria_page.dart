@@ -6,7 +6,6 @@ import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/rekomendasi_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/models/user_preference_criteria_model.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_camping_frontend/core/widgets/custom_slider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:flutter_camping_frontend/core/services/preference.dart';
@@ -19,35 +18,52 @@ class PrioritasKriteriaPage extends StatefulWidget {
 }
 
 class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
-  UserPreference userPreference = UserPreference();
-  double keamanan = 0.5;
-  double kenyamanan = 0.5;
-  double kebersihan = 0.5;
-  double kemudahanTransportasi = 0.5;
+  final UserPreferenceService userPreference = UserPreferenceService();
+  final MyColor myColor = MyColor();
+
+  /// Mapping ID ke Nama Kriteria
+  final Map<String, int> criteriaMapping = {
+    'Keamanan': 1,
+    'Kenyamanan': 2,
+    'Kebersihan': 3,
+    'Kemudahan Transportasi': 4,
+  };
+
+  List<Map<String, dynamic>> myTiles = [
+    {'name': 'Keamanan', 'weight': 9.0},
+    {'name': 'Kenyamanan', 'weight': 7.0},
+    {'name': 'Kebersihan', 'weight': 5.0},
+    {'name': 'Kemudahan Transportasi', 'weight': 3.0},
+  ];
 
   @override
   void initState() {
     super.initState();
     _loadUserPreferences();
-    userPreference.loadPreferences();
   }
 
   Future<void> _savePreferences() async {
     final rekomendasiBloc = context.read<RekomendasiBloc>();
 
-    List<UserPreferenceCriteriaModel> preferences = [
-      UserPreferenceCriteriaModel(criteria_id: 1, weight: keamanan),
-      UserPreferenceCriteriaModel(criteria_id: 2, weight: kenyamanan),
-      UserPreferenceCriteriaModel(criteria_id: 3, weight: kebersihan),
-      UserPreferenceCriteriaModel(
-          criteria_id: 4, weight: kemudahanTransportasi),
-    ];
+    print("myTiles setelah update weight: $myTiles");
+
+    // Konversi ke Model UserPreferenceCriteriaModel sesuai urutan myTiles saat ini
+    List<UserPreferenceCriteriaModel> preferences = myTiles
+        .map((tile) => UserPreferenceCriteriaModel(
+              criteria_id: criteriaMapping[tile['name']]!,
+              weight: tile['weight'], // Menggunakan nilai yang ada
+            ))
+        .toList();
+
+    print("Event dikirim ke Bloc dengan data: $preferences");
 
     // Simpan ke SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String encodedData =
         jsonEncode(preferences.map((e) => e.toJson()).toList());
     await prefs.setString("user_preferences", encodedData);
+
+    // Kirim ke Bloc
     rekomendasiBloc
         .add(RekomendasiEventSaveUserPreferenceCriteria(preferences));
 
@@ -55,12 +71,10 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
   }
 
   Future<void> _loadUserPreferences() async {
-    await userPreference.loadPreferences();
+    List<Map<String, dynamic>> preferences =
+        await userPreference.getPreferences();
     setState(() {
-      keamanan = userPreference.keamanan ?? 0.5;
-      kenyamanan = userPreference.kenyamanan ?? 0.5;
-      kebersihan = userPreference.kebersihan ?? 0.5;
-      kemudahanTransportasi = userPreference.kemudahanTransportasi ?? 0.5;
+      myTiles = preferences;
     });
   }
 
@@ -87,24 +101,23 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
           },
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(0.5), // Ketebalan garis
+          preferredSize: Size.fromHeight(0.5),
           child: Divider(
             height: 1,
             thickness: 1,
-            color: MyColor().secondaryColor, // Warna garis
+            color: myColor.secondaryColor,
           ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+        padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
+              child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 12.0),
+                    padding: const EdgeInsets.fromLTRB(0, 16.0, 16.0, 12.0),
                     child: Text(
                       "Masukkan urutan prioritas kriteriamu",
                       style: AppTextStyle.bold24,
@@ -113,37 +126,81 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
                   Container(
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: MyColor().customGrey,
-                      borderRadius: BorderRadius.circular(12),
+                      // Warna latar belakang
+                      borderRadius: BorderRadius.circular(
+                          20), // Border radius sesuai gambar
+                      border: Border.all(
+                        color: myColor.customOrange, // Warna border
+                        width: 1, // Ketebalan border
+                      ),
                     ),
                     child: Text(
                       "Terdapat 4 kriteria terkait pemilihan lokasi camping. Silahkan isi seberapa penting kriteria berdasarkan preferensi Anda dengan menggeser perbandingan di bawah ini.",
                       style: AppTextStyle.regular12.copyWith(
-                        color: MyColor().darkGrey,
+                        color: myColor.customOrange,
                       ),
                     ),
                   ),
-                  SizedBox(height: 24),
-                  CustomSlider(
-                    title: "Keamanan",
-                    value: keamanan,
-                    onChanged: (value) => setState(() => keamanan = value),
-                  ),
-                  CustomSlider(
-                    title: "Kenyamanan",
-                    value: kenyamanan,
-                    onChanged: (value) => setState(() => kenyamanan = value),
-                  ),
-                  CustomSlider(
-                    title: "Kebersihan",
-                    value: kebersihan,
-                    onChanged: (value) => setState(() => kebersihan = value),
-                  ),
-                  CustomSlider(
-                    title: "Kemudahan Transportasi",
-                    value: kemudahanTransportasi,
-                    onChanged: (value) =>
-                        setState(() => kemudahanTransportasi = value),
+                  SizedBox(height: 8),
+                  SizedBox(
+                    height: 320,
+                    child: ReorderableListView(
+                      proxyDecorator: (Widget child, int index,
+                          Animation<double> animation) {
+                        return Material(
+                          elevation: 4,
+                          color: Colors.transparent,
+                          child: child,
+                        );
+                      },
+                      buildDefaultDragHandles:
+                          false, // Matikan drag handle bawaan
+                      children: [
+                        for (int i = 0; i < myTiles.length; i++)
+                          ReorderableDragStartListener(
+                            key: ValueKey(i),
+                            index: i,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 12),
+                              margin: EdgeInsets.symmetric(vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    myTiles[i]['name'],
+                                    style: AppTextStyle.semiBold18,
+                                  ),
+                                  Text(
+                                    _getSubtitle(myTiles[i]['name']),
+                                    style: AppTextStyle.regular12,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                      onReorder: (int oldIndex, int newIndex) {
+                        setState(() {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          final item = myTiles.removeAt(oldIndex);
+                          myTiles.insert(newIndex, item);
+
+                          // Update weight berdasarkan posisi baru
+                          for (int i = 0; i < myTiles.length; i++) {
+                            myTiles[i]['weight'] = 9.0 - (i * 2.0);
+                          }
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -169,6 +226,20 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
         ),
       ),
     );
-    // Coba Buat Sharedpreference
+  }
+}
+
+String _getSubtitle(String name) {
+  switch (name) {
+    case 'Keamanan':
+      return 'Tingkat keamanan pada wilayah camping';
+    case 'Kenyamanan':
+      return 'Kondisi fasilitas dan lingkungan sekitar';
+    case 'Kebersihan':
+      return 'Seberapa bersih area camping';
+    case 'Kemudahan Transportasi':
+      return 'Aksesibilitas menuju lokasi camping';
+    default:
+      return '';
   }
 }
