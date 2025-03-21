@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_camping_frontend/core/constants/color.dart';
+import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
+import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
 
 class BookmarkPage extends StatefulWidget {
@@ -11,6 +14,7 @@ class BookmarkPage extends StatefulWidget {
 }
 
 class _BookmarkPageState extends State<BookmarkPage> {
+  final MyColor myColor = MyColor();
   @override
   void initState() {
     super.initState();
@@ -22,7 +26,19 @@ class _BookmarkPageState extends State<BookmarkPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Bookmarks"),
+        title: Text(
+          "Bookmarks",
+          style: AppTextStyle.medium20,
+        ),
+        backgroundColor: Colors.white,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(0.5), // Ketebalan garis
+          child: Divider(
+            height: 1,
+            thickness: 1,
+            color: myColor.secondaryColor, // Warna garis
+          ),
+        ),
       ),
       body: BlocListener<BookmarksBloc, BookmarksState>(
         listener: (context, state) {
@@ -45,7 +61,10 @@ class _BookmarkPageState extends State<BookmarkPage> {
             } else if (state is BookmarksSuccess) {
               final bookmarkedSites = state.bookmarkedSites;
               if (bookmarkedSites.isEmpty) {
-                return const Center(child: Text("Tidak ada bookmark."));
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 30.0, 16.0, 0),
+                  child: EmptyCampingWidget(),
+                );
               }
 
               return ListView.builder(

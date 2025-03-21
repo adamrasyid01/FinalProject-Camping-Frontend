@@ -73,6 +73,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/icons/homeCamp.svg
+    - assets/icons/emptyBookmark.svg
     - assets/icons/camping.svg
     - assets/images/adamCampiio.svg
     - assets/images/dapatkanRekomendasi.svg

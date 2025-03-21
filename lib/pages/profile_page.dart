@@ -19,7 +19,6 @@ class ProfilePage extends StatelessWidget {
           style: AppTextStyle.medium20,
         ),
         backgroundColor: Colors.white,
-        elevation: 1,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0.5),
           child: Divider(

@@ -17,7 +17,6 @@ class RekomendasiPage extends StatelessWidget {
             style: AppTextStyle.medium20,
           ),
           backgroundColor: Colors.white,
-          elevation: 1,
           actions: [
             IconButton(
               icon: Icon(Icons.info_outline, color: MyColor().customOrange),
