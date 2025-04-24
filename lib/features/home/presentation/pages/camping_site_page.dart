@@ -24,7 +24,6 @@ class _CampingSitePageState extends State<CampingSitePage> {
   final TextEditingController _searchController = TextEditingController();
   final String _campingLocationName = "Loading...";
   final SaveNameCampLocation saveNameCampLocation = SaveNameCampLocation();
-  Timer? _debounce;
 
   @override
   void initState() {
