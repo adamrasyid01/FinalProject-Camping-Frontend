@@ -22,11 +22,15 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SplashCubit, SplashState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         print('Current state: $state');
+        await Future.delayed(
+            const Duration(seconds: 3)); // <- kasih delay 2 detik
         if (state is SplashStateLoggedIn) {
+          // ignore: use_build_context_synchronously
           context.go('/home');
         } else if (state is SplashStateNotLoggedIn) {
+          // ignore: use_build_context_synchronously
           context.go('/login');
         }
       },

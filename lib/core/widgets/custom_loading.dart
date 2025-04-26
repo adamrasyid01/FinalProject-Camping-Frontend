@@ -10,8 +10,8 @@ class CustomLoading extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Lottie.asset(
       asset,
-      width: size.width * 0.8, // 50% dari lebar layar
-      height: size.height * 0.5, // atau bisa juga size.height * 0.3
+      width: size.width, // 50% dari lebar layar
+      height: size.height, // atau bisa juga size.height * 0.3
     );
   }
 }
