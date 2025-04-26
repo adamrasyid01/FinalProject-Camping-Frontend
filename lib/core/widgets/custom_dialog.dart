@@ -7,20 +7,27 @@ class CustomDialog extends StatelessWidget {
   final VoidCallback onConfirm;
   final String title;
   final String content;
-  final String canceledText;
-  final String confirmedText;
+  final String? canceledText; // ubah ke nullable
+  final String? confirmedText; // ubah ke nullable
   final IconData icon;
-  final Color iconBackgroundColor;
+  final Color iconBackgroundColor; // Remove default value here
+  final TextStyle? titleStyle;
+  final TextStyle? contentStyle;
+  final TextAlign? alignContent; // Add alignContent as a nullable property
 
   CustomDialog({
     super.key,
     required this.onConfirm,
     required this.title,
     required this.content,
-    required this.canceledText,
-    required this.confirmedText,
-    this.icon = Icons.info, // default icon
-    this.iconBackgroundColor = Colors.red, // default background
+    this.canceledText, // tidak required
+    this.confirmedText, // tidak required
+    this.icon = Icons.info,
+    this.titleStyle,
+    this.contentStyle,
+    this.alignContent, // Initialize alignContent in the constructor
+    this.iconBackgroundColor =
+        Colors.red, // Add iconBackgroundColor to constructor with default value
   });
 
   @override
@@ -40,49 +47,56 @@ class CustomDialog extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(title,
-                    style: AppTextStyle.bold20.copyWith(color: myColor.black)),
+                Text(
+                  title,
+                  style: titleStyle ??
+                      AppTextStyle.bold20.copyWith(color: myColor.black),
+                ),
                 const SizedBox(height: 10),
                 Text(
                   content,
-                  textAlign: TextAlign.center,
-                  style:
+                  textAlign: alignContent ?? TextAlign.center,
+                  style: contentStyle ??
                       AppTextStyle.semiBold16.copyWith(color: myColor.darkGrey),
                 ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: myColor.lightGrey,
-                        ),
-                        child: Text(
-                          canceledText,
-                          style: AppTextStyle.semiBold16
-                              .copyWith(color: myColor.customWhite),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          onConfirm();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: myColor.customRed,
-                          foregroundColor: myColor.customWhite,
-                        ),
-                        child: Text(
-                          confirmedText,
-                          style: AppTextStyle.semiBold16
-                              .copyWith(color: myColor.customWhite),
+                    if (canceledText != null) // hanya tampil kalau tidak null
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: myColor.lightGrey,
+                          ),
+                          child: Text(
+                            canceledText!,
+                            style: AppTextStyle.semiBold16
+                                .copyWith(color: myColor.customWhite),
+                          ),
                         ),
                       ),
-                    ),
+                    if (canceledText != null && confirmedText != null)
+                      const SizedBox(
+                          width: 10), // kasih jarak kalau dua-duanya ada
+                    if (confirmedText != null) // hanya tampil kalau tidak null
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            onConfirm();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: myColor.customRed,
+                            foregroundColor: myColor.customWhite,
+                          ),
+                          child: Text(
+                            confirmedText!,
+                            style: AppTextStyle.semiBold16
+                                .copyWith(color: myColor.customWhite),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ],
@@ -111,10 +125,13 @@ void showCustomDialog({
   required VoidCallback onConfirm,
   String title = 'Dialog Title',
   String content = 'Dialog Content',
-  String canceledText = 'Cancel',
-  String confirmedText = 'Confirm',
+  String? canceledText, // nullable
+  String? confirmedText, // nullable
   IconData icon = Icons.info,
   Color iconBackgroundColor = Colors.red,
+  TextStyle? titleStyle,
+  TextStyle? contentStyle,
+  TextAlign? alignContent, // nullable
 }) {
   showDialog(
     context: context,
@@ -126,6 +143,9 @@ void showCustomDialog({
       confirmedText: confirmedText,
       icon: icon,
       iconBackgroundColor: iconBackgroundColor,
+      titleStyle: titleStyle,
+      contentStyle: contentStyle,
+      alignContent: alignContent, // pass alignContent to CustomDialog
     ),
   );
 }

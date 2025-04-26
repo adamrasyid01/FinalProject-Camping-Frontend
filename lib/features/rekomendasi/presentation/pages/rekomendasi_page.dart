@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_dialog.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_event.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_state.dart';
-import 'package:flutter_camping_frontend/features/rekomendasi/presentation/pages/prioritas_kriteria_page.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,7 +38,23 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
           actions: [
             IconButton(
               icon: Icon(Icons.info_outline, color: MyColor().customOrange),
-              onPressed: () {},
+              onPressed: () {
+                showCustomDialog(
+                  context: context,
+                  onConfirm: () {},
+                  title: 'Rumus yang digunakan',
+                  content:
+                      '1. Sistem menetapkan nilai dari kriteriamu sebagai bobot.\n'
+                      '2. Sistem akan menormalisasi bobot untuk mendapatkan bobot setiap kriteria.\n'
+                      '3. Sistem akan menghitung bobot dari alternatif berdasarkan setiap kriteria.\n'
+                      '4. Sistem akan mengalikan bobot kriteriamu dengan bobot alternatif untuk setiap kriteria, lalu jumlahkan hasilnya untuk mendapatkan skor total setiap alternatif.',
+                  icon: Icons.info_outline,
+                  titleStyle: AppTextStyle.bold18,
+                  contentStyle: AppTextStyle.regular14,
+                  alignContent: TextAlign.justify,
+                  iconBackgroundColor: MyColor().customOrange,
+                );
+              },
             ),
           ],
           bottom: PreferredSize(

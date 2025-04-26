@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
       listener: (context, state) async {
         print('Current state: $state');
         await Future.delayed(
-            const Duration(seconds: 3)); // <- kasih delay 2 detik
+            const Duration(seconds: 2)); // <- kasih delay 2 detik
         if (state is SplashStateLoggedIn) {
           // ignore: use_build_context_synchronously
           context.go('/home');

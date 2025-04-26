@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_dialog.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/rekomendasi_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/models/user_preference_criteria_model.dart';
 import 'package:go_router/go_router.dart';
@@ -90,7 +91,23 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.info_outline, color: MyColor().customOrange),
-            onPressed: () {},
+            onPressed: () {
+              showCustomDialog(
+                context: context,
+                onConfirm: () {},
+                title: 'Rumus yang digunakan',
+                content:
+                    '1. Sistem menetapkan nilai dari kriteriamu sebagai bobot.\n'
+                    '2. Sistem akan menormalisasi bobot untuk mendapatkan bobot setiap kriteria.\n'
+                    '3. Sistem akan menghitung bobot dari alternatif berdasarkan setiap kriteria.\n'
+                    '4. Sistem akan mengalikan bobot kriteriamu dengan bobot alternatif untuk setiap kriteria, lalu jumlahkan hasilnya untuk mendapatkan skor total setiap alternatif.',
+                icon: Icons.info_outline,
+                titleStyle: AppTextStyle.bold18,
+                contentStyle: AppTextStyle.regular14,
+                alignContent: TextAlign.justify,
+                iconBackgroundColor: MyColor().customOrange,
+              );
+            },
           ),
         ],
         leading: IconButton(
