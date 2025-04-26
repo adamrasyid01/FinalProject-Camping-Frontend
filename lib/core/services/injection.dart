@@ -24,10 +24,15 @@ import 'package:flutter_camping_frontend/features/home/domain/repositories/campi
 import 'package:flutter_camping_frontend/features/home/domain/usecases/get_camping_location.dart';
 import 'package:flutter_camping_frontend/features/home/domain/usecases/get_camping_site.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/data/datasources/ahp_result_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/datasources/user_preference_criteria_remote_datasource.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/data/repositories/ahp_result_repository_impl.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/repositories/user_preference_criteria_repository_implementation.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/domain/repositories/ahp_result_repository.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/domain/repositories/user_preference_criteria_repository.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/domain/usecases/get_ahp_result.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/domain/usecases/save_user_preference_criteria.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/rekomendasi_bloc.dart';
 import 'package:flutter_camping_frontend/features/splash/data/repositories/splash_repository_implementation.dart';
 import 'package:flutter_camping_frontend/features/splash/domain/repositories/splash_repository.dart';
@@ -147,5 +152,16 @@ Future<void> init() async {
   myInjection.registerLazySingleton<BookmarkRepository>(() => BookmarkRepositoryImpl(bookmarkRemoteDatasource: myInjection()));
   // Datasource
   myInjection.registerLazySingleton<BookmarkRemoteDatasource>(() => BookmarkRemoteDatasourceImpl(dio: myInjection()));
+
+
+  // FEATURE - GET AHP RECOMENDATION
+  // BLOC
+  myInjection.registerLazySingleton(() => AHPResultBloc(getAHPResult: myInjection()));
+  // USECASES
+  myInjection.registerLazySingleton(() => GetAHPResult(ahpResultRepository: myInjection()));
+  // Repository
+  myInjection.registerLazySingleton<AHPResultRepository>(() => AHPResultRepositoryImpl(ahpResultRemoteDatasource: myInjection()));
+  // Datasource
+  myInjection.registerLazySingleton<AHPResultRemoteDatasource>(() => AHPResultRemoteDatasourceImpl(dio: myInjection()));
 
 }

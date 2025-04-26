@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_camping_frontend/core/error/failure.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/data/datasources/bookmark_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/domain/repositories/bookmark_repository.dart';
-import 'package:flutter_camping_frontend/features/home/data/models/camping_site_model.dart';
+import 'package:flutter_camping_frontend/features/home/domain/entities/camping_site.dart';
 
 class BookmarkRepositoryImpl extends BookmarkRepository {
   final BookmarkRemoteDatasource bookmarkRemoteDatasource;
@@ -15,7 +15,7 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
   }
 
   @override
-  Future<Either<Failure, List<CampingSiteModel>>> getBookmarkedSites() async {
+  Future<Either<Failure, List<CampingSite>>> getBookmarkedSites() async {
     try {
       final result = await bookmarkRemoteDatasource.getBookmarkedSites();
       return Right(result);

@@ -3,6 +3,7 @@ import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_camping_frontend/features/authentication/presentation/bloc/authentication_bloc.dart';
 
@@ -81,9 +82,21 @@ class ProfilePage extends StatelessWidget {
                     CustomButton(
                       btnText: "Logout",
                       onPressed: () {
-                        context
-                            .read<AuthenticationBloc>()
-                            .add(AuthenticationEventLogout());
+                        showCustomDialog(
+                          context: context,
+                          onConfirm: () {
+                            context
+                                .read<AuthenticationBloc>()
+                                .add(AuthenticationEventLogout());
+                          },
+                          title: 'Logout',
+                          content:
+                              'Apakah Anda yakin ingin logout dari aplikasi?',
+                          canceledText: 'Batal',
+                          confirmedText: 'Logout',
+                          icon: Icons.logout,
+                          iconBackgroundColor: Colors.red,
+                        );
                       },
                       btnColor: myColor.customRed,
                     ),

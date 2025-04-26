@@ -67,7 +67,7 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
     rekomendasiBloc
         .add(RekomendasiEventSaveUserPreferenceCriteria(preferences));
 
-    context.pop();
+    context.pop(true); // Kembali ke halaman sebelumnya
   }
 
   Future<void> _loadUserPreferences() async {

@@ -3,6 +3,7 @@ import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/services/save_name_camp_location.dart';
 import 'package:flutter_camping_frontend/core/services/save_user.dart';
 import 'package:flutter_camping_frontend/core/services/token_storage.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
 import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
@@ -107,8 +108,12 @@ class _BerandaPageState extends State<BerandaPage> {
             BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
                 if (state is HomeStateLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    alignment: Alignment.center,
+                    child: const CustomLoading(
+                      asset: 'assets/animations/loadingAnimation.json',
+                    ),
                   );
                 } else if (state is HomeStateError) {
                   return Center(child: Text(state.message));
@@ -136,7 +141,9 @@ class _BerandaPageState extends State<BerandaPage> {
                     },
                   );
                 }
-                return EmptyCampingWidget( message: "Data Camping Tidak Ada, Mohon Hubungi Admin",);
+                return EmptyCampingWidget(
+                  message: "Data Camping Tidak Ada, Mohon Hubungi Admin",
+                );
               },
             ),
           ],

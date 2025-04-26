@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
 import 'package:flutter_camping_frontend/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,7 +32,8 @@ class _SplashScreenState extends State<SplashScreen> {
       },
       child: const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(),
+          child:
+              CustomLoading(asset: 'assets/animations/welcomeAnimation.json'),
         ),
       ),
     );

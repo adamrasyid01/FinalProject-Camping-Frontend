@@ -1,21 +1,26 @@
 import 'package:flutter_camping_frontend/core/networks/api_endpoints.dart';
 import 'package:flutter_camping_frontend/core/networks/dio_client.dart';
-import 'package:flutter_camping_frontend/features/rekomendasi/data/models/ahp_result.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/data/models/ahp_result_model.dart';
 
-abstract class AhpResultRemoteDatasource {
+abstract class AHPResultRemoteDatasource {
   Future<List<AHPResultModel>> getAHPResult();
 }
 
-class AhpResultImpl extends AhpResultRemoteDatasource {
+class AHPResultRemoteDatasourceImpl extends AHPResultRemoteDatasource {
   final DioClient dio;
 
-  AhpResultImpl({required this.dio});
+  AHPResultRemoteDatasourceImpl({required this.dio});
   @override
   Future<List<AHPResultModel>> getAHPResult() async {
     try {
       final response = await dio.getRequest(ApiEndpoints.ahpResults);
-      print('$response kddndknodnodnd');
-      return AHPResultModel.fromJsonList(response.data['data']);
+
+      final ahpResultData = response.data['result'];
+      print(ahpResultData);
+      // print('$response kddndknodnodnd');
+      // print(
+      //     '-----------------------------sudthgc----------------------------------------');
+      return AHPResultModel.fromJsonList(ahpResultData).cast<AHPResultModel>();
     } catch (e) {
       throw Exception('Failed to load AHP results: $e');
     }
