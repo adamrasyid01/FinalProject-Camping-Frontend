@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_dialog.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
@@ -20,6 +21,49 @@ class RekomendasiPage extends StatefulWidget {
 }
 
 class _RekomendasiPageState extends State<RekomendasiPage> {
+  final MyColor myColor = MyColor();
+  int selectedRating = 0; // Default value
+  String selectedLocation = ""; // Default value
+  List<String> locations = [
+    "Kabupaten Bangkalan",
+    "Kabupaten Banyuwangi",
+    "Kabupaten Blitar",
+    "Kabupaten Bojonegoro",
+    "Kabupaten Bondowoso",
+    "Kabupaten Gresik",
+    "Kabupaten Jember",
+    "Kabupaten Jombang",
+    "Kabupaten Kediri",
+    "Kabupaten Lamongan",
+    "Kabupaten Lumajang",
+    "Kabupaten Madiun",
+    "Kabupaten Magetan",
+    "Kabupaten Malang",
+    "Kabupaten Mojokerto",
+    "Kabupaten Nganjuk",
+    "Kabupaten Ngawi",
+    "Kabupaten Pacitan",
+    "Kabupaten Pamekasan",
+    "Kabupaten Pasuruan",
+    "Kabupaten Ponorogo",
+    "Kabupaten Probolinggo",
+    "Kabupaten Sampang",
+    "Kabupaten Sidoarjo",
+    "Kabupaten Situbondo",
+    "Kabupaten Sumenep",
+    "Kabupaten Trenggalek",
+    "Kabupaten Tuban",
+    "Kabupaten Tulungagung",
+    "Kota Batu",
+    "Kota Blitar",
+    "Kota Kediri",
+    "Kota Madiun",
+    "Kota Malang",
+    "Kota Mojokerto",
+    "Kota Pasuruan",
+    "Kota Probolinggo",
+    "Kota Surabaya",
+  ];
   @override
   void initState() {
     super.initState();
@@ -99,16 +143,18 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                     onPressed: () {
                       showModalBottomSheet(
                         context: context,
+                        isScrollControlled:
+                            true, // Pastikan ini true untuk fleksibilitas tinggi
+                        constraints: BoxConstraints(
+                          minHeight: 300, // Tinggi minimal
+                          maxHeight: MediaQuery.of(context).size.height *
+                              0.6, // Tinggi maksimal 70% layar
+                        ),
                         shape: const RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.vertical(top: Radius.circular(16)),
                         ),
-                        builder: (BuildContext context) {
-                          return const Text(
-                            "Terapkan Filter",
-                            style: TextStyle(fontSize: 16),
-                          );
-                        },
+                        builder: (context) => buildSheet(),
                       );
                     },
                     icon: Icon(Icons.filter_list,
@@ -178,4 +224,146 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
           ),
         ));
   }
+
+  Widget buildSheet() => StatefulBuilder(builder: (context, setModalState) {
+        List<int> ratingOptions = [1, 2, 3, 4, 5];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize:
+                MainAxisSize.min, // Penting untuk menghindari overflow
+            children: [
+              // Header "Filter"
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(Icons.filter_alt_outlined),
+                  SizedBox(width: 8),
+                  Text('Filter', style: AppTextStyle.semiBold18),
+                ],
+              ),
+              SizedBox(height: 16),
+
+              // Konten utama (Rating + Lokasi) di dalam Expanded
+              Expanded(
+                child: SingleChildScrollView(
+                  // Untuk konten yang panjang
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Filter Rating
+                      const Text(
+                        "Rating",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: ratingOptions.map((rating) {
+                          final isSelected = selectedRating == rating;
+                          return ChoiceChip(
+                            showCheckmark: false,
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  rating.toString(),
+                                  style: AppTextStyle.medium14.copyWith(
+                                    color: isSelected
+                                        ? myColor.customOrange
+                                        : myColor.darkGrey,
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Icon(
+                                  Icons.star,
+                                  size: 18,
+                                  color: isSelected
+                                      ? myColor.customOrange
+                                      : myColor.darkGrey.withOpacity(0.5),
+                                ),
+                              ],
+                            ),
+                            selected: isSelected,
+                            onSelected: (_) =>
+                                setModalState(() => selectedRating = rating),
+                            selectedColor:
+                                myColor.customOrange.withOpacity(0.1),
+                            backgroundColor: Colors.transparent,
+                            side: BorderSide(
+                              color: isSelected
+                                  ? myColor.customOrange
+                                  : myColor.secondaryColor,
+                              width: 1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            labelPadding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                          );
+                        }).toList(),
+                      ),
+
+                      // Filter Lokasi
+                      SizedBox(height: 16),
+                      const Text(
+                        "Lokasi",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        children: locations.map((location) {
+                          final isSelected = selectedLocation == location;
+                          return ChoiceChip(
+                            showCheckmark: false,
+                            label: Text(
+                              location,
+                              style: isSelected
+                                  ? AppTextStyle.semiBold16
+                                      .copyWith(color: myColor.primaryColor)
+                                  : AppTextStyle.medium14
+                                      .copyWith(color: myColor.darkGrey),
+                            ),
+                            selected: isSelected,
+                            onSelected: (_) => setModalState(
+                                () => selectedLocation = location),
+                            selectedColor:
+                                myColor.primaryColor.withOpacity(0.1),
+                            backgroundColor: Colors.transparent,
+                            side: BorderSide(
+                              color: isSelected
+                                  ? myColor.primaryColor
+                                  : myColor.secondaryColor,
+                              width: 1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            labelPadding: EdgeInsets.symmetric(horizontal: 8),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Tombol "Temukan Rekomendasi" (selalu di bawah)
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: CustomButton(
+                  btnText: "Terapkan Filter",
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          ),
+        );
+      });
 }
