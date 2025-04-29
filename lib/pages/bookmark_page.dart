@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_dialog.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
 import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
@@ -43,11 +44,12 @@ class _BookmarkPageState extends State<BookmarkPage> {
       body: BlocListener<BookmarksBloc, BookmarksState>(
         listener: (context, state) {
           if (state is BookmarkDeleteSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Bookmark deleted"),
-                duration: Duration(seconds: 2), // Durasi lebih singkat
-              ),
+            showCustomDialogAutoDismiss(
+              context: context,
+              title: 'Bookmark dihapus...',
+              content: 'Camping site berhasil dihapus dari bookmark kamu.',
+              icon: Icons.delete,
+              iconBackgroundColor: myColor.customRed,
             );
             context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
           }

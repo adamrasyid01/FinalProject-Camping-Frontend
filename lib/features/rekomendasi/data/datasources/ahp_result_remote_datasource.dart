@@ -3,7 +3,7 @@ import 'package:flutter_camping_frontend/core/networks/dio_client.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/models/ahp_result_model.dart';
 
 abstract class AHPResultRemoteDatasource {
-  Future<List<AHPResultModel>> getAHPResult();
+  Future<List<AHPResultModel>> getAHPResult({int? locationId, int? rating});
 }
 
 class AHPResultRemoteDatasourceImpl extends AHPResultRemoteDatasource {
@@ -11,9 +11,9 @@ class AHPResultRemoteDatasourceImpl extends AHPResultRemoteDatasource {
 
   AHPResultRemoteDatasourceImpl({required this.dio});
   @override
-  Future<List<AHPResultModel>> getAHPResult() async {
+  Future<List<AHPResultModel>> getAHPResult({int? locationId, int? rating}) async {
     try {
-      final response = await dio.getRequest(ApiEndpoints.ahpResults);
+      final response = await dio.getRequest(ApiEndpoints.ahpResults(locationId: locationId, rating: rating));
 
       final ahpResultData = response.data['result'];
       print(ahpResultData);

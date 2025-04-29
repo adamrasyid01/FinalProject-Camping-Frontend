@@ -149,3 +149,38 @@ void showCustomDialog({
     ),
   );
 }
+void showCustomDialogAutoDismiss({
+  required BuildContext context,
+  String title = 'Dialog Title',
+  String content = 'Dialog Content',
+  IconData icon = Icons.info,
+  Color iconBackgroundColor = Colors.red,
+  TextStyle? titleStyle,
+  TextStyle? contentStyle,
+  TextAlign? alignContent,
+  Duration duration = const Duration(seconds: 1),
+}) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      Future.delayed(duration, () {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
+      });
+      return CustomDialog(
+        onConfirm: () {},
+        title: title,
+        content: content,
+        canceledText: null,
+        confirmedText: null,
+        icon: icon,
+        iconBackgroundColor: iconBackgroundColor,
+        titleStyle: titleStyle,
+        contentStyle: contentStyle,
+        alignContent: alignContent,
+      );
+    },
+  );
+}

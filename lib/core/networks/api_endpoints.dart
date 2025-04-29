@@ -1,6 +1,6 @@
 class ApiEndpoints {
   // Menggunakan Hotspot
-  // static const baseUrl = 'http://192.168.158.118:8000/api';
+  // static const baseUrl = 'http://192.168.19.118:8000/api';
 
   // Menggunakana Wifi Rumah
   static const baseUrl = 'http://192.168.100.51:8000/api';
@@ -35,6 +35,23 @@ class ApiEndpoints {
   static String deleteBookmark(int campingSiteId) =>
       '$baseUrl/bookmarks/$campingSiteId';
 
-  // AHP Result Endpoint
-  static const String ahpResults = '$baseUrl/ahp-results';
+   // AHP Result Endpoint dengan query parameters
+  static String ahpResults({int? locationId, int? rating}) {
+    String url = '$baseUrl/ahp-results';
+    final params = <String>[];
+    
+    if (locationId != null && locationId > 0) {
+      params.add('location_id=$locationId');
+    }
+    
+    if (rating != null) {
+      params.add('min_rating=$rating');
+    }
+    
+  if (params.isNotEmpty) {
+      url += '?${params.join('&')}';
+    }
+    
+    return url;
+  }
 }

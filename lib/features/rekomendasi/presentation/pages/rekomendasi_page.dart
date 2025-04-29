@@ -6,6 +6,8 @@ import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_dialog.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
+import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
+import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_event.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_state.dart';
@@ -24,50 +26,66 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
   final MyColor myColor = MyColor();
   int selectedRating = 0; // Default value
   String selectedLocation = ""; // Default value
-  List<String> locations = [
-    "Kabupaten Bangkalan",
-    "Kabupaten Banyuwangi",
-    "Kabupaten Blitar",
-    "Kabupaten Bojonegoro",
-    "Kabupaten Bondowoso",
-    "Kabupaten Gresik",
-    "Kabupaten Jember",
-    "Kabupaten Jombang",
-    "Kabupaten Kediri",
-    "Kabupaten Lamongan",
-    "Kabupaten Lumajang",
-    "Kabupaten Madiun",
-    "Kabupaten Magetan",
-    "Kabupaten Malang",
-    "Kabupaten Mojokerto",
-    "Kabupaten Nganjuk",
-    "Kabupaten Ngawi",
-    "Kabupaten Pacitan",
-    "Kabupaten Pamekasan",
-    "Kabupaten Pasuruan",
-    "Kabupaten Ponorogo",
-    "Kabupaten Probolinggo",
-    "Kabupaten Sampang",
-    "Kabupaten Sidoarjo",
-    "Kabupaten Situbondo",
-    "Kabupaten Sumenep",
-    "Kabupaten Trenggalek",
-    "Kabupaten Tuban",
-    "Kabupaten Tulungagung",
-    "Kota Batu",
-    "Kota Blitar",
-    "Kota Kediri",
-    "Kota Madiun",
-    "Kota Malang",
-    "Kota Mojokerto",
-    "Kota Pasuruan",
-    "Kota Probolinggo",
-    "Kota Surabaya",
+  int? selectedLocationId;
+
+  List<Map<String, dynamic>> locations = [
+    {"id": 1, "name": "Kabupaten Bangkalan"},
+    {"id": 2, "name": "Kabupaten Banyuwangi"},
+    {"id": 3, "name": "Kabupaten Blitar"},
+    {"id": 4, "name": "Kabupaten Bojonegoro"},
+    {"id": 5, "name": "Kabupaten Bondowoso"},
+    {"id": 6, "name": "Kabupaten Gresik"},
+    {"id": 7, "name": "Kabupaten Jember"},
+    {"id": 8, "name": "Kabupaten Jombang"},
+    {"id": 9, "name": "Kabupaten Kediri"},
+    {"id": 10, "name": "Kabupaten Lamongan"},
+    {"id": 11, "name": "Kabupaten Lumajang"},
+    {"id": 12, "name": "Kabupaten Madiun"},
+    {"id": 13, "name": "Kabupaten Magetan"},
+    {"id": 14, "name": "Kabupaten Malang"},
+    {"id": 15, "name": "Kabupaten Mojokerto"},
+    {"id": 16, "name": "Kabupaten Nganjuk"},
+    {"id": 17, "name": "Kabupaten Ngawi"},
+    {"id": 18, "name": "Kabupaten Pacitan"},
+    {"id": 19, "name": "Kabupaten Pamekasan"},
+    {"id": 20, "name": "Kabupaten Pasuruan"},
+    {"id": 21, "name": "Kabupaten Ponorogo"},
+    {"id": 22, "name": "Kabupaten Probolinggo"},
+    {"id": 23, "name": "Kabupaten Sampang"},
+    {"id": 24, "name": "Kabupaten Sidoarjo"},
+    {"id": 25, "name": "Kabupaten Situbondo"},
+    {"id": 26, "name": "Kabupaten Sumenep"},
+    {"id": 27, "name": "Kabupaten Trenggalek"},
+    {"id": 28, "name": "Kabupaten Tuban"},
+    {"id": 29, "name": "Kabupaten Tulungagung"},
+    {"id": 30, "name": "Kota Batu"},
+    {"id": 31, "name": "Kota Blitar"},
+    {"id": 32, "name": "Kota Kediri"},
+    {"id": 33, "name": "Kota Madiun"},
+    {"id": 34, "name": "Kota Malang"},
+    {"id": 35, "name": "Kota Mojokerto"},
+    {"id": 36, "name": "Kota Pasuruan"},
+    {"id": 37, "name": "Kota Probolinggo"},
+    {"id": 38, "name": "Kota Surabaya"},
   ];
   @override
   void initState() {
     super.initState();
     context.read<AHPResultBloc>().add(AHPResultEventGetAHPResult());
+  }
+
+  void _toggleBookmark(int campingSiteId, bool isBookmarked) {
+    final bookmarksBloc = context.read<BookmarksBloc>();
+
+    if (isBookmarked) {
+      bookmarksBloc.add(BookmarksEventDeleteBookmark(campingSiteId));
+    } else {
+      bookmarksBloc.add(BookmarksEventInsertBookmark(campingSiteId));
+    }
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      bookmarksBloc.add(BookmarksEventGetBookmarks());
+    });
   }
 
   @override
@@ -180,46 +198,98 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
               ),
               SizedBox(height: 6), // <== tambahkan ini
 
-              Expanded(child: BlocBuilder<AHPResultBloc, AHPResultState>(
-                builder: (context, state) {
-                  if (state is AHPResultLoading) {
-                    return Center(
-                      child: const CustomLoading(
-                        asset: 'assets/animations/loadingAnimation.json',
-                      ),
+              // MUNCULKAN DIALOG BERHASIL BOOKMARK
+              BlocListener<BookmarksBloc, BookmarksState>(
+                listener: (context, state) {
+                  if (state is BookmarkInsertSuccess) {
+                    showCustomDialogAutoDismiss(
+                      context: context,
+                      title: 'Bookmark ditambahkan',
+                      content:
+                          'Berhasil ditambahkan! Lihat di "Bookmark" untuk detailnya.',
+                      icon: Icons.check_circle,
+                      iconBackgroundColor: MyColor().primaryColor,
                     );
-                  } else if (state is AHPResultSuccess) {
-                    return ListView.builder(
-                      itemCount: state.ahpResult.length,
-                      itemBuilder: (context, index) {
-                        final item = state.ahpResult[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: CampingCard(
-                            imageUrl: item.campingSite.imageUrl,
-                            title: item.campingSite.name,
-                            location: item.campingSite.location,
-                            rating: item.campingSite.rating,
-                            reviews: item.campingSite.reviews,
-                            isBookmarked: false,
-                            onBookmarkPressed: () {},
-                          ),
+                  } else if (state is BookmarkDeleteSuccess) {
+                    showCustomDialogAutoDismiss(
+                      context: context,
+                      title: 'Bookmark dihapus',
+                      content:
+                          'Camping site berhasil dihapus dari bookmark kamu.',
+                      icon: Icons.delete,
+                      iconBackgroundColor: MyColor().customRed,
+                    );
+                  }
+                },
+                child:
+                    Expanded(child: BlocBuilder<BookmarksBloc, BookmarksState>(
+                  builder: (context, bookmarksState) {
+                    return BlocBuilder<AHPResultBloc, AHPResultState>(
+                      builder: (context, state) {
+                        if (state is AHPResultLoading) {
+                          return Center(
+                            child: const CustomLoading(
+                              asset: 'assets/animations/loadingAnimation.json',
+                            ),
+                          );
+                        } else if (state is AHPResultSuccess) {
+                          // Jika AHP RESULT TIDAK ADA DATA
+                          if (state.ahpResult.isEmpty) {
+                            return Center(
+                              child: EmptyCampingWidget(
+                                message:
+                                    'Tidak ada hasil rekomendasi yang ditemukan.',
+                              ),
+                            );
+                          }
+                          return ListView.builder(
+                            itemCount: state.ahpResult.length,
+                            itemBuilder: (context, index) {
+                              final item = state.ahpResult[index];
+
+                              // CEK BOOKMARKNYA
+                              final isBookmarked = bookmarksState
+                                      is BookmarksSuccess &&
+                                  bookmarksState.bookmarkedSites.any(
+                                      (campingSite) =>
+                                          campingSite.id ==
+                                          item.campingSite.id);
+
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: CampingCard(
+                                  key: ValueKey(item.campingSite.id),
+                                  imageUrl: item.campingSite.imageUrl,
+                                  title: item.campingSite.name,
+                                  location: item.campingSite.location,
+                                  rating: item.campingSite.rating,
+                                  reviews: item.campingSite.reviews,
+                                  isBookmarked: isBookmarked,
+                                  onBookmarkPressed: () {
+                                    _toggleBookmark(
+                                        item.camping_site_id, isBookmarked);
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        } else if (state is AHPResultError) {
+                          return Center(
+                            child: Text(
+                              'Terjadi kesalahan: ${state.message}',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          );
+                        }
+                        return SizedBox(
+                          height: 12,
                         );
                       },
                     );
-                  } else if (state is AHPResultError) {
-                    return Center(
-                      child: Text(
-                        'Terjadi kesalahan: ${state.message}',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    );
-                  }
-                  return SizedBox(
-                    height: 12,
-                  );
-                },
-              )),
+                  },
+                )),
+              ),
             ],
           ),
         ));
@@ -319,11 +389,13 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                       Wrap(
                         spacing: 8,
                         children: locations.map((location) {
-                          final isSelected = selectedLocation == location;
+                          final isSelected =
+                              selectedLocationId == location['id'];
+
                           return ChoiceChip(
                             showCheckmark: false,
                             label: Text(
-                              location,
+                              location['name'],
                               style: isSelected
                                   ? AppTextStyle.semiBold16
                                       .copyWith(color: myColor.primaryColor)
@@ -331,8 +403,13 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                                       .copyWith(color: myColor.darkGrey),
                             ),
                             selected: isSelected,
-                            onSelected: (_) => setModalState(
-                                () => selectedLocation = location),
+                            onSelected: (_) {
+                              setModalState(() {
+                                selectedLocationId = location['id'];
+                                print(
+                                    "Selected location id: $selectedLocationId");
+                              });
+                            },
                             selectedColor:
                                 myColor.primaryColor.withOpacity(0.1),
                             backgroundColor: Colors.transparent,
@@ -355,11 +432,61 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
               ),
 
               // Tombol "Temukan Rekomendasi" (selalu di bawah)
+              // Dua tombol di bagian bawah
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
-                child: CustomButton(
-                  btnText: "Terapkan Filter",
-                  onPressed: () {},
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setModalState(() {
+                            selectedRating = 0;
+                            selectedLocation = "";
+                            selectedLocationId = null;
+                          });
+                          // Dispatch event ke Bloc tanpa filter
+                          context.read<AHPResultBloc>().add(
+                                AHPResultEventGetAHPResult(),
+                              );
+                          context.pop();
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          side: BorderSide(color: myColor.secondaryColor),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                        ),
+                        child: Text(
+                          "Reset",
+                          style: AppTextStyle.semiBold16.copyWith(
+                            color: myColor.darkGrey,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: CustomButton(
+                        btnText: "Terapkan",
+                        onPressed: () {
+                          print("Kirim ke backend:");
+                          print("Rating: $selectedRating");
+                          print("Location ID: $selectedLocationId");
+
+                          context.read<AHPResultBloc>().add(
+                                AHPResultEventGetAHPResult(
+                                  locationId: selectedLocationId,
+                                  rating: selectedRating == 0
+                                      ? null
+                                      : selectedRating,
+                                ),
+                              );
+                          context.pop();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -10,8 +10,8 @@ class GetAHPResult {
 
   GetAHPResult({required this.ahpResultRepository});
 
-  Future<Either<Failure,List<AHPResult>>> execute() async {
-   return await ahpResultRepository.getAHPResult();
+  Future<Either<Failure,List<AHPResult>>> execute({int? locationId, int? rating}) async {
+   return await ahpResultRepository.getAHPResult(locationId: locationId, rating: rating);
     
   }
 }

@@ -9,8 +9,8 @@ class AHPResultRepositoryImpl extends AHPResultRepository {
   final AHPResultRemoteDatasource ahpResultRemoteDatasource;
   AHPResultRepositoryImpl({required this.ahpResultRemoteDatasource});
   @override
-  Future<Either<Failure, List<AHPResult>>> getAHPResult() async {
-    List<AHPResultModel> ahpResult = await ahpResultRemoteDatasource.getAHPResult();
+  Future<Either<Failure, List<AHPResult>>> getAHPResult({int? locationId, int? rating}) async {
+    List<AHPResultModel> ahpResult = await ahpResultRemoteDatasource.getAHPResult(locationId: locationId, rating: rating);
     return Right(ahpResult);
   }
 }

@@ -10,11 +10,11 @@ class AHPResultBloc extends Bloc<AHPResultEvent, AHPResultState> {
   final GetAHPResult getAHPResult;
 
   AHPResultBloc({required this.getAHPResult}) : super(AHPResultInitial()) {
-    on<AHPResultEvent>((event, emit) async {
+    on<AHPResultEventGetAHPResult>((event, emit) async {
       print("ahp result --------------------------------------");
 
       emit(AHPResultLoading());
-      Either<Failure, List<AHPResult>> result = await getAHPResult.execute();
+      Either<Failure, List<AHPResult>> result = await getAHPResult.execute(locationId: event.locationId, rating: event.rating);
       result.fold(
         (failure) => emit(AHPResultError(failure.message)),
         (data) => emit(AHPResultSuccess(data)),

@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/services/save_name_camp_location.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_dialog.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
 import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
@@ -90,18 +92,21 @@ class _CampingSitePageState extends State<CampingSitePage> {
       body: BlocConsumer<BookmarksBloc, BookmarksState>(
         listener: (context, state) async {
           if (state is BookmarkInsertSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Bookmark added"),
-                duration: Duration(seconds: 1),
-              ),
+            showCustomDialogAutoDismiss(
+              context: context,
+              title: 'Bookmark ditambahkan',
+              content:
+                  'Berhasil ditambahkan! Lihat di "Bookmark" untuk detailnya.',
+              icon: Icons.check_circle,
+              iconBackgroundColor: myColor.primaryColor,
             );
           } else if (state is BookmarkDeleteSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Bookmark deleted"),
-                duration: Duration(seconds: 1),
-              ),
+            showCustomDialogAutoDismiss(
+              context: context,
+              title: 'Bookmark dihapus...',
+              content: 'Camping site berhasil dihapus dari bookmark kamu.',
+              icon: Icons.delete,
+              iconBackgroundColor: myColor.customRed,
             );
           }
         },
@@ -109,7 +114,9 @@ class _CampingSitePageState extends State<CampingSitePage> {
           return BlocBuilder<HomeBloc, HomeState>(
             builder: (context, state) {
               if (state is HomeStateLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const CustomLoading(
+                  asset: 'assets/animations/loadingAnimation.json',
+                );
               } else if (state is HomeStateError) {
                 return Center(child: Text(state.message));
               } else if (state is HomeStateSuccessCampingSite) {
