@@ -44,7 +44,7 @@ class _BerandaPageState extends State<BerandaPage> {
   }
 
   void _fetchDataCamping() {
-    context.read<HomeBloc>().add(HomeEventGetCampingLocations());
+    context.read<HomeBloc>().add(HomeEventGetCampingLocations(filter: 'semua'));
   }
 
   final List<String> filters = ['Semua', 'Urutan Nama', 'Camping Terbanyak'];
@@ -152,22 +152,46 @@ class _BerandaPageState extends State<BerandaPage> {
     );
   }
 
+  // FILTER BERANDA
   Widget buildFilterBeranda() {
-    return Row(
-      children: List.generate(filters.length, (index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: CustomChip(
-            label: filters[index],
-            isSelected: selectedFilterIndex == index,
-            onTap: () {
-              setState(() {
-                selectedFilterIndex = index;
-              });
-            },
-          ),
+    return StatefulBuilder(
+      builder: (context, setStateFilter) {
+        return Row(
+          children: List.generate(filters.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: CustomChip(
+                label: filters[index],
+                isSelected: selectedFilterIndex == index,
+                onTap: () {
+                  setStateFilter(() {
+                    selectedFilterIndex = index;
+                  });
+                  // Lakukan fetch ulang data berdasarkan filter
+                  String selectedFilter = filters[index];
+
+                  String filterKeyword;
+                  switch (selectedFilter.toLowerCase()) {
+                    case 'urutan nama':
+                      filterKeyword = 'nama';
+                      break;
+                    case 'camping terbanyak':
+                      filterKeyword = 'terbanyak';
+                      break;
+                    default:
+                      filterKeyword = 'semua';
+                  }
+
+                  // Trigger event bloc
+                  context.read<HomeBloc>().add(
+                        HomeEventGetCampingLocations(filter: filterKeyword),
+                      );
+                },
+              ),
+            );
+          }),
         );
-      }),
+      },
     );
   }
 }

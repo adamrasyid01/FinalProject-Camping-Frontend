@@ -12,9 +12,9 @@ class CampingLocationRepositoryImplementation
   CampingLocationRepositoryImplementation(
       {required this.campingLocationDataSource});
   @override
-  Future<Either<Failure, List<CampingLocation>>> getCampingLocation() async {
+  Future<Either<Failure, List<CampingLocation>>> getCampingLocation({String filter = 'semua'}) async {
     List<CampingLocationModel> campingLocation =
-        await campingLocationDataSource.getCampingLocation();
+        await campingLocationDataSource.getCampingLocation(filter: filter);
     return Right(campingLocation);
   }
 }

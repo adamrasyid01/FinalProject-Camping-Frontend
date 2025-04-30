@@ -4,7 +4,8 @@ import 'package:flutter_camping_frontend/features/home/data/models/camping_locat
 import 'package:flutter_camping_frontend/core/networks/api_endpoints.dart';
 
 abstract class CampingLocationRemoteDataSource {
-  Future<List<CampingLocationModel>> getCampingLocation();
+  Future<List<CampingLocationModel>> getCampingLocation(
+      {String filter = 'semua'});
 }
 
 class CampingLocationRemoteDatasourceImplementation
@@ -13,12 +14,12 @@ class CampingLocationRemoteDatasourceImplementation
 
   CampingLocationRemoteDatasourceImplementation({required this.dio});
   @override
-  Future<List<CampingLocationModel>> getCampingLocation() async {
+  Future<List<CampingLocationModel>> getCampingLocation({String filter = 'semua'}) async {
     try {
       // final token = await tokenStorage.getToken();
-      final response = await dio.getRequest(ApiEndpoints.campingLocations);
+      final response = await dio.getRequest(ApiEndpoints.campingLocations(filter: filter));
       // print(response.data['result']);
-     
+
       return CampingLocationModel.fromJsonList(response.data['result']);
     } catch (e) {
       throw ServerFailure(e.toString());

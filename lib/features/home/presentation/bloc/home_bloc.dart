@@ -21,7 +21,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // Get Camping Locations
     on<HomeEventGetCampingLocations>((event, emit) async {
       emit(HomeStateLoading());
-      final result = await getCampingLocation.execute();
+      final result = await getCampingLocation.execute(filter: event.filter);
       result.fold(
         (failure) => emit(HomeStateError(failure.message)),
         (locations) => emit(HomeStateSuccessCampingLocation(locations)),

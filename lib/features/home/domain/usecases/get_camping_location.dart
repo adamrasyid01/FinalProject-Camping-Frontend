@@ -8,7 +8,7 @@ class GetCampingLocation {
   final CampingLocationRepository campingLocationRepository;
   const GetCampingLocation({required this.campingLocationRepository});
 
-  Future<Either<Failure, List<CampingLocation>>> execute() async {
-    return await campingLocationRepository.getCampingLocation();
+  Future<Either<Failure, List<CampingLocation>>> execute({String filter = 'semua'}) async {
+    return await campingLocationRepository.getCampingLocation(filter: filter);
   }
 }
