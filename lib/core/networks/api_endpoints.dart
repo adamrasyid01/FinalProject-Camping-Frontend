@@ -1,17 +1,14 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiEndpoints {
-  // Menggunakan Hotspot
-  // static const baseUrl = 'http://192.168.82.118:8000/api';
-
-  // Menggunakana Wifi Rumah
-  static const baseUrl = 'http://192.168.100.51:8000/api';
-
-  // static const baseUrl = 'http://10.252.134.8:8000/api';
+  // Base URL diambil dari .env
+  static String get baseUrl => dotenv.get('BASE_URL');
 
   // Auth Endpoints
-  static const String login = '$baseUrl/login';
-  static const String register = '$baseUrl/register';
-  static const String logout = '$baseUrl/logout';
-  static const String currentUser = '$baseUrl/user';
+  static String get login => '$baseUrl/login';
+  static String get register => '$baseUrl/register';
+  static String get logout => '$baseUrl/logout';
+  static String get currentUser => '$baseUrl/user';
 
   // Camping Locations Endpoints
   static String campingLocations({String? filter}) {
@@ -23,8 +20,7 @@ class ApiEndpoints {
   }
 
   // User Preference Criteria Endpoints
-  static const String userPreferenceCriteria =
-      '$baseUrl/user-preference-criteria';
+  static String get userPreferenceCriteria => '$baseUrl/user-preference-criteria';
 
   // Camping Sites Endpoints
   static String campingSites(int id, {String? search}) {
@@ -32,14 +28,12 @@ class ApiEndpoints {
     if (search != null && search.isNotEmpty) {
       url += '?search=$search';
     }
-
     return url;
   }
 
   // Bookmark Endpoint
-  static const String bookmarks = '$baseUrl/bookmarks';
-  static String deleteBookmark(int campingSiteId) =>
-      '$baseUrl/bookmarks/$campingSiteId';
+  static String get bookmarks => '$baseUrl/bookmarks';
+  static String deleteBookmark(int campingSiteId) => '$baseUrl/bookmarks/$campingSiteId';
 
   // AHP Result Endpoint dengan query parameters
   static String ahpResults({int? locationId, int? rating}) {

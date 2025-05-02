@@ -10,6 +10,7 @@ import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bl
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/rekomendasi_bloc.dart';
 import 'package:flutter_camping_frontend/features/splash/presentation/cubit/splash_cubit.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +19,7 @@ void main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
