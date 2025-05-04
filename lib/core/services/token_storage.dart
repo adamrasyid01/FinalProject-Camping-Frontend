@@ -12,6 +12,7 @@ class TokenStorage {
   /// 🔹 Ambil token dari SharedPreferences
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
+    print("🔍 Mengambil username: $prefs"); // Debugging
     return prefs.getString(_tokenKey);
   }
 

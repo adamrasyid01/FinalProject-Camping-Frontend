@@ -20,7 +20,8 @@ class ApiEndpoints {
   }
 
   // User Preference Criteria Endpoints
-  static String get userPreferenceCriteria => '$baseUrl/user-preference-criteria';
+  static String get userPreferenceCriteria =>
+      '$baseUrl/user-preference-criteria';
 
   // Camping Sites Endpoints
   static String campingSites(int id, {String? search}) {
@@ -33,25 +34,24 @@ class ApiEndpoints {
 
   // Bookmark Endpoint
   static String get bookmarks => '$baseUrl/bookmarks';
-  static String deleteBookmark(int campingSiteId) => '$baseUrl/bookmarks/$campingSiteId';
+  static String deleteBookmark(int campingSiteId) =>
+      '$baseUrl/bookmarks/$campingSiteId';
 
-  // AHP Result Endpoint dengan query parameters
-  static String ahpResults({int? locationId, int? rating}) {
-    String url = '$baseUrl/ahp-results';
-    final params = <String>[];
+  // AHP Result Endpoint dengan query parameters dan baseUrl
+  static String ahpResults({
+    int? locationId,
+    int? rating,
+    int page = 1,
+    int limit = 10,
+  }) {
+    final queryParams = <String, String>{
+      'page': page.toString(),
+      'limit': limit.toString(),
+      if (locationId != null) 'location_id': locationId.toString(),
+      if (rating != null) 'min_rating': rating.toString(),
+    };
 
-    if (locationId != null && locationId > 0) {
-      params.add('location_id=$locationId');
-    }
-
-    if (rating != null) {
-      params.add('min_rating=$rating');
-    }
-
-    if (params.isNotEmpty) {
-      url += '?${params.join('&')}';
-    }
-
-    return url;
+    final queryString = Uri(queryParameters: queryParams).query;
+    return '$baseUrl/ahp-results?$queryString';
   }
 }

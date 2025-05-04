@@ -8,6 +8,7 @@ import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
 import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
+import 'package:flutter_camping_frontend/features/rekomendasi/domain/entities/ahp_result.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_event.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/presentation/bloc/ahp_result_state.dart';
@@ -23,10 +24,14 @@ class RekomendasiPage extends StatefulWidget {
 }
 
 class _RekomendasiPageState extends State<RekomendasiPage> {
+  AHPResultBloc? ahpResultBloc;
+  ScrollController controller = ScrollController();
   final MyColor myColor = MyColor();
   int selectedRating = 0; // Default value
   String selectedLocation = ""; // Default value
   int? selectedLocationId;
+  int _currentPage = 1;
+  final int _limit = 10;
 
   List<Map<String, dynamic>> locations = [
     {"id": 1, "name": "Kabupaten Bangkalan"},
@@ -71,7 +76,23 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
   @override
   void initState() {
     super.initState();
-    context.read<AHPResultBloc>().add(AHPResultEventGetAHPResult());
+    _loadInitialData();
+    controller.addListener(onScroll);
+  }
+
+  void _loadInitialData() {
+    _currentPage = 1;
+    context.read<AHPResultBloc>().add(AHPResultEventGetAHPResult(
+          page: _currentPage,
+          limit: _limit,
+        ));
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(onScroll);
+    controller.dispose();
+    super.dispose();
   }
 
   void _toggleBookmark(int campingSiteId, bool isBookmarked) {
@@ -86,6 +107,18 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
     Future.delayed(const Duration(milliseconds: 300), () {
       bookmarksBloc.add(BookmarksEventGetBookmarks());
     });
+  }
+
+  void onScroll() {
+    if (controller.position.pixels == controller.position.maxScrollExtent) {
+      _currentPage++; // increment halaman
+      context.read<AHPResultBloc>().add(
+            AHPResultEventGetAHPResult(
+              page: _currentPage,
+              limit: _limit,
+            ),
+          );
+    }
   }
 
   @override
@@ -226,65 +259,55 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                   builder: (context, bookmarksState) {
                     return BlocBuilder<AHPResultBloc, AHPResultState>(
                       builder: (context, state) {
-                        if (state is AHPResultLoading) {
+                        if (state is AHPResultInitial) {
                           return Center(
                             child: const CustomLoading(
                               asset: 'assets/animations/loadingAnimation.json',
                             ),
                           );
-                        } else if (state is AHPResultSuccess) {
-                          // Jika AHP RESULT TIDAK ADA DATA
-                          if (state.ahpResult.isEmpty) {
-                            return Center(
-                              child: EmptyCampingWidget(
-                                message:
-                                    'Tidak ada hasil rekomendasi yang ditemukan.',
-                              ),
-                            );
-                          }
+                        } else {
+                          AHPResultSuccess ahpLoaded =
+                              state as AHPResultSuccess;
+
                           return ListView.builder(
-                            itemCount: state.ahpResult.length,
-                            itemBuilder: (context, index) {
-                              final item = state.ahpResult[index];
+                              controller: controller,
+                              itemCount: (ahpLoaded.hasReachedMax)
+                                  ? ahpLoaded.ahpResults.length
+                                  : ahpLoaded.ahpResults.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index < state.ahpResults.length) {
+                                  final item = state.ahpResults[index];
+                                  final isBookmarked =
+                                      bookmarksState is BookmarksSuccess &&
+                                          bookmarksState.bookmarkedSites.any(
+                                              (campingSite) =>
+                                                  campingSite.id ==
+                                                  item.campingSite.id);
 
-                              // CEK BOOKMARKNYA
-                              final isBookmarked = bookmarksState
-                                      is BookmarksSuccess &&
-                                  bookmarksState.bookmarkedSites.any(
-                                      (campingSite) =>
-                                          campingSite.id ==
-                                          item.campingSite.id);
-
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: CampingCard(
-                                  key: ValueKey(item.campingSite.id),
-                                  imageUrl: item.campingSite.imageUrl,
-                                  title: item.campingSite.name,
-                                  location: item.campingSite.location,
-                                  rating: item.campingSite.rating,
-                                  reviews: item.campingSite.reviews,
-                                  isBookmarked: isBookmarked,
-                                  onBookmarkPressed: () {
-                                    _toggleBookmark(
-                                        item.camping_site_id, isBookmarked);
-                                  },
-                                ),
-                              );
-                            },
-                          );
-                        } else if (state is AHPResultError) {
-                          return Center(
-                            child: Text(
-                              'Terjadi kesalahan: ${state.message}',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          );
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: CampingCard(
+                                      key: ValueKey(item.campingSite.id),
+                                      imageUrl: item.campingSite.imageUrl,
+                                      title: item.campingSite.name,
+                                      location: item.campingSite.location,
+                                      rating: item.campingSite.rating,
+                                      reviews: item.campingSite.reviews,
+                                      isBookmarked: isBookmarked,
+                                      onBookmarkPressed: () => _toggleBookmark(
+                                          item.camping_site_id, isBookmarked),
+                                    ),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: MyColor().customOrange,
+                                    ),
+                                  );
+                                }
+                              });
                         }
-                        return SizedBox(
-                          height: 12,
-                        );
                       },
                     );
                   },

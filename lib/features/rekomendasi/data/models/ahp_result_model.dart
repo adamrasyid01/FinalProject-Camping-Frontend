@@ -20,14 +20,10 @@ class AHPResultModel extends AHPResult {
     );
   }
 
-  static List<AHPResultModel?> fromJsonList(List<dynamic> data) {
-    return data.map((singleData) {
-      try {
-        return AHPResultModel.fromJson(singleData);
-      } catch (e) {
-        print('Error parsing AHPResultModel: $e');
-        return null; // Return null if parsing fails
-      }
-    }).toList();
+  static List<AHPResultModel> fromJsonList(List data) {
+    if(data.isEmpty) return [];
+    return data.map((singleData) => AHPResultModel.fromJson(singleData)).toList();
   }
+
+   
 }
