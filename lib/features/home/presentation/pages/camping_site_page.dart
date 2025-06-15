@@ -114,7 +114,7 @@ class _CampingSitePageState extends State<CampingSitePage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pushNamed('/home'),
+          onPressed: () => context.push('/home'),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0.5),

@@ -43,7 +43,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () =>
-              context.go('/camping-site/${widget.campingSiteLocationId}'),
+              context.push('/camping-site/${widget.campingSiteLocationId}'),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0.5),
