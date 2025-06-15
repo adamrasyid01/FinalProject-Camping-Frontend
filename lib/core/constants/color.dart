@@ -10,6 +10,7 @@ class MyColor {
   final Color customGrey = const Color(0xFFF6F6F6);
   final Color darkGrey = const Color(0xFF838383);
   final Color lightGrey = const Color(0xFFA7A7A7);
+  final Color borderColor = Colors.white54;
 
   final Color lightGreen = const Color(0xFF13777D);
   final Color darkGreen = const Color(0xFF284B63);
