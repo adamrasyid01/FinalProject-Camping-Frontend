@@ -24,20 +24,62 @@ class CampingSitePage extends StatefulWidget {
 
 class _CampingSitePageState extends State<CampingSitePage> {
   final TextEditingController _searchController = TextEditingController();
-  final String _campingLocationName = "Loading...";
+  String? _campingLocationName;
+
   final SaveNameCampLocation saveNameCampLocation = SaveNameCampLocation();
+  ScrollController controller = ScrollController();
+  final int _limit = 10;
 
   @override
   void initState() {
     super.initState();
-    _fetchCampingLocationSites();
+    _loadCampLocationName();
+    _loadInitialData();
+    controller.addListener(_onScroll);
   }
 
-  void _fetchCampingLocationSites() {
-    context.read<HomeBloc>().add(
-          HomeEventGetCampingSite(locationId: widget.locationId),
-        );
+  void _loadCampLocationName() async {
+    final name = await saveNameCampLocation.getCampLocationName();
+    if (mounted) {
+      setState(() {
+        _campingLocationName = name;
+      });
+    }
+  }
+
+  void _loadInitialData() {
+    context.read<HomeBloc>().add(HomeEventGetCampingSite(
+          locationId: widget.locationId,
+          limit: _limit,
+        ));
     context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
+  }
+
+  void _loadMore() {
+    final currentState = context.read<HomeBloc>().state;
+    if (currentState is HomeStateSuccessSites && !currentState.hasReachedMax) {
+      context.read<HomeBloc>().add(
+            HomeEventGetCampingSite(
+              locationId: widget.locationId,
+              page: currentState.currentPage + 1,
+              limit: _limit,
+            ),
+          );
+    }
+  }
+
+  // void _fetchCampingLocationSites() {
+  //   context.read<HomeBloc>().add(
+  //         HomeEventGetCampingSite(locationId: widget.locationId),
+  //       );
+  //   context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
+  // }
+
+  @override
+  void dispose() {
+    controller.removeListener(_onScroll);
+    controller.dispose();
+    super.dispose();
   }
 
   void _toggleBookmark(int campingSiteId, bool isBookmarked) {
@@ -54,31 +96,25 @@ class _CampingSitePageState extends State<CampingSitePage> {
     });
   }
 
+  void _onScroll() {
+    if (controller.position.pixels == controller.position.maxScrollExtent) {
+      _loadMore();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final MyColor myColor = MyColor();
     return Scaffold(
       appBar: AppBar(
-        title: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) {
-            if (state is HomeStateSuccessCampingSite) {
-              return FutureBuilder<String?>(
-                future: saveNameCampLocation.getCampLocationName(),
-                builder: (context, snapshot) {
-                  return Text(
-                    snapshot.data ?? _campingLocationName,
-                    style: AppTextStyle.medium20,
-                  );
-                },
-              );
-            }
-            return Text(_campingLocationName, style: AppTextStyle.medium20);
-          },
+        title: Text(
+          _campingLocationName ?? '',
+          style: AppTextStyle.medium20,
         ),
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.go('/home'),
+          onPressed: () => context.pushNamed('/home'),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0.5),
@@ -113,98 +149,121 @@ class _CampingSitePageState extends State<CampingSitePage> {
         builder: (context, bookmarksState) {
           return BlocBuilder<HomeBloc, HomeState>(
             builder: (context, state) {
-              if (state is HomeStateLoading) {
+              if (state is HomeStateInitial ||
+                  (state is HomeStateLoading && state.campingSites.isEmpty)) {
                 return const CustomLoading(
                   asset: 'assets/animations/loadingAnimation.json',
                 );
-              } else if (state is HomeStateError) {
-                return Center(child: Text(state.message));
-              } else if (state is HomeStateSuccessCampingSite) {
-                final campingData = state.campingSite;
+              }
+              final campingData = state.campingSites;
+              final hasReachedMax =
+                  state is HomeStateSuccessSites ? state.hasReachedMax : false;
 
-                return SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      SearchInput(
-                        controller: _searchController,
-                        hintText: "Cari tempat camping",
-                        onSearchTap: () {
-                          final searchValue = _searchController.text.trim();
-                          context.read<HomeBloc>().add(
-                                HomeEventGetCampingSite(
-                                  locationId: widget.locationId,
-                                  search: searchValue.isNotEmpty
-                                      ? searchValue
-                                      : null,
-                                ),
-                              );
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: myColor.customOrange,
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          "Klik pada kotak camping untuk membuka link pada aplikasi atau website Google Maps",
-                          style: AppTextStyle.regular12.copyWith(
-                            color: myColor.customOrange,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      if (campingData.isEmpty)
-                        Center(
-                          child: EmptyCampingWidget(
-                            message: "Data tidak ditemukan",
-                          ),
-                        )
-                      else
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: campingData.length,
-                          itemBuilder: (context, index) {
-                            final site = campingData[index];
-
-                            final isBookmarked = bookmarksState
-                                    is BookmarksSuccess &&
-                                bookmarksState.bookmarkedSites.contains(site);
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12.0),
-                              child: CampingCard(
-                                key: ValueKey(site.id),
-                                imageUrl: site.imageUrl,
-                                title: site.name,
-                                location:
-                                    '${site.location}, Jawa Timur, Indonesia',
-                                rating: site.rating,
-                                reviews: site.reviews,
-                                isBookmarked: isBookmarked,
-                                onBookmarkPressed: () {
-                                  _toggleBookmark(site.id, isBookmarked);
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                    ],
+              if (campingData.isEmpty) {
+                return Center(
+                  child: EmptyCampingWidget(
+                    message: 'Tidak ada hasil rekomendasi yang ditemukan.',
                   ),
                 );
               }
-              return const Center(child: Text("Data tidak ditemukan"));
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    SearchInput(
+                      controller: _searchController,
+                      hintText: "Cari tempat camping",
+                      onSearchTap: () {
+                        final searchValue = _searchController.text.trim();
+                        context.read<HomeBloc>().add(
+                              HomeEventGetCampingSite(
+                                locationId: widget.locationId,
+                                search:
+                                    searchValue.isNotEmpty ? searchValue : null,
+                                page: 1,
+                                limit: _limit,
+                              ),
+                            );
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: myColor.customOrange,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        "Klik pada kotak camping untuk membuka link pada aplikasi atau website Google Maps",
+                        style: AppTextStyle.regular12.copyWith(
+                          color: myColor.customOrange,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: controller,
+                        itemCount: hasReachedMax
+                            ? campingData.length
+                            : campingData.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index >= campingData.length) {
+                            return hasReachedMax
+                                ? SizedBox.shrink()
+                                : Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: MyColor().customOrange,
+                                      ),
+                                    ),
+                                  );
+                          }
+                          final site = campingData[index];
+                          final isBookmarked =
+                              bookmarksState is BookmarksSuccess &&
+                                  bookmarksState.bookmarkedSites.contains(site);
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: CampingCard(
+                              key: ValueKey(site.id),
+                              imageUrl: site.imageUrl,
+                              title: site.name,
+                              location:
+                                  '${site.location}, Jawa Timur, Indonesia',
+                              rating: site.rating,
+                              reviews: site.total_reviews,
+                              isBookmarked: isBookmarked,
+                              onBookmarkPressed: () {
+                                _toggleBookmark(site.id, isBookmarked);
+                              },
+                              onDetailPressed: () {
+                                context.pushNamed(
+                                  'camping_site_detail',
+                                  pathParameters: {
+                                    'id': widget.locationId.toString(),
+                                    'campingSiteId': site.id.toString(),
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
             },
           );
         },

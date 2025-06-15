@@ -8,7 +8,7 @@ class GetCampingSite {
   final CampingSiteRepository campingSiteRepository;
   const GetCampingSite({required this.campingSiteRepository});
 
-  Future<Either<Failure, List<CampingSite>>> execute(int locationId, {String? search}) async {
-    return await campingSiteRepository.getCampingSite(locationId, search:search);
+  Future<Either<Failure, List<CampingSite>>> execute(int locationId, {String? search, int limit = 10, int page = 1}) async {
+    return await campingSiteRepository.getCampingSite(locationId, search:search, limit: limit, page: page);
   }
 }

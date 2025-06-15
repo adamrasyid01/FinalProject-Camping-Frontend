@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class EmptyCampingWidget extends StatelessWidget {
   final String message;
-  EmptyCampingWidget({super.key, this.message = "Kosong"});
+  const EmptyCampingWidget({super.key, this.message = "Kosong"});
 
   @override
   Widget build(BuildContext context) {

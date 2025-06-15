@@ -13,8 +13,24 @@ class HomeEventGetCampingLocations extends HomeEvent {
 
 class HomeEventGetCampingSite extends HomeEvent {
   final int locationId;
+  final int page;
   final String? search;
-  HomeEventGetCampingSite({required this.locationId, this.search});
+  final int limit;
+  HomeEventGetCampingSite(
+      {required this.locationId, this.search, this.limit = 10, this.page = 1});
   @override
-  List<Object?> get props => [locationId, search];
+  List<Object?> get props => [locationId, search, limit, page];
+}
+
+class HomeEventGetDetailSites extends HomeEvent {
+  final int campingLocationId;
+  final int campingSiteId;
+
+  HomeEventGetDetailSites({
+    required this.campingLocationId,
+    required this.campingSiteId,
+  });
+
+  @override
+  List<Object> get props => [campingLocationId, campingSiteId];
 }

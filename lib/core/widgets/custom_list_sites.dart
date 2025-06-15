@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_button.dart';
 
 class CampingCard extends StatelessWidget {
   final String imageUrl;
@@ -9,8 +10,9 @@ class CampingCard extends StatelessWidget {
   final String location;
   final double rating;
   final int reviews;
-  final bool isBookmarked; // Tambahkan ini
+  final bool isBookmarked;
   final VoidCallback onBookmarkPressed;
+  final VoidCallback? onDetailPressed; // Tambahan untuk tombol
 
   const CampingCard({
     super.key,
@@ -19,8 +21,9 @@ class CampingCard extends StatelessWidget {
     required this.location,
     required this.rating,
     required this.reviews,
-    required this.isBookmarked, // Tambahkan ini
+    required this.isBookmarked,
     required this.onBookmarkPressed,
+    this.onDetailPressed, // Tambahkan ini
   });
 
   @override
@@ -38,10 +41,22 @@ class CampingCard extends StatelessWidget {
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: Image.network(
-              imageUrl,
+              imageUrl.isNotEmpty
+                  ? imageUrl
+                  : 'https://via.placeholder.com/400x160?text=No+Image',
               width: double.infinity,
               height: 160,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: double.infinity,
+                height: 160,
+                color: Colors.grey.shade300,
+                child: const Icon(
+                  Icons.broken_image,
+                  size: 48,
+                  color: Colors.grey,
+                ),
+              ),
             ),
           ),
           Padding(
@@ -61,8 +76,8 @@ class CampingCard extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(
-                        isBookmarked ? Icons.bookmark : Icons.bookmark_border, // Ikon berubah
-                        color: isBookmarked ? Colors.orange : Colors.grey, // Warna berubah
+                        isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                        color: isBookmarked ? Colors.orange : Colors.grey,
                       ),
                       onPressed: onBookmarkPressed,
                     ),
@@ -80,14 +95,27 @@ class CampingCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       rating.toString(),
-                      style: AppTextStyle.bold14.copyWith(color: MyColor().customOrange),
+                      style: AppTextStyle.bold14
+                          .copyWith(color: MyColor().customOrange),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       "($reviews)",
-                      style: AppTextStyle.bold14.copyWith(color: MyColor().customOrange),
+                      style: AppTextStyle.bold14
+                          .copyWith(color: MyColor().customOrange),
                     ),
                   ],
+                ),
+
+                // ✅ Tambahkan tombol di bawah
+                CustomButton(
+                  btnHeight: MediaQuery.of(context).size.height * 0.05,
+                  btnText: "Lihat Detail",
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  btnColor: MyColor().primaryColor,
+                  onPressed: onDetailPressed ?? () {},
                 ),
               ],
             ),

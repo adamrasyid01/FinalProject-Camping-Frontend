@@ -1,16 +1,11 @@
-
-
 import 'package:flutter_camping_frontend/features/bookmarks/domain/entities/bookmark.dart';
-import 'package:flutter_camping_frontend/features/home/data/models/camping_site_model.dart';
 
 class BookmarkModel extends Bookmark {
-  BookmarkModel({
-    required int id,
-    required int userId,
+  const BookmarkModel({
+    required super.id,
+    required super.userId,
     required int campingSiteId,
   }) : super(
-          id: id,
-          userId: userId,
           campingSite: campingSiteId,
         );
 

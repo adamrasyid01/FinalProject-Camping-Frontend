@@ -23,14 +23,26 @@ class ApiEndpoints {
   static String get userPreferenceCriteria =>
       '$baseUrl/user-preference-criteria';
 
-  // Camping Sites Endpoints
-  static String campingSites(int id, {String? search}) {
-    String url = '$baseUrl/camping-locations/$id/sites';
-    if (search != null && search.isNotEmpty) {
-      url += '?search=$search';
-    }
-    return url;
-  }
+  // Camping Sites by CampingLocation id Endpoints
+  static String campingSites({
+  int? id,
+  String? search,
+  int page = 1,
+  int limit = 10,
+}) {
+  final queryParams = <String, String>{
+    'page': page.toString(),
+    'limit': limit.toString(),
+    if (search != null && search.isNotEmpty) 'search': search,
+  };
+
+  final queryString = Uri(queryParameters: queryParams).query;
+  return '$baseUrl/camping-locations/$id/sites?$queryString';
+}
+// Camping Site Detail Endpoint
+  static String campingSiteDetail(int campingLocationId, int campingSiteId) =>
+      '$baseUrl/camping-locations/$campingLocationId/sites/$campingSiteId';
+
 
   // Bookmark Endpoint
   static String get bookmarks => '$baseUrl/bookmarks';

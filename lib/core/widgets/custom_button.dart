@@ -6,9 +6,11 @@ class CustomButton extends StatelessWidget {
   final double? btnWidth;
   final double? btnHeight;
   final Color btnTextColor;
-  final Color? btnColor; // Tambahkan parameter untuk warna tombol
+  final Color? btnColor;
   final double? fontSize;
   final VoidCallback onPressed;
+  final OutlinedBorder? shape; // ✅ Tambahkan shape
+
   static const Color primaryColor = Color(0xFF14777D);
 
   const CustomButton({
@@ -16,10 +18,11 @@ class CustomButton extends StatelessWidget {
     required this.btnText,
     required this.onPressed,
     this.btnTextColor = Colors.white,
-    this.btnColor, // Warna tombol bisa diubah dari luar
+    this.btnColor,
     this.fontSize,
     this.btnWidth,
     this.btnHeight,
+    this.shape, // ✅ Inisialisasi shape
   });
 
   @override
@@ -27,9 +30,12 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: btnColor ??
-            primaryColor, // Gunakan warna dari parameter atau default
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        backgroundColor: btnColor ?? primaryColor,
+        shape: shape ??
+            RoundedRectangleBorder(
+              // ✅ Default shape
+              borderRadius: BorderRadius.circular(30),
+            ),
         minimumSize: Size(
           btnWidth ?? MediaQuery.of(context).size.width,
           btnHeight ?? MediaQuery.of(context).size.height * 0.06,
@@ -39,8 +45,10 @@ class CustomButton extends StatelessWidget {
       child: Center(
         child: Text(
           btnText,
-          style: AppTextStyle.semiBold16
-              .copyWith(color: btnTextColor, fontSize: fontSize),
+          style: AppTextStyle.semiBold16.copyWith(
+            color: btnTextColor,
+            fontSize: fontSize,
+          ),
         ),
       ),
     );

@@ -2,15 +2,11 @@ import 'package:flutter_camping_frontend/features/home/data/models/camping_site_
 import 'package:flutter_camping_frontend/features/rekomendasi/domain/entities/ahp_result.dart';
 
 class AHPResultModel extends AHPResult {
-  AHPResultModel({
-    required int camping_site_id,
-    required double final_score,
-    required CampingSiteModel campingSite,
-  }) : super(
-          camping_site_id: camping_site_id,
-          final_score: final_score,
-          campingSite: campingSite,
-        );
+  const AHPResultModel({
+    required super.camping_site_id,
+    required super.final_score,
+    required CampingSiteModel super.campingSite,
+  });
 
   factory AHPResultModel.fromJson(Map<String, dynamic> json) {
     return AHPResultModel(

@@ -1,13 +1,10 @@
 import 'package:flutter_camping_frontend/features/rekomendasi/domain/entities/user_preference_criteria.dart';
 
 class UserPreferenceCriteriaModel extends UserPreferenceCriteria {
-  UserPreferenceCriteriaModel({
-    required int criteria_id,
-    required double weight,
-  }) : super(
-          criteria_id: criteria_id,
-          weight: weight,
-        );
+  const UserPreferenceCriteriaModel({
+    required super.criteria_id,
+    required super.weight,
+  });
 
   factory UserPreferenceCriteriaModel.fromJson(Map<String, dynamic> json) {
     return UserPreferenceCriteriaModel(

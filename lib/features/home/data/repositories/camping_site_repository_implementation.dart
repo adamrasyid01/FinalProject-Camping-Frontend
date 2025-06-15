@@ -11,9 +11,16 @@ class CampingSiteRepositoryImplementation extends CampingSiteRepository {
   CampingSiteRepositoryImplementation({required this.campingSiteRemoteDataSource});
 
   @override
-  Future<Either<Failure, List<CampingSite>>> getCampingSite(int locationId, {String? search}) async {
+  Future<Either<Failure, List<CampingSite>>> getCampingSite(int locationId, {String? search, int limit = 10, int page = 1}) async {
     List<CampingSiteModel> campingSite =
-        await campingSiteRemoteDataSource.getCampingSite(locationId, search: search);
+        await campingSiteRemoteDataSource.getCampingSite(locationId, search: search, limit: limit, page: page);
     return Right(campingSite);
+  }
+  
+  @override
+  Future<Either<Failure, CampingSite>> getDetailSite(int campingLocationId, int campingSiteId) async {
+    final CampingSiteModel detailCampSite = await campingSiteRemoteDataSource.getDetailSite(campingLocationId, campingSiteId);
+
+    return Right(detailCampSite);
   }
 }

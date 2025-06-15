@@ -23,6 +23,7 @@ import 'package:flutter_camping_frontend/features/home/domain/repositories/campi
 import 'package:flutter_camping_frontend/features/home/domain/repositories/camping_site_repository.dart';
 import 'package:flutter_camping_frontend/features/home/domain/usecases/get_camping_location.dart';
 import 'package:flutter_camping_frontend/features/home/domain/usecases/get_camping_site.dart';
+import 'package:flutter_camping_frontend/features/home/domain/usecases/get_detail_site.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/datasources/ahp_result_remote_datasource.dart';
 import 'package:flutter_camping_frontend/features/rekomendasi/data/datasources/user_preference_criteria_remote_datasource.dart';
@@ -98,7 +99,8 @@ Future<void> init() async {
   // BLOC
   myInjection.registerLazySingleton(() => HomeBloc(
       getCampingLocation: myInjection(),
-      getCampingSite: myInjection(),));
+      getCampingSite: myInjection(),
+      getDetailSite: myInjection()));
   // USECASES
   myInjection.registerLazySingleton(
       () => GetCampingLocation(campingLocationRepository: myInjection()));
@@ -122,7 +124,9 @@ Future<void> init() async {
   myInjection.registerLazySingleton<CampingSiteRemoteDataSource>(
       () => CampingSiteRemoteDataSourceImplementation(dio: myInjection()));
 
-  
+  // DETAIL CAMPING SITE
+  // USECASES
+  myInjection.registerLazySingleton(() => GetDetailSite(campingSiteRepository: myInjection()));
 
   // FEATURE - SAVE USERPREFERENCE CRITERIA
   // BLOC

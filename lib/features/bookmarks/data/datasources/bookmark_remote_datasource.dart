@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter_camping_frontend/core/error/failure.dart';
 import 'package:flutter_camping_frontend/core/networks/api_endpoints.dart';
 import 'package:flutter_camping_frontend/core/networks/dio_client.dart';

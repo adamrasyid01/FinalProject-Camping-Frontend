@@ -19,13 +19,16 @@ class UserPreferenceCriteriaRemoteDataSourceImplementation
       List<UserPreferenceCriteriaModel> criteriaList) async {
     try {
       // Ubah List<UserPreferenceCriteriaModel> menjadi List<Map<String, dynamic>>
-      final List<Map<String, dynamic>> jsonData = criteriaList.map((criteria) => criteria.toJson()).toList();
+      final List<Map<String, dynamic>> jsonData =
+          criteriaList.map((criteria) => criteria.toJson()).toList();
 
       print("Sending request to: ${ApiEndpoints.userPreferenceCriteria}");
-      print("Request Data: ${jsonData}");
+      print("Request Data: $jsonData");
 
       // Kirim request ke API
-      final response = await dio.postRequest(ApiEndpoints.userPreferenceCriteria,data: {"preference_criteria": jsonData});
+      final response = await dio.postRequest(
+          ApiEndpoints.userPreferenceCriteria,
+          data: {"preference_criteria": jsonData});
 
       print("Response Status Code: ${response.statusCode}");
       print("Response Data: ${response.data}");

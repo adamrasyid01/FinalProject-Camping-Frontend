@@ -117,8 +117,8 @@ class _BerandaPageState extends State<BerandaPage> {
                   );
                 } else if (state is HomeStateError) {
                   return Center(child: Text(state.message));
-                } else if (state is HomeStateSuccessCampingLocation) {
-                  final locations = state.campingLocation;
+                } else if (state is HomeStateSuccessLocations) {
+                  final locations = state.campingLocations;
                   return ListView.builder(
                     shrinkWrap: true, // Hindari error overflow
                     physics:
@@ -130,7 +130,7 @@ class _BerandaPageState extends State<BerandaPage> {
                         onTap: () async {
                           await saveNameCampLocation
                               .saveCampLocationName(location.name);
-                          context.go('/camping-site/${location.id}');
+                          context.push('/camping-site/${location.id}');
                         },
                         child: CustomListWisata(
                           imageUrl: location.imageUrl,

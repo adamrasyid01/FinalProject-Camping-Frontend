@@ -84,7 +84,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       title: site.name,
                       location: site.location,
                       rating: site.rating,
-                      reviews: site.reviews,
+                      reviews: site.total_reviews,
                       isBookmarked: true,
                       onBookmarkPressed: () {
                         context

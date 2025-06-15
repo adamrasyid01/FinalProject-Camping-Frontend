@@ -74,6 +74,8 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
   Future<void> _loadUserPreferences() async {
     List<Map<String, dynamic>> preferences =
         await userPreference.getPreferences();
+
+    print("Data dari SharedPreferences: $preferences");
     setState(() {
       myTiles = preferences;
     });
