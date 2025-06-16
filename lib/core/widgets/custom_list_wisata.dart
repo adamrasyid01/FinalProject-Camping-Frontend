@@ -17,7 +17,7 @@ class CustomListWisata extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: AspectRatio(

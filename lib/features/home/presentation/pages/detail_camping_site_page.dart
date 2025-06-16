@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
+import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
+
+import 'package:flutter_camping_frontend/features/home/domain/entities/camping_site.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
 
 import 'package:flutter_camping_frontend/models/sentiment_bar_data.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailCampingSitePage extends StatefulWidget {
   final int campingSiteLocationId;
@@ -35,6 +39,39 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
         ));
   }
 
+  // === Fungsi untuk membuka Google Maps ===
+  Future<void> _launchGoogleMaps(String placeName) async {
+    // 1. Cek apakah string URL tidak kosong
+    if (placeName.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('URL Peta tidak tersedia.')),
+        );
+      }
+      return;
+    }
+
+    // 2. Parse string URL menjadi objek Uri
+    final Uri url = Uri.parse(placeName);
+
+    // 3. Coba luncurkan URL
+    try {
+      if (await canLaunchUrl(url)) {
+        // Buka di aplikasi eksternal (Google Maps atau Browser)
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        throw 'Tidak dapat membuka URL: $placeName';
+      }
+    } catch (e) {
+      // Tampilkan pesan error jika gagal
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,8 +80,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () =>
-              context.push('/camping-site/${widget.campingSiteLocationId}'),
+          onPressed: () => context.pop(),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0.5),
@@ -79,6 +115,9 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                 _buildChart(sentimen),
                 const SizedBox(height: 16),
                 _buildLegend(),
+                const SizedBox(height: 16),
+                // === [BARU] Memanggil widget untuk Card Google Maps ===
+                _buildMapsCard(site),
               ],
             );
           }
@@ -87,7 +126,9 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
             return Center(child: Text('Terjadi kesalahan: ${state.message}'));
           }
 
-          return const Center(child: Text('Memuat data...'));
+          return const Center(
+              child: CustomLoading(
+                  asset: 'assets/animations/loadingAnimation.json'));
         },
       ),
     );
@@ -247,6 +288,65 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                 style: AppTextStyle.regular15.copyWith(color: Colors.black87)),
             Text("T = Kemudahan Transportasi",
                 style: AppTextStyle.regular15.copyWith(color: Colors.black87)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // === [BARU] Widget untuk menampilkan Card Google Maps ===
+  Widget _buildMapsCard(CampingSite site) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Lokasi di Peta",
+                style: AppTextStyle.semiBold18.copyWith(color: Colors.black87)),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.location_on,
+                    color: MyColor().primaryColor, size: 28),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(site.name, style: AppTextStyle.medium14),
+                      Text('${site.location}, Jawa Timur',
+                          style: AppTextStyle.regular14
+                              .copyWith(color: Colors.black54)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(
+                  Icons.map_outlined,
+                  color: Colors.white,
+                ),
+                label: const Text('Buka di Google Maps'),
+                onPressed: () {
+                  _launchGoogleMaps(site.link);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MyColor().primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
           ],
         ),
       ),

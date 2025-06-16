@@ -23,14 +23,16 @@ class RekomendasiPage extends StatefulWidget {
 }
 
 class _RekomendasiPageState extends State<RekomendasiPage> {
-  AHPResultBloc? ahpResultBloc;
+  // Semua state dan fungsi Anda tetap sama
   ScrollController controller = ScrollController();
   final MyColor myColor = MyColor();
-  int selectedRating = 0; // Default value
-  String selectedLocation = ""; // Default value
+  int selectedRating = 0;
+  // Mengembalikan variabel selectedLocation karena digunakan di buildSheet versi asli
+  String selectedLocation = "";
   int? selectedLocationId;
   final int _limit = 10;
 
+  // Daftar lokasi tetap sama
   List<Map<String, dynamic>> locations = [
     {"id": 1, "name": "Kabupaten Bangkalan"},
     {"id": 2, "name": "Kabupaten Banyuwangi"},
@@ -71,6 +73,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
     {"id": 37, "name": "Kota Probolinggo"},
     {"id": 38, "name": "Kota Surabaya"},
   ];
+
   @override
   void initState() {
     super.initState();
@@ -106,13 +109,11 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
 
   void _toggleBookmark(int campingSiteId, bool isBookmarked) {
     final bookmarksBloc = context.read<BookmarksBloc>();
-
     if (isBookmarked) {
       bookmarksBloc.add(BookmarksEventDeleteBookmark(campingSiteId));
     } else {
       bookmarksBloc.add(BookmarksEventInsertBookmark(campingSiteId));
     }
-
     Future.delayed(const Duration(milliseconds: 300), () {
       bookmarksBloc.add(BookmarksEventGetBookmarks());
     });
@@ -124,241 +125,196 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
     }
   }
 
-  // void _applyFilters() {
-  //   context.read<AHPResultBloc>().add(AHPResultEventGetAHPResult(
-  //         page: 1,
-  //         limit: _limit,
-  //         locationId: selectedLocationId,
-  //         rating: selectedRating == 0 ? null : selectedRating,
-  //         isFilterChanged: true,
-  //       ));
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Rekomendasi",
-            style: AppTextStyle.medium20,
+      backgroundColor: Colors.grey[50], // Latar belakang yang lebih lembut
+      appBar: AppBar(
+        title: Text("Rekomendasi", style: AppTextStyle.medium20),
+        backgroundColor: Colors.white,
+        elevation: 1.0,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info_outline, color: myColor.customOrange),
+            onPressed: () {
+              showCustomDialog(
+                context: context,
+                onConfirm: () {},
+                title: 'Rumus yang digunakan',
+                content:
+                    '1. Sistem menetapkan nilai dari kriteriamu sebagai bobot.\n'
+                    '2. Sistem akan menormalisasi bobot untuk mendapatkan bobot setiap kriteria.\n'
+                    '3. Sistem akan menghitung bobot dari alternatif berdasarkan setiap kriteria.\n'
+                    '4. Sistem akan mengalikan bobot kriteriamu dengan bobot alternatif untuk setiap kriteria, lalu jumlahkan hasilnya untuk mendapatkan skor total setiap alternatif.',
+                icon: Icons.info_outline,
+                titleStyle: AppTextStyle.bold18,
+                contentStyle: AppTextStyle.regular14,
+                alignContent: TextAlign.justify,
+                iconBackgroundColor: myColor.customOrange,
+              );
+            },
           ),
-          backgroundColor: Colors.white,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.info_outline, color: MyColor().customOrange),
-              onPressed: () {
-                showCustomDialog(
-                  context: context,
-                  onConfirm: () {},
-                  title: 'Rumus yang digunakan',
-                  content:
-                      '1. Sistem menetapkan nilai dari kriteriamu sebagai bobot.\n'
-                      '2. Sistem akan menormalisasi bobot untuk mendapatkan bobot setiap kriteria.\n'
-                      '3. Sistem akan menghitung bobot dari alternatif berdasarkan setiap kriteria.\n'
-                      '4. Sistem akan mengalikan bobot kriteriamu dengan bobot alternatif untuk setiap kriteria, lalu jumlahkan hasilnya untuk mendapatkan skor total setiap alternatif.',
-                  icon: Icons.info_outline,
-                  titleStyle: AppTextStyle.bold18,
-                  contentStyle: AppTextStyle.regular14,
-                  alignContent: TextAlign.justify,
-                  iconBackgroundColor: MyColor().customOrange,
-                );
-              },
-            ),
-          ],
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(0.5), // Ketebalan garis
-            child: Divider(
-              height: 1,
-              thickness: 1,
-              color: MyColor().secondaryColor, // Warna garis
-            ),
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () async {
-                  final result =
-                      await context.pushNamed<bool>("prioritas_kriteria");
-
-                  if (result == true) {
-                    context
-                        .read<AHPResultBloc>()
-                        .add(AHPResultEventGetAHPResult());
-                  }
-                },
-                child: SvgPicture.asset(
-                  "assets/images/dapatkanRekomendasi.svg",
+        ],
+      ),
+      body: BlocListener<BookmarksBloc, BookmarksState>(
+        listener: (context, state) {
+          if (state is BookmarkInsertSuccess) {
+            showCustomDialogAutoDismiss(
+              context: context,
+              title: 'Bookmark ditambahkan',
+              content:
+                  'Berhasil ditambahkan! Lihat di "Bookmark" untuk detailnya.',
+              icon: Icons.check_circle,
+              iconBackgroundColor: myColor.primaryColor,
+            );
+          } else if (state is BookmarkDeleteSuccess) {
+            showCustomDialogAutoDismiss(
+              context: context,
+              title: 'Bookmark dihapus',
+              content: 'Camping site berhasil dihapus dari bookmark kamu.',
+              icon: Icons.delete,
+              iconBackgroundColor: myColor.customRed,
+            );
+          }
+        },
+        child: BlocConsumer<AHPResultBloc, AHPResultState>(
+          listener: (context, state) {
+            if (state is AHPResultError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+          builder: (context, state) {
+            // Logika untuk state Loading dan Initial
+            if (state is AHPResultInitial ||
+                (state is AHPResultLoading && state.ahpResults.isEmpty)) {
+              return Center(
+                child: CustomLoading(
+                  asset: 'assets/animations/loadingAnimation.json',
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Hasil Rekomendasi",
-                    style: AppTextStyle.semiBold18.copyWith(
-                      color: MyColor().black,
-                      fontWeight: FontWeight.w600,
-                    ),
+              );
+            }
+
+            final ahpResults = state.ahpResults;
+            final hasReachedMax =
+                state is AHPResultSuccess ? state.hasReachedMax : false;
+
+            // Menggunakan ListView sebagai parent utama agar seluruh halaman bisa di-scroll.
+            return ListView(
+              controller: controller,
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              children: [
+                // 1. Banner Rekomendasi
+                GestureDetector(
+                  onTap: () async {
+                    final result =
+                        await context.pushNamed<bool>("prioritas_kriteria");
+                    if (result == true) {
+                      context
+                          .read<AHPResultBloc>()
+                          .add(AHPResultEventGetAHPResult());
+                    }
+                  },
+                  child: SvgPicture.asset(
+                    "assets/images/dapatkanRekomendasi.svg",
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled:
-                            true, // Pastikan ini true untuk fleksibilitas tinggi
-                        constraints: BoxConstraints(
-                          minHeight: 300, // Tinggi minimal
-                          maxHeight: MediaQuery.of(context).size.height *
-                              0.6, // Tinggi maksimal 70% layar
+                ),
+                // const SizedBox(height: 16),
+
+                // 2. Judul "Hasil Rekomendasi" dan Tombol Filter
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Hasil Rekomendasi", style: AppTextStyle.semiBold18),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height * 0.7,
+                          ),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (context) => buildSheet(),
+                        );
+                      },
+                      icon: Icon(Icons.filter_list,
+                          color: myColor.customOrange, size: 20),
+                      label: Text("Filter",
+                          style:
+                              TextStyle(color: myColor.darkGrey, fontSize: 14)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: BorderSide(color: myColor.secondaryColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(16)),
-                        ),
-                        builder: (context) => buildSheet(),
-                      );
-                    },
-                    icon: Icon(Icons.filter_list,
-                        color: MyColor().customOrange, size: 20),
-                    label: Text(
-                      "Filter",
-                      style: TextStyle(
-                        color: MyColor().darkGrey,
-                        fontSize: 14,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        elevation: 0,
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: BorderSide(color: MyColor().secondaryColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                  ],
+                ),
+                // const SizedBox(height: 8),
+
+                // 3. Konten Daftar Hasil
+                if (ahpResults.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: EmptyCampingWidget(
+                        message: 'Tidak ada hasil rekomendasi yang ditemukan.',
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      elevation: 0,
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 6), // <== tambahkan ini
-
-              // MUNCULKAN DIALOG BERHASIL BOOKMARK
-              BlocListener<BookmarksBloc, BookmarksState>(
-                listener: (context, state) {
-                  if (state is BookmarkInsertSuccess) {
-                    showCustomDialogAutoDismiss(
-                      context: context,
-                      title: 'Bookmark ditambahkan',
-                      content:
-                          'Berhasil ditambahkan! Lihat di "Bookmark" untuk detailnya.',
-                      icon: Icons.check_circle,
-                      iconBackgroundColor: MyColor().primaryColor,
-                    );
-                  } else if (state is BookmarkDeleteSuccess) {
-                    showCustomDialogAutoDismiss(
-                      context: context,
-                      title: 'Bookmark dihapus',
-                      content:
-                          'Camping site berhasil dihapus dari bookmark kamu.',
-                      icon: Icons.delete,
-                      iconBackgroundColor: MyColor().customRed,
-                    );
-                  }
-                },
-                child: Expanded(
-                  child: BlocConsumer<AHPResultBloc, AHPResultState>(
-                    listener: (context, state) {
-                      if (state is AHPResultError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(state.message)),
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      if (state is AHPResultInitial ||
-                          (state is AHPResultLoading &&
-                              state.ahpResults.isEmpty)) {
-                        return Center(
-                          child: CustomLoading(
-                            asset: 'assets/animations/loadingAnimation.json',
-                          ),
-                        );
-                      }
-
-                      final ahpResults = state.ahpResults;
-
-                      final hasReachedMax = state is AHPResultSuccess
-                          ? state.hasReachedMax
-                          : false;
-
-                      if (ahpResults.isEmpty) {
-                        return Center(
-                          child: EmptyCampingWidget(
-                            message:
-                                'Tidak ada hasil rekomendasi yang ditemukan.',
-                          ),
-                        );
-                      }
-
-                      return BlocBuilder<BookmarksBloc, BookmarksState>(
-                        builder: (context, bookmarksState) {
-                          return ListView.builder(
-                            controller: controller,
-                            itemCount: hasReachedMax
-                                ? ahpResults.length
-                                : ahpResults.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index >= ahpResults.length) {
-                                return hasReachedMax
-                                    ? SizedBox.shrink()
-                                    : Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Center(
-                                          child: CircularProgressIndicator(
-                                            color: MyColor().customOrange,
-                                          ),
-                                        ),
-                                      );
-                              }
-
-                              final item = ahpResults[index];
-                              final isBookmarked = bookmarksState
-                                      is BookmarksSuccess &&
+                  )
+                else
+                  BlocBuilder<BookmarksBloc, BookmarksState>(
+                    builder: (context, bookmarksState) {
+                      return Column(
+                        children: ahpResults.map((item) {
+                          final isBookmarked =
+                              bookmarksState is BookmarksSuccess &&
                                   bookmarksState.bookmarkedSites.any(
-                                      (campingSite) =>
-                                          campingSite.id ==
-                                          item.campingSite.id);
+                                      (site) => site.id == item.campingSite.id);
 
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: CampingCard(
-                                  key: ValueKey(item.campingSite.id),
-                                  imageUrl: item.campingSite.imageUrl,
-                                  title: item.campingSite.name,
-                                  location: item.campingSite.location,
-                                  rating: item.campingSite.rating,
-                                  reviews: item.campingSite.total_reviews,
-                                  isBookmarked: isBookmarked,
-                                  onBookmarkPressed: () => _toggleBookmark(
-                                      item.camping_site_id, isBookmarked),
-                                ),
-                              );
-                            },
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: CampingCard(
+                              key: ValueKey(item.campingSite.id),
+                              imageUrl: item.campingSite.imageUrl,
+                              title: item.campingSite.name,
+                              location: item.campingSite.location,
+                              rating: item.campingSite.rating,
+                              reviews: item.campingSite.total_reviews,
+                              isBookmarked: isBookmarked,
+                              onBookmarkPressed: () => _toggleBookmark(
+                                  item.camping_site_id, isBookmarked),
+                            ),
                           );
-                        },
+                        }).toList(),
                       );
                     },
                   ),
-                ),
-              ),
-            ],
-          ),
-        ));
+
+                // 4. Indikator Loading untuk Pagination di paling bawah
+                if (!hasReachedMax && ahpResults.isNotEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 
+  // PERUBAHAN: Mengembalikan widget buildSheet() ke versi asli sesuai permintaan.
   Widget buildSheet() => StatefulBuilder(builder: (context, setModalState) {
         List<int> ratingOptions = [1, 2, 3, 4, 5];
         return Padding(
@@ -372,12 +328,12 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Icon(Icons.filter_alt_outlined),
-                  SizedBox(width: 8),
+                  const Icon(Icons.filter_alt_outlined),
+                  const SizedBox(width: 8),
                   Text('Filter', style: AppTextStyle.semiBold18),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Konten utama (Rating + Lokasi) di dalam Expanded
               Expanded(
@@ -392,7 +348,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                         style: TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -411,7 +367,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                                         : myColor.darkGrey,
                                   ),
                                 ),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Icon(
                                   Icons.star,
                                   size: 18,
@@ -436,20 +392,20 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            labelPadding: EdgeInsets.symmetric(
+                            labelPadding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                           );
                         }).toList(),
                       ),
 
                       // Filter Lokasi
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       const Text(
                         "Lokasi",
                         style: TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         children: locations.map((location) {
@@ -486,7 +442,8 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            labelPadding: EdgeInsets.symmetric(horizontal: 8),
+                            labelPadding:
+                                const EdgeInsets.symmetric(horizontal: 8),
                           );
                         }).toList(),
                       ),
@@ -495,7 +452,6 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                 ),
               ),
 
-              // Tombol "Temukan Rekomendasi" (selalu di bawah)
               // Dua tombol di bagian bawah
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
@@ -516,7 +472,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                           context.pop();
                         },
                         style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           side: BorderSide(color: myColor.secondaryColor),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30)),
@@ -529,7 +485,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: CustomButton(
                         btnText: "Terapkan",

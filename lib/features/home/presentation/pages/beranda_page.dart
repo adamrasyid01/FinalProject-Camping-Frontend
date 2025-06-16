@@ -22,41 +22,75 @@ class BerandaPage extends StatefulWidget {
 }
 
 class _BerandaPageState extends State<BerandaPage> {
+  // Sebaiknya, instance ini didapatkan dari dependency injection (seperti get_it)
+  // agar lebih mudah di-test, namun untuk saat ini kita biarkan dulu.
   final SaveUser saveUser = SaveUser();
   final TokenStorage tokenStorage = TokenStorage();
   final SaveNameCampLocation saveNameCampLocation = SaveNameCampLocation();
 
   String? username;
   int selectedFilterIndex = 0;
+  final List<String> filters = ['Semua', 'Urutan Nama', 'Camping Terbanyak'];
 
   @override
   void initState() {
     super.initState();
+    // Memanggil semua data yang dibutuhkan saat halaman pertama kali dimuat
+    _loadInitialData();
+  }
+
+  void _loadInitialData() {
     _loadUsername();
     _fetchDataCamping();
   }
 
   Future<void> _loadUsername() async {
     final user = await saveUser.getUsername();
-    setState(() {
-      username = user ?? "Guest";
-    });
+    // Pastikan widget masih ada sebelum memanggil setState
+    if (mounted) {
+      setState(() {
+        username = user ?? "Guest";
+      });
+    }
   }
 
   void _fetchDataCamping() {
-    context.read<HomeBloc>().add(HomeEventGetCampingLocations(filter: 'semua'));
+    // Menentukan filter berdasarkan index yang aktif
+    String filterKeyword = _getFilterKeyword(selectedFilterIndex);
+    context
+        .read<HomeBloc>()
+        .add(HomeEventGetCampingLocations(filter: filterKeyword));
   }
 
-  final List<String> filters = ['Semua', 'Urutan Nama', 'Camping Terbanyak'];
+  String _getFilterKeyword(int index) {
+    switch (filters[index].toLowerCase()) {
+      case 'urutan nama':
+        return 'nama';
+      case 'camping terbanyak':
+        return 'terbanyak';
+      default:
+        return 'semua';
+    }
+  }
+
+  void _onFilterTapped(int index) {
+    // 1. Update state untuk UI (mengubah chip yang aktif)
+    setState(() {
+      selectedFilterIndex = index;
+    });
+    // 2. Ambil data baru berdasarkan filter yang dipilih
+    _fetchDataCamping();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -64,27 +98,28 @@ class _BerandaPageState extends State<BerandaPage> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: SvgPicture.asset(
-                          'assets/icons/homeCamp.svg',
-                        ),
+                        child: SvgPicture.asset('assets/icons/homeCamp.svg'),
                       ),
                       Expanded(
                         child: Text(
-                          "Halo $username",
+                          // Menampilkan "Halo..." saat username masih dimuat
+                          username == null ? "Halo..." : "Halo $username",
                           style: AppTextStyle.semiBold16.copyWith(
-                            color: Color(0xFF274F66),
+                            color: const Color(0xFF274F66),
                           ),
-                          overflow: TextOverflow.ellipsis, // Hindari overflow
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
+                  // const SizedBox(height: 8),
                   Text(
-                    "Anda mau pergi camping di mana?",
+                    "Anda mau pergi camping ke mana?",
                     style: AppTextStyle.bold24.copyWith(
                       color: MyColor().primaryColor,
                     ),
                   ),
+                  // const SizedBox(height: 16),
                   Text(
                     "Eksplor Tempat Camping",
                     style: AppTextStyle.semiBold16,
@@ -93,23 +128,25 @@ class _BerandaPageState extends State<BerandaPage> {
               ),
             ),
 
-            // Bagian filter (pastikan bisa scroll horizontal)
+            // Bagian filter
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(
+                  horizontal:
+                      12), // Mengurangi padding agar chip tidak terlalu mepet
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: buildFilterBeranda(),
               ),
             ),
 
-            const SizedBox(height: 12),
+            // const SizedBox(height: 12),
 
-            // List tempat camping (hindari overflow dengan shrinkWrap)
+            // Bagian List Tempat Camping
             BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
                 if (state is HomeStateLoading) {
                   return Container(
-                    height: MediaQuery.of(context).size.height * 0.6,
+                    height: MediaQuery.of(context).size.height * 0.5,
                     alignment: Alignment.center,
                     child: const CustomLoading(
                       asset: 'assets/animations/loadingAnimation.json',
@@ -118,19 +155,27 @@ class _BerandaPageState extends State<BerandaPage> {
                 } else if (state is HomeStateError) {
                   return Center(child: Text(state.message));
                 } else if (state is HomeStateSuccessLocations) {
-                  final locations = state.campingLocations;
-                  return ListView.builder(
-                    shrinkWrap: true, // Hindari error overflow
-                    physics:
-                        const NeverScrollableScrollPhysics(), // Tidak scroll sendiri
-                    itemCount: locations.length,
-                    itemBuilder: (context, index) {
-                      final location = locations[index];
+                  if (state.campingLocations.isEmpty) {
+                    return const EmptyCampingWidget(
+                      message: "Data Camping Tidak Tersedia.",
+                    );
+                  }
+                  // Menggunakan Column daripada ListView untuk menghindari masalah scroll-dalam-scroll
+                  // Ini efisien jika jumlah item tidak terlalu banyak.
+                  return Column(
+                    children: state.campingLocations.map((location) {
                       return GestureDetector(
                         onTap: () async {
+                          // Simpan nama lokasi sebelum pindah halaman
                           await saveNameCampLocation
                               .saveCampLocationName(location.name);
-                          context.push('/camping-site/${location.id}');
+
+                          // AWAIT push. Kode di bawah ini akan jalan setelah halaman detail di-pop.
+                          await context.push('/camping-site/${location.id}');
+
+                          // PANGGIL KEMBALI method untuk refresh data setelah kembali ke halaman ini
+                          print("Kembali ke Beranda, memuat ulang data...");
+                          _loadInitialData();
                         },
                         child: CustomListWisata(
                           imageUrl: location.imageUrl,
@@ -138,12 +183,13 @@ class _BerandaPageState extends State<BerandaPage> {
                           totalCamps: location.totalCamps,
                         ),
                       );
-                    },
+                    }).toList(),
+                  );
+                } else {
+                  return const EmptyCampingWidget(
+                    message: "Data Camping Tidak Ada, Mohon Hubungi Admin",
                   );
                 }
-                return EmptyCampingWidget(
-                  message: "Data Camping Tidak Ada, Mohon Hubungi Admin",
-                );
               },
             ),
           ],
@@ -152,46 +198,19 @@ class _BerandaPageState extends State<BerandaPage> {
     );
   }
 
-  // FILTER BERANDA
+  // FILTER BERANDA (Sudah disederhanakan)
   Widget buildFilterBeranda() {
-    return StatefulBuilder(
-      builder: (context, setStateFilter) {
-        return Row(
-          children: List.generate(filters.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: CustomChip(
-                label: filters[index],
-                isSelected: selectedFilterIndex == index,
-                onTap: () {
-                  setStateFilter(() {
-                    selectedFilterIndex = index;
-                  });
-                  // Lakukan fetch ulang data berdasarkan filter
-                  String selectedFilter = filters[index];
-
-                  String filterKeyword;
-                  switch (selectedFilter.toLowerCase()) {
-                    case 'urutan nama':
-                      filterKeyword = 'nama';
-                      break;
-                    case 'camping terbanyak':
-                      filterKeyword = 'terbanyak';
-                      break;
-                    default:
-                      filterKeyword = 'semua';
-                  }
-
-                  // Trigger event bloc
-                  context.read<HomeBloc>().add(
-                        HomeEventGetCampingLocations(filter: filterKeyword),
-                      );
-                },
-              ),
-            );
-          }),
+    return Row(
+      children: List.generate(filters.length, (index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: CustomChip(
+            label: filters[index],
+            isSelected: selectedFilterIndex == index,
+            onTap: () => _onFilterTapped(index), // Memanggil fungsi terpisah
+          ),
         );
-      },
+      }),
     );
   }
 }
