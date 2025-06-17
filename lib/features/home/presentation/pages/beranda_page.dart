@@ -156,8 +156,10 @@ class _BerandaPageState extends State<BerandaPage> {
                   return Center(child: Text(state.message));
                 } else if (state is HomeStateSuccessLocations) {
                   if (state.campingLocations.isEmpty) {
-                    return const EmptyCampingWidget(
-                      message: "Data Camping Tidak Tersedia.",
+                    return Center(
+                      child: const EmptyCampingWidget(
+                        message: "Data Camping Tidak Tersedia.",
+                      ),
                     );
                   }
                   // Menggunakan Column daripada ListView untuk menghindari masalah scroll-dalam-scroll
@@ -186,8 +188,10 @@ class _BerandaPageState extends State<BerandaPage> {
                     }).toList(),
                   );
                 } else {
-                  return const EmptyCampingWidget(
-                    message: "Data Camping Tidak Ada, Mohon Hubungi Admin",
+                  return Center(
+                    child: const EmptyCampingWidget(
+                      message: "Data Camping Tidak Ada, Mohon Hubungi Admin",
+                    ),
                   );
                 }
               },

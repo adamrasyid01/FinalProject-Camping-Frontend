@@ -6,6 +6,7 @@ import 'package:flutter_camping_frontend/core/widgets/custom_dialog.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_list_sites.dart';
 import 'package:flutter_camping_frontend/core/widgets/empty_widget.dart';
 import 'package:flutter_camping_frontend/features/bookmarks/presentation/bloc/bookmarks_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class BookmarkPage extends StatefulWidget {
   const BookmarkPage({super.key});
@@ -90,6 +91,15 @@ class _BookmarkPageState extends State<BookmarkPage> {
                         context
                             .read<BookmarksBloc>()
                             .add(BookmarksEventDeleteBookmark(site.id));
+                      },
+                      onDetailPressed: () {
+                        context.pushNamed(
+                          'camping_site_detail',
+                          pathParameters: {
+                            'id': site.locationId.toString(),
+                            'campingSiteId': site.id.toString(),
+                          },
+                        );
                       },
                     ),
                   );

@@ -122,162 +122,168 @@ class _CampingSitePageState extends State<CampingSitePage> {
   @override
   Widget build(BuildContext context) {
     final MyColor myColor = MyColor();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_campingLocationName ?? 'Daftar Camp',
-            style: AppTextStyle.medium20),
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(0.5),
-          child: Divider(
-            height: 1,
-            thickness: 1,
-            color: MyColor().secondaryColor,
+    return GestureDetector(
+      onTap: () {
+        // 2. Saat area di luar TextField diklik, hilangkan fokus
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_campingLocationName ?? 'Daftar Camp',
+              style: AppTextStyle.medium20),
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => context.pop(),
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(0.5),
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: MyColor().secondaryColor,
+            ),
           ),
         ),
-      ),
-      body: BlocListener<BookmarksBloc, BookmarksState>(
-        // Menggunakan BlocListener di sini untuk menangani side-effect seperti dialog dan refresh
-        listener: (context, state) {
-          if (state is BookmarkInsertSuccess) {
-            showCustomDialogAutoDismiss(
-              context: context,
-              title: 'Bookmark ditambahkan',
-              content:
-                  'Berhasil ditambahkan! Lihat di "Bookmark" untuk detailnya.',
-              icon: Icons.check_circle,
-              iconBackgroundColor: myColor.primaryColor,
-            );
-            // REFRESH data bookmark setelah berhasil
-            context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
-          } else if (state is BookmarkDeleteSuccess) {
-            showCustomDialogAutoDismiss(
-              context: context,
-              title: 'Bookmark dihapus',
-              content: 'Camping site berhasil dihapus dari bookmark kamu.',
-              icon: Icons.delete,
-              iconBackgroundColor: myColor.customRed,
-            );
-            // REFRESH data bookmark setelah berhasil
-            context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              SearchInput(
-                controller: _searchController,
-                hintText: "Cari tempat camping",
-                onSearchTap: _onSearch,
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: myColor.customOrange, width: 1),
+        body: BlocListener<BookmarksBloc, BookmarksState>(
+          // Menggunakan BlocListener di sini untuk menangani side-effect seperti dialog dan refresh
+          listener: (context, state) {
+            if (state is BookmarkInsertSuccess) {
+              showCustomDialogAutoDismiss(
+                context: context,
+                title: 'Bookmark ditambahkan',
+                content:
+                    'Berhasil ditambahkan! Lihat di "Bookmark" untuk detailnya.',
+                icon: Icons.check_circle,
+                iconBackgroundColor: myColor.primaryColor,
+              );
+              // REFRESH data bookmark setelah berhasil
+              context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
+            } else if (state is BookmarkDeleteSuccess) {
+              showCustomDialogAutoDismiss(
+                context: context,
+                title: 'Bookmark dihapus',
+                content: 'Camping site berhasil dihapus dari bookmark kamu.',
+                icon: Icons.delete,
+                iconBackgroundColor: myColor.customRed,
+              );
+              // REFRESH data bookmark setelah berhasil
+              context.read<BookmarksBloc>().add(BookmarksEventGetBookmarks());
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                SearchInput(
+                  controller: _searchController,
+                  hintText: "Cari tempat camping",
+                  onSearchTap: _onSearch,
                 ),
-                child: Text(
-                  "Klik pada kartu camping untuk melihat detail dan rute Google Maps.",
-                  style: AppTextStyle.regular12
-                      .copyWith(color: myColor.customOrange),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: myColor.customOrange, width: 1),
+                  ),
+                  child: Text(
+                    "Klik pada kartu camping untuk melihat detail dan rute Google Maps.",
+                    style: AppTextStyle.regular12
+                        .copyWith(color: myColor.customOrange),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: BlocBuilder<HomeBloc, HomeState>(
-                  builder: (context, homeState) {
-                    if (homeState is HomeStateInitial ||
-                        (homeState is HomeStateLoading &&
-                            homeState.campingSites.isEmpty)) {
-                      return const CustomLoading(
-                          asset: 'assets/animations/loadingAnimation.json');
-                    }
+                const SizedBox(height: 12),
+                Expanded(
+                  child: BlocBuilder<HomeBloc, HomeState>(
+                    builder: (context, homeState) {
+                      if (homeState is HomeStateInitial ||
+                          (homeState is HomeStateLoading &&
+                              homeState.campingSites.isEmpty)) {
+                        return const CustomLoading(
+                            asset: 'assets/animations/loadingAnimation.json');
+                      }
 
-                    if (homeState is HomeStateError) {
-                      return Center(child: Text(homeState.message));
-                    }
+                      if (homeState is HomeStateError) {
+                        return Center(child: Text(homeState.message));
+                      }
 
-                    if (homeState.campingSites.isEmpty) {
-                      return const Center(
-                          child: EmptyCampingWidget(
-                              message:
-                                  'Tidak ada camping site yang ditemukan.'));
-                    }
+                      if (homeState.campingSites.isEmpty) {
+                        return const Center(
+                            child: EmptyCampingWidget(
+                                message:
+                                    'Tidak ada camping site yang ditemukan.'));
+                      }
 
-                    final campingData = homeState.campingSites;
-                    final hasReachedMax = homeState is HomeStateSuccessSites
-                        ? homeState.hasReachedMax
-                        : false;
+                      final campingData = homeState.campingSites;
+                      final hasReachedMax = homeState is HomeStateSuccessSites
+                          ? homeState.hasReachedMax
+                          : false;
 
-                    return ListView.builder(
-                      controller: _scrollController,
-                      itemCount: hasReachedMax
-                          ? campingData.length
-                          : campingData.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index >= campingData.length) {
-                          // Ini adalah item loading di bagian bawah list
-                          return const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-
-                        final site = campingData[index];
-                        return BlocBuilder<BookmarksBloc, BookmarksState>(
-                          builder: (context, bookmarksState) {
-                            final isBookmarked = bookmarksState
-                                    is BookmarksSuccess &&
-                                bookmarksState.bookmarkedSites
-                                    .any((bookmark) => bookmark.id == site.id);
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12.0),
-                              child: CampingCard(
-                                key: ValueKey(site.id),
-                                imageUrl: site.imageUrl,
-                                title: site.name,
-                                location:
-                                    '${site.location}, Jawa Timur, Indonesia',
-                                rating: site.rating,
-                                reviews: site.total_reviews,
-                                isBookmarked: isBookmarked,
-                                onBookmarkPressed: () =>
-                                    _toggleBookmark(site.id, isBookmarked),
-                                onDetailPressed: () async {
-                                  // PERBAIKAN UTAMA: Tambahkan async dan await
-                                  await context.pushNamed(
-                                    'camping_site_detail',
-                                    pathParameters: {
-                                      'id': widget.locationId.toString(),
-                                      'campingSiteId': site.id.toString(),
-                                    },
-                                  );
-                                  // Setelah kembali, panggil method ini untuk refresh data
-                                  print(
-                                      "Kembali ke daftar site, memuat ulang data...");
-                                  _loadInitialData();
-                                },
-                              ),
+                      return ListView.builder(
+                        controller: _scrollController,
+                        itemCount: hasReachedMax
+                            ? campingData.length
+                            : campingData.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index >= campingData.length) {
+                            // Ini adalah item loading di bagian bawah list
+                            return const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Center(child: CircularProgressIndicator()),
                             );
-                          },
-                        );
-                      },
-                    );
-                  },
+                          }
+
+                          final site = campingData[index];
+                          return BlocBuilder<BookmarksBloc, BookmarksState>(
+                            builder: (context, bookmarksState) {
+                              final isBookmarked =
+                                  bookmarksState is BookmarksSuccess &&
+                                      bookmarksState.bookmarkedSites.any(
+                                          (bookmark) => bookmark.id == site.id);
+
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: CampingCard(
+                                  key: ValueKey(site.id),
+                                  imageUrl: site.imageUrl,
+                                  title: site.name,
+                                  location:
+                                      '${site.location}, Jawa Timur, Indonesia',
+                                  rating: site.rating,
+                                  reviews: site.total_reviews,
+                                  isBookmarked: isBookmarked,
+                                  onBookmarkPressed: () =>
+                                      _toggleBookmark(site.id, isBookmarked),
+                                  onDetailPressed: () async {
+                                    // PERBAIKAN UTAMA: Tambahkan async dan await
+                                    await context.pushNamed(
+                                      'camping_site_detail',
+                                      pathParameters: {
+                                        'id': widget.locationId.toString(),
+                                        'campingSiteId': site.id.toString(),
+                                      },
+                                    );
+                                    // Setelah kembali, panggil method ini untuk refresh data
+                                    print(
+                                        "Kembali ke daftar site, memuat ulang data...");
+                                    _loadInitialData();
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
