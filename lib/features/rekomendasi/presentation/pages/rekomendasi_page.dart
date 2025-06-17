@@ -23,7 +23,6 @@ class RekomendasiPage extends StatefulWidget {
 }
 
 class _RekomendasiPageState extends State<RekomendasiPage> {
-  // Semua state dan fungsi Anda tetap sama
   ScrollController controller = ScrollController();
   final MyColor myColor = MyColor();
   int selectedRating = 0;
@@ -32,7 +31,6 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
   int? selectedLocationId;
   final int _limit = 10;
 
-  // Daftar lokasi tetap sama
   List<Map<String, dynamic>> locations = [
     {"id": 1, "name": "Kabupaten Bangkalan"},
     {"id": 2, "name": "Kabupaten Banyuwangi"},
@@ -128,7 +126,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Latar belakang yang lebih lembut
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text("Rekomendasi", style: AppTextStyle.medium20),
         backgroundColor: Colors.white,
@@ -186,7 +184,6 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
             }
           },
           builder: (context, state) {
-            // Logika untuk state Loading dan Initial
             if (state is AHPResultInitial ||
                 (state is AHPResultLoading && state.ahpResults.isEmpty)) {
               return Center(
@@ -200,10 +197,10 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
             final hasReachedMax =
                 state is AHPResultSuccess ? state.hasReachedMax : false;
 
-            // Menggunakan ListView sebagai parent utama agar seluruh halaman bisa di-scroll.
+            // Menggunakan ListView sebagai parent utama agar seluruh halaman bisa di-scroll
             return ListView(
               controller: controller,
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.all(16.0),
               children: [
                 // 1. Banner Rekomendasi
                 GestureDetector(
@@ -220,7 +217,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                     "assets/images/dapatkanRekomendasi.svg",
                   ),
                 ),
-                // const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // 2. Judul "Hasil Rekomendasi" dan Tombol Filter
                 Row(
@@ -233,11 +230,11 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                           context: context,
                           isScrollControlled: true,
                           constraints: BoxConstraints(
-                            maxHeight: MediaQuery.of(context).size.height * 0.7,
+                            maxHeight: MediaQuery.of(context).size.height * 0.6,
                           ),
                           shape: const RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20)),
+                                BorderRadius.vertical(top: Radius.circular(16)),
                           ),
                           builder: (context) => buildSheet(),
                         );
@@ -259,21 +256,23 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                     ),
                   ],
                 ),
-                // const SizedBox(height: 8),
+                const SizedBox(height: 8),
 
                 // 3. Konten Daftar Hasil
                 if (ahpResults.isEmpty)
                   Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      padding: const EdgeInsets.symmetric(vertical: 48.0),
                       child: EmptyCampingWidget(
                         message: 'Tidak ada hasil rekomendasi yang ditemukan.',
                       ),
                     ),
                   )
                 else
+                  // Menggunakan BlocBuilder untuk memastikan status bookmark selalu terbaru
                   BlocBuilder<BookmarksBloc, BookmarksState>(
                     builder: (context, bookmarksState) {
+                      // Gunakan Column di sini karena parent-nya sudah ListView (scrollable)
                       return Column(
                         children: ahpResults.map((item) {
                           final isBookmarked =
@@ -293,6 +292,17 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                               isBookmarked: isBookmarked,
                               onBookmarkPressed: () => _toggleBookmark(
                                   item.camping_site_id, isBookmarked),
+                              onDetailPressed: () async {
+                                await context.pushNamed(
+                                  'camping_site_detail',
+                                  pathParameters: {
+                                    'id':
+                                        item.campingSite.locationId.toString(),
+                                    'campingSiteId':
+                                        item.campingSite.id.toString(),
+                                  },
+                                );
+                              },
                             ),
                           );
                         }).toList(),
@@ -314,7 +324,9 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
     );
   }
 
-  // PERUBAHAN: Mengembalikan widget buildSheet() ke versi asli sesuai permintaan.
+  // ==========================================================
+  // BAGIAN buildSheet() DIKEMBALIKAN KE VERSI ASLI ANDA
+  // ==========================================================
   Widget buildSheet() => StatefulBuilder(builder: (context, setModalState) {
         List<int> ratingOptions = [1, 2, 3, 4, 5];
         return Padding(
@@ -328,12 +340,12 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Icon(Icons.filter_alt_outlined),
-                  const SizedBox(width: 8),
+                  Icon(Icons.filter_alt_outlined),
+                  SizedBox(width: 8),
                   Text('Filter', style: AppTextStyle.semiBold18),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Konten utama (Rating + Lokasi) di dalam Expanded
               Expanded(
@@ -348,7 +360,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                         style: TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -367,7 +379,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                                         : myColor.darkGrey,
                                   ),
                                 ),
-                                const SizedBox(width: 4),
+                                SizedBox(width: 4),
                                 Icon(
                                   Icons.star,
                                   size: 18,
@@ -392,20 +404,20 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            labelPadding: const EdgeInsets.symmetric(
+                            labelPadding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                           );
                         }).toList(),
                       ),
 
                       // Filter Lokasi
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       const Text(
                         "Lokasi",
                         style: TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         children: locations.map((location) {
@@ -442,8 +454,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            labelPadding:
-                                const EdgeInsets.symmetric(horizontal: 8),
+                            labelPadding: EdgeInsets.symmetric(horizontal: 8),
                           );
                         }).toList(),
                       ),

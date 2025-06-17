@@ -34,136 +34,148 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final MyColor myColor = MyColor();
-    return Scaffold(
-      resizeToAvoidBottomInset: false, // ✅ Menghindari overflow
-      body: BlocListener<AuthenticationBloc, AuthenticationState>(
-        listener: (context, state) {
-          if (state is AuthenticationStateSuccess) {
-            context.go('/login');
-          } else if (state is AuthenticationStateError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Something went wrong!"),
-              ),
-            );
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-          child: Column(
-            children: [
-              Expanded(
-                // ✅ Agar bisa di-scroll jika konten melebihi layar
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Bagian atas (Logo + Teks)
-                    SvgPicture.asset('assets/images/adamCampiio.svg'),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white, // Warna latar belakang
-                          borderRadius: BorderRadius.circular(
-                              20), // Border radius sesuai gambar
-                          border: Border.all(
-                            color: myColor.customOrange, // Warna border
-                            width: 1, // Ketebalan border
+    return GestureDetector(
+      onTap: () {
+        // 2. Saat area di luar TextField diklik, hilangkan fokus
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        body: BlocListener<AuthenticationBloc, AuthenticationState>(
+          listener: (context, state) {
+            if (state is AuthenticationStateSuccess) {
+              context.go('/login');
+            } else if (state is AuthenticationStateError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Something went wrong!"),
+                ),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Column(
+              children: [
+                Expanded(
+                  // ✅ Agar bisa di-scroll jika konten melebihi layar
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Bagian atas (Logo + Teks)
+                        SvgPicture.asset('assets/images/adamCampiio.svg'),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white, // Warna latar belakang
+                              borderRadius: BorderRadius.circular(
+                                  20), // Border radius sesuai gambar
+                              border: Border.all(
+                                color: myColor.customOrange, // Warna border
+                                width: 1, // Ketebalan border
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "REGISTER",
+                                  style: AppTextStyle.bold14.copyWith(
+                                    color: myColor
+                                        .customOrange, // Warna teks login
+                                  ),
+                                ),
+                                Text(
+                                  "Silakan masukkan data diri Anda untuk membuat akun. ",
+                                  style: AppTextStyle.regular12.copyWith(
+                                    color: myColor
+                                        .customOrange, // Warna teks deskripsi
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "REGISTER",
-                              style: AppTextStyle.bold14.copyWith(
-                                color: myColor.customOrange, // Warna teks login
-                              ),
-                            ),
-                            Text(
-                              "Silakan masukkan data diri Anda untuk membuat akun. ",
-                              style: AppTextStyle.regular12.copyWith(
-                                color: myColor
-                                    .customOrange, // Warna teks deskripsi
-                              ),
-                            ),
-                          ],
+                        CustomTextfield(
+                          inputController: _namaController,
+                          label: 'Nama',
+                          hintText: 'Nama',
                         ),
+                        const SizedBox(height: 8),
+                        CustomTextfield(
+                          inputController: _emailController,
+                          label: 'Email',
+                          hintText: 'Email',
+                        ),
+                        const SizedBox(height: 8),
+                        CustomTextfield(
+                          inputController: _passwordController,
+                          label: "Password",
+                          hintText: "Masukkan password Anda",
+                          isObscureText:
+                              true, // <-- Set ini ke true untuk mengaktifkan fitur password
+                        ),
+                        const SizedBox(height: 12),
+                        CustomTextfield(
+                          inputController: _confirmPasswordController,
+                          label: 'Konfirmasi Password',
+                          hintText: 'Konfirmasi Password',
+                          isObscureText: true,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Bagian bawah (Tombol)
+                BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                  builder: (context, state) {
+                    return CustomButton(
+                      btnText: "Buat Akun",
+                      onPressed: () {
+                        // Panggil event untuk registrasi
+                        context.read<AuthenticationBloc>().add(
+                            AuthenticationEventRegister(
+                                name: _namaController.text,
+                                email: _emailController.text,
+                                password: _passwordController.text,
+                                passwordConfirmation:
+                                    _confirmPasswordController.text));
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment
+                      .center, // ✅ Pusatkan teks secara horizontal
+                  children: [
+                    Text(
+                      "Sudah mempunyai akun? ",
+                      style: AppTextStyle.regular14.copyWith(
+                        color: myColor.black,
                       ),
                     ),
-                    CustomTextfield(
-                      inputController: _namaController,
-                      label: 'Nama',
-                      hintText: 'Nama',
-                    ),
-                    const SizedBox(height: 8),
-                    CustomTextfield(
-                      inputController: _emailController,
-                      label: 'Email',
-                      hintText: 'Email',
-                    ),
-                    const SizedBox(height: 8),
-                    CustomTextfield(
-                      inputController: _passwordController,
-                      label: 'Password',
-                      hintText: 'Password',
-                    ),
-                    const SizedBox(height: 12),
-                    CustomTextfield(
-                      inputController: _confirmPasswordController,
-                      label: 'Konfirmasi Password',
-                      hintText: 'Konfirmasi Password',
+                    GestureDetector(
+                      onTap: () {
+                        context.go('/login');
+                      },
+                      child: Text(
+                        "Login",
+                        style: AppTextStyle.bold14.copyWith(
+                          color: myColor.greenCustom,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-
-              // Bagian bawah (Tombol)
-              BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                builder: (context, state) {
-                  return CustomButton(
-                    btnText: "Buat Akun",
-                    onPressed: () {
-                      // Panggil event untuk registrasi
-                      context.read<AuthenticationBloc>().add(
-                          AuthenticationEventRegister(
-                              name: _namaController.text,
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                              passwordConfirmation:
-                                  _confirmPasswordController.text));
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .center, // ✅ Pusatkan teks secara horizontal
-                children: [
-                  Text(
-                    "Sudah mempunyai akun? ",
-                    style: AppTextStyle.regular14.copyWith(
-                      color: myColor.black,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      context.go('/login');
-                    },
-                    child: Text(
-                      "Login",
-                      style: AppTextStyle.bold14.copyWith(
-                        color: myColor.greenCustom,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8)
-            ],
+                const SizedBox(height: 8)
+              ],
+            ),
           ),
         ),
       ),

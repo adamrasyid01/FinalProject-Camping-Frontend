@@ -22,124 +22,133 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final MyColor myColor = MyColor();
-    return Scaffold(
-      resizeToAvoidBottomInset: false, // ✅ Menghindari overflow
-      body: BlocListener<AuthenticationBloc, AuthenticationState>(
-        listener: (context, state) {
-          if (state is AuthenticationStateSuccess) {
-            context.go('/home');
-          } else if (state is AuthenticationStateError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Something went wrong!"),
-              ),
-            );
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-          child: Column(
-            children: [
-              Expanded(
-                // ✅ Agar bisa di-scroll jika konten melebihi layar
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Bagian atas (Logo + Teks)
-                    SvgPicture.asset('assets/images/adamCampiio.svg'),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white, // Warna latar belakang
-                          borderRadius: BorderRadius.circular(
-                              20), // Border radius sesuai gambar
-                          border: Border.all(
-                            color: myColor.customOrange, // Warna border
-                            width: 1, // Ketebalan border
+    return GestureDetector(
+      onTap: () {
+        // 2. Saat area di luar TextField diklik, hilangkan fokus
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false, // ✅ Menghindari overflow
+        body: BlocListener<AuthenticationBloc, AuthenticationState>(
+          listener: (context, state) {
+            if (state is AuthenticationStateSuccess) {
+              context.go('/home');
+            } else if (state is AuthenticationStateError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Something went wrong!"),
+                ),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Column(
+              children: [
+                Expanded(
+                  // ✅ Agar bisa di-scroll jika konten melebihi layar
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Bagian atas (Logo + Teks)
+                      SvgPicture.asset('assets/images/adamCampiio.svg'),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white, // Warna latar belakang
+                            borderRadius: BorderRadius.circular(
+                                20), // Border radius sesuai gambar
+                            border: Border.all(
+                              color: myColor.customOrange, // Warna border
+                              width: 1, // Ketebalan border
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "LOGIN",
+                                style: AppTextStyle.bold14.copyWith(
+                                  color:
+                                      myColor.customOrange, // Warna teks login
+                                ),
+                              ),
+                              Text(
+                                "Silakan masukkan data diri Anda untuk masuk.",
+                                style: AppTextStyle.regular12.copyWith(
+                                  color: myColor
+                                      .customOrange, // Warna teks deskripsi
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "LOGIN",
-                              style: AppTextStyle.bold14.copyWith(
-                                color: myColor.customOrange, // Warna teks login
+                      ),
+
+                      CustomTextfield(
+                        inputController: _emailController,
+                        label: 'Email',
+                        hintText: 'Email',
+                      ),
+                      const SizedBox(height: 16),
+                      CustomTextfield(
+                        inputController: _passwordController,
+                        label: "Password",
+                        hintText: "Password",
+                        isObscureText:
+                            true, // <-- Set ini ke true untuk mengaktifkan fitur password
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Bagian bawah (Tombol)
+                BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                  builder: (context, state) {
+                    return CustomButton(
+                      btnText: "Masuk",
+                      onPressed: () {
+                        context.read<AuthenticationBloc>().add(
+                              AuthenticationEventLogin(
+                                email: _emailController.text,
+                                password: _passwordController.text,
                               ),
-                            ),
-                            Text(
-                              "Silakan masukkan data diri Anda untuk masuk.",
-                              style: AppTextStyle.regular12.copyWith(
-                                color: myColor
-                                    .customOrange, // Warna teks deskripsi
-                              ),
-                            ),
-                          ],
-                        ),
+                            );
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment
+                      .center, // ✅ Pusatkan teks secara horizontal
+                  children: [
+                    Text(
+                      "Belum mempunyai akun? ",
+                      style: AppTextStyle.regular14.copyWith(
+                        color: myColor.black,
                       ),
                     ),
-
-                    CustomTextfield(
-                      inputController: _emailController,
-                      label: 'Email',
-                      hintText: 'Email',
-                    ),
-                    const SizedBox(height: 16),
-                    CustomTextfield(
-                      inputController: _passwordController,
-                      label: 'Password',
-                      hintText: 'Password',
+                    GestureDetector(
+                      onTap: () {
+                        context.go('/register');
+                      },
+                      child: Text(
+                        "Register",
+                        style: AppTextStyle.bold14.copyWith(
+                          color: myColor.greenCustom,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
 
-              // Bagian bawah (Tombol)
-              BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                builder: (context, state) {
-                  return CustomButton(
-                    btnText: "Masuk",
-                    onPressed: () {
-                      context.read<AuthenticationBloc>().add(
-                            AuthenticationEventLogin(
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                            ),
-                          );
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .center, // ✅ Pusatkan teks secara horizontal
-                children: [
-                  Text(
-                    "Belum mempunyai akun? ",
-                    style: AppTextStyle.regular14.copyWith(
-                      color: myColor.black,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      context.go('/register');
-                    },
-                    child: Text(
-                      "Register",
-                      style: AppTextStyle.bold14.copyWith(
-                        color: myColor.greenCustom,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20)
-            ],
+                const SizedBox(height: 20)
+              ],
+            ),
           ),
         ),
       ),

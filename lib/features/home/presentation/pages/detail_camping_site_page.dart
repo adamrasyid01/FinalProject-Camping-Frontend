@@ -118,6 +118,8 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                 const SizedBox(height: 16),
                 // === [BARU] Memanggil widget untuk Card Google Maps ===
                 _buildMapsCard(site),
+                const SizedBox(height: 16),
+                _buildReviewsCard(site),
               ],
             );
           }
@@ -346,6 +348,63 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewsCard(CampingSite site) {
+    // Cek jika review kosong atau null
+    if (site.text_reviews.isEmpty) {
+      return const SizedBox
+          .shrink(); // Tidak menampilkan apa-apa jika tidak ada review
+    }
+
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Beberapa Ulasan Pengguna",
+                style: AppTextStyle.semiBold18.copyWith(color: Colors.black87)),
+            const SizedBox(height: 16),
+            // Gunakan Column untuk menampilkan semua review
+            // Ini lebih sederhana daripada ListView.builder di dalam ListView
+            Column(
+              children: site.text_reviews.map((review) {
+                // Pastikan 'review' adalah Map dan ambil 'text'
+                final reviewText = review['text'] ?? 'Review tidak valid';
+
+                // Widget untuk setiap item review
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[300]!)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.chat_bubble_outline,
+                            color: Colors.grey[600], size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(reviewText,
+                              style: AppTextStyle.regular14.copyWith(
+                                  color: Colors.black87, height: 1.5)),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ],
         ),
