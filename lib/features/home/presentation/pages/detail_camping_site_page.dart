@@ -4,10 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_camping_frontend/core/constants/color.dart';
 import 'package:flutter_camping_frontend/core/constants/text_styles.dart';
 import 'package:flutter_camping_frontend/core/widgets/custom_loading.dart';
-
 import 'package:flutter_camping_frontend/features/home/domain/entities/camping_site.dart';
 import 'package:flutter_camping_frontend/features/home/presentation/bloc/home_bloc.dart';
-
 import 'package:flutter_camping_frontend/models/sentiment_bar_data.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -26,6 +24,9 @@ class DetailCampingSitePage extends StatefulWidget {
 }
 
 class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
+  // Definisikan instance MyColor di sini agar mudah diakses
+  final MyColor myColor = MyColor();
+
   @override
   void initState() {
     _fetchDataDetailSites();
@@ -39,9 +40,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
         ));
   }
 
-  // === Fungsi untuk membuka Google Maps ===
   Future<void> _launchGoogleMaps(String placeName) async {
-    // 1. Cek apakah string URL tidak kosong
     if (placeName.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -50,20 +49,14 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
       }
       return;
     }
-
-    // 2. Parse string URL menjadi objek Uri
     final Uri url = Uri.parse(placeName);
-
-    // 3. Coba luncurkan URL
     try {
       if (await canLaunchUrl(url)) {
-        // Buka di aplikasi eksternal (Google Maps atau Browser)
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
         throw 'Tidak dapat membuka URL: $placeName';
       }
     } catch (e) {
-      // Tampilkan pesan error jika gagal
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.toString()}')),
@@ -77,9 +70,10 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Detail Analisis Sentimen", style: AppTextStyle.medium20),
-        backgroundColor: Colors.white,
+        backgroundColor: myColor.customWhite, // <-- Disesuaikan
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back,
+              color: myColor.customBlack), // <-- Disesuaikan
           onPressed: () => context.pop(),
         ),
         bottom: PreferredSize(
@@ -87,14 +81,16 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
           child: Divider(
             height: 1,
             thickness: 1,
-            color: MyColor().secondaryColor,
+            color: myColor.secondaryColor, // Sudah benar
           ),
         ),
       ),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is HomeStateLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+                child: CircularProgressIndicator(
+                    color: myColor.primaryColor)); // <-- Disesuaikan
           }
 
           if (state is HomeStateGetDetailSites) {
@@ -116,7 +112,6 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                 const SizedBox(height: 16),
                 _buildLegend(),
                 const SizedBox(height: 16),
-                // === [BARU] Memanggil widget untuk Card Google Maps ===
                 _buildMapsCard(site),
                 const SizedBox(height: 16),
                 _buildReviewsCard(site),
@@ -136,7 +131,6 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
     );
   }
 
-  // CHARTT
   Widget _buildChart(List<SentimentBarData> sentimen) {
     return Card(
       elevation: 4,
@@ -148,27 +142,28 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
           children: [
             Text(
               "Grafik Sentimen Berdasarkan Kriteria",
-              style: AppTextStyle.semiBold16.copyWith(color: Colors.black87),
+              style: AppTextStyle.semiBold16
+                  .copyWith(color: myColor.customBlack), // <-- Disesuaikan
             ),
             const SizedBox(height: 16),
             AspectRatio(
               aspectRatio: 1.4,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                // color: Colors.red,
                 child: BarChart(BarChartData(
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: MyColor().customGrey,
+                      color: myColor.customGrey,
                       strokeWidth: 3,
                     ),
                   ),
                   barGroups: _buildBarGroups(sentimen),
                   borderData: FlBorderData(
-                    show: true,
-                  ),
+                      show: true,
+                      border: Border.all(
+                          color: myColor.secondaryColor)), // <-- Disesuaikan
                   titlesData: FlTitlesData(
                     show: true,
                     topTitles: AxisTitles(),
@@ -179,8 +174,9 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                         interval: 6,
                         getTitlesWidget: (value, meta) => Text(
                           value.toInt().toString(),
-                          style:
-                              const TextStyle(color: Colors.grey, fontSize: 12),
+                          style: TextStyle(
+                              color: myColor.darkGrey,
+                              fontSize: 12), // <-- Disesuaikan
                         ),
                       ),
                     ),
@@ -195,8 +191,8 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Text(
                               _getKriteriaLabel(sentimen[index].criterionId),
-                              style: const TextStyle(
-                                  color: Colors.black54,
+                              style: TextStyle(
+                                  color: myColor.customBlack, // <-- Disesuaikan
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14),
                             ),
@@ -213,7 +209,8 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                             ["Positif", "Netral", "Negatif"][rodIndex];
                         return BarTooltipItem(
                           '$label: ${rod.toY.toStringAsFixed(1)}',
-                          const TextStyle(color: Colors.white),
+                          TextStyle(
+                              color: myColor.customWhite), // <-- Disesuaikan
                         );
                       },
                     ),
@@ -237,17 +234,17 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
         barRods: [
           BarChartRodData(
               toY: data.positif,
-              color: Colors.green,
+              color: myColor.lightGreen, // <-- Disesuaikan
               width: 12,
               borderRadius: BorderRadius.circular(4)),
           BarChartRodData(
               toY: data.netral,
-              color: Colors.grey,
+              color: myColor.lightGrey, // <-- Disesuaikan
               width: 12,
               borderRadius: BorderRadius.circular(4)),
           BarChartRodData(
               toY: data.negatif,
-              color: Colors.red,
+              color: myColor.customRed, // <-- Disesuaikan
               width: 12,
               borderRadius: BorderRadius.circular(4)),
         ],
@@ -256,7 +253,6 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
     }).toList();
   }
 
-  // LEGEND (KETERANGAN)
   Widget _buildLegend() {
     return Card(
       elevation: 4,
@@ -267,36 +263,46 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Legenda",
-                style: AppTextStyle.semiBold18.copyWith(color: Colors.black87)),
+                style: AppTextStyle.semiBold18
+                    .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
             const SizedBox(height: 16),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _LegendItem(color: Color(0xFF4CAF50), label: "Positif"),
-                _LegendItem(color: Color(0xFF9E9E9E), label: "Netral"),
-                _LegendItem(color: Color(0xFFF44336), label: "Negatif"),
+                _LegendItem(
+                    color: myColor.lightGreen,
+                    label: "Positif"), // <-- Disesuaikan
+                _LegendItem(
+                    color: myColor.lightGrey,
+                    label: "Netral"), // <-- Disesuaikan
+                _LegendItem(
+                    color: myColor.customRed,
+                    label: "Negatif"), // <-- Disesuaikan
               ],
             ),
             const Divider(height: 32, thickness: 1),
             Text("Keterangan Kriteria",
-                style: AppTextStyle.semiBold16.copyWith(color: Colors.black87)),
+                style: AppTextStyle.semiBold16
+                    .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
             const SizedBox(height: 4),
-            // Membuat list keterangan kriteria secara dinamis
             Text("A = Keamanan",
-                style: AppTextStyle.regular15.copyWith(color: Colors.black87)),
+                style: AppTextStyle.regular15
+                    .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
             Text("N = Kenyamanan",
-                style: AppTextStyle.regular15.copyWith(color: Colors.black87)),
+                style: AppTextStyle.regular15
+                    .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
             Text("B = Kebersihan",
-                style: AppTextStyle.regular15.copyWith(color: Colors.black87)),
+                style: AppTextStyle.regular15
+                    .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
             Text("T = Kemudahan Transportasi",
-                style: AppTextStyle.regular15.copyWith(color: Colors.black87)),
+                style: AppTextStyle.regular15
+                    .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
           ],
         ),
       ),
     );
   }
 
-  // === [BARU] Widget untuk menampilkan Card Google Maps ===
   Widget _buildMapsCard(CampingSite site) {
     return Card(
       elevation: 4,
@@ -307,12 +313,12 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Lokasi di Peta",
-                style: AppTextStyle.semiBold18.copyWith(color: Colors.black87)),
+                style: AppTextStyle.semiBold18
+                    .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.location_on,
-                    color: MyColor().primaryColor, size: 28),
+                Icon(Icons.location_on, color: myColor.primaryColor, size: 28),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -320,8 +326,8 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                     children: [
                       Text(site.name, style: AppTextStyle.medium14),
                       Text('${site.location}, Jawa Timur',
-                          style: AppTextStyle.regular14
-                              .copyWith(color: Colors.black54)),
+                          style: AppTextStyle.regular14.copyWith(
+                              color: myColor.darkGrey)), // <-- Disesuaikan
                     ],
                   ),
                 ),
@@ -331,17 +337,17 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                icon: const Icon(
-                  Icons.map_outlined,
-                  color: Colors.white,
-                ),
-                label: const Text('Buka di Google Maps'),
+                icon: Icon(Icons.map_outlined,
+                    color: myColor.customWhite), // <-- Disesuaikan
+                label: Text('Buka di Google Maps',
+                    style: AppTextStyle.medium14.copyWith(
+                        color: myColor.customWhite)), // <-- Disesuaikan
                 onPressed: () {
                   _launchGoogleMaps(site.link);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MyColor().primaryColor,
-                  foregroundColor: Colors.white,
+                  backgroundColor: myColor.primaryColor,
+                  foregroundColor: myColor.customWhite,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -356,12 +362,9 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
   }
 
   Widget _buildReviewsCard(CampingSite site) {
-    // Cek jika review kosong atau null
     if (site.text_reviews.isEmpty) {
-      return const SizedBox
-          .shrink(); // Tidak menampilkan apa-apa jika tidak ada review
+      return const SizedBox.shrink();
     }
-
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -371,34 +374,33 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Beberapa Ulasan Pengguna",
-                style: AppTextStyle.semiBold18.copyWith(color: Colors.black87)),
+                style: AppTextStyle.semiBold18
+                    .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
             const SizedBox(height: 16),
-            // Gunakan Column untuk menampilkan semua review
-            // Ini lebih sederhana daripada ListView.builder di dalam ListView
             Column(
               children: site.text_reviews.map((review) {
-                // Pastikan 'review' adalah Map dan ambil 'text'
                 final reviewText = review['text'] ?? 'Review tidak valid';
-
-                // Widget untuk setiap item review
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: myColor.customGrey, // <-- Disesuaikan
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[300]!)),
+                        border: Border.all(
+                            color: myColor.secondaryColor)), // <-- Disesuaikan
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(Icons.chat_bubble_outline,
-                            color: Colors.grey[600], size: 20),
+                            color: myColor.darkGrey,
+                            size: 20), // <-- Disesuaikan
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(reviewText,
                               style: AppTextStyle.regular14.copyWith(
-                                  color: Colors.black87, height: 1.5)),
+                                  color: myColor.customBlack,
+                                  height: 1.5)), // <-- Disesuaikan
                         ),
                       ],
                     ),
@@ -423,7 +425,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
       case 4:
         return 'T';
       default:
-        return 'K$id'; // fallback jika id tidak dikenali
+        return 'K$id';
     }
   }
 }
@@ -440,7 +442,9 @@ class _LegendItem extends StatelessWidget {
       children: [
         Container(width: 12, height: 12, color: color),
         const SizedBox(width: 4),
-        Text(label),
+        Text(label,
+            style: AppTextStyle.regular14
+                .copyWith(color: Colors.black)), // <-- Disesuaikan
       ],
     );
   }
