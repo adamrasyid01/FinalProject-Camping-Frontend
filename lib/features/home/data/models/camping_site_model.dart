@@ -20,9 +20,9 @@ class CampingSiteModel extends CampingSite {
   @override
   final String phone;
   @override
-  final List<Map<String, String>> text_reviews;
+  final List<Map<String, dynamic>> text_reviews;
   @override
-  final List<Map<String, String>> total_sentimen;
+  final List<Map<String, dynamic>> total_sentimen;
 
   const CampingSiteModel({
     required this.id,
@@ -50,45 +50,58 @@ class CampingSiteModel extends CampingSite {
           total_sentimen: total_sentimen,
         );
 
+  // --- FUNGSI FROMJSON YANG DIPERBAIKI ---
   factory CampingSiteModel.fromJson(Map<String, dynamic> json) {
-    return CampingSiteModel(
-        id: json['id'] ?? 0,
-        name: json['name'] ?? "Unknown",
-        imageUrl: json['image_url'] ?? "",
-        locationId: json['location_id'] ?? 0,
-        rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-        link: json['link'] ?? "",
-        total_reviews: json['reviews'] ?? 0,
-        phone: json['phone'] ?? "",
-        location: json['location'] ?? "Unknown",
+    // Parsing List yang aman
+    final List<Map<String, dynamic>> textReviewsList =
+        (json['text_reviews'] as List<dynamic>?)
+                ?.map((item) => item as Map<String, dynamic>)
+                .toList() ?? // Jika null, kembalikan list kosong
+            [];
 
-        // Parsing List<Map<String, String>> dari JSON (array of objects)
-        text_reviews: (json['text_reviews'] as List<dynamic>)
-            .map((e) => {
-                  "text": (e['text'] ?? "").toString(),
-                })
-            .toList(),
-        total_sentimen: (json['total_sentimen'] as List<dynamic>)
-            .map((e) => {
-                  "criterion_id": e['criterion_id'].toString(),
-                  "total_positif": e['total_positif'].toString(),
-                  "total_netral": e['total_netral'].toString(),
-                  "total_negatif": e['total_negatif'].toString(),
-                })
-            .toList());
+    final List<Map<String, dynamic>> totalSentimenList =
+        (json['total_sentimen'] as List<dynamic>?)
+                ?.map((item) => item as Map<String, dynamic>)
+                .toList() ?? // Jika null, kembalikan list kosong
+            [];
+
+    return CampingSiteModel(
+      id: json['id'] as int? ?? 0,
+      name: json['name'] as String? ?? "Unknown",
+      imageUrl: json['image_url'] as String? ?? "",
+      locationId: json['location_id'] as int? ?? 0,
+      // Parsing angka yang aman (menerima int atau double)
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      link: json['link'] as String? ?? "",
+      // KESALAHAN 1: Menggunakan nama kunci yang benar
+      total_reviews: json['total_reviews'] as int? ?? 0,
+      // Beri nilai default jika 'phone' tidak ada di JSON
+      phone: json['phone'] as String? ?? "No Phone",
+      location: json['location'] as String? ?? "Unknown",
+
+      // Gunakan list yang sudah diparsing dengan aman
+      text_reviews: textReviewsList,
+      total_sentimen: totalSentimenList,
+    );
   }
 
-  static List<CampingSiteModel> fromJsonList(List jsonList) {
-    // return jsonList.map((json) {
-    //   try {
-    //     return CampingSiteModel.fromJson(json);
-    //   } catch (e) {
-    //     print("Error parsing list: $e");
-    //     return null; // Tetap tambahkan null jika ada error
-    //   }
-    // }).toList(); // Jangan hapus item yang null
-
+  static List<CampingSiteModel> fromJsonList(List<dynamic> jsonList) {
     if (jsonList.isEmpty) return [];
-    return jsonList.map((item) => CampingSiteModel.fromJson(item)).toList();
+    // Bungkus dengan try-catch untuk menangani jika ada satu item yang gagal parsing
+    return jsonList
+        .map((item) {
+          try {
+            return CampingSiteModel.fromJson(item);
+          } catch (e) {
+            print("Error parsing item: $item. Error: $e");
+            // Mengembalikan null atau model default bisa jadi pilihan,
+            // tapi melempar error agar tahu ada data yang salah juga baik.
+            // Di sini kita lewati saja item yang error.
+            return null;
+          }
+        })
+        .where((item) => item != null)
+        .cast<CampingSiteModel>()
+        .toList();
   }
 }

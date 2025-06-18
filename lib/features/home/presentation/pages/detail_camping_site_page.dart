@@ -97,11 +97,19 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
             final site = state.campingSite;
             final List<SentimentBarData> sentimen =
                 site.total_sentimen.map((data) {
+              // Lakukan casting yang aman dan beri nilai default jika null
+              final criterionId = (data['criterion_id'] as num?)?.toInt() ?? 0;
+              final positif =
+                  (data['total_positif'] as num?)?.toDouble() ?? 0.0;
+              final netral = (data['total_netral'] as num?)?.toDouble() ?? 0.0;
+              final negatif =
+                  (data['total_negatif'] as num?)?.toDouble() ?? 0.0;
+
               return SentimentBarData(
-                criterionId: int.tryParse(data['criterion_id'] ?? '0') ?? 0,
-                positif: double.tryParse(data['total_positif'] ?? '0') ?? 0.0,
-                netral: double.tryParse(data['total_netral'] ?? '0') ?? 0.0,
-                negatif: double.tryParse(data['total_negatif'] ?? '0') ?? 0.0,
+                criterionId: criterionId,
+                positif: positif,
+                netral: netral,
+                negatif: negatif,
               );
             }).toList();
 

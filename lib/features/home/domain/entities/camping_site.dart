@@ -10,8 +10,8 @@ class CampingSite extends Equatable {
   final int total_reviews;
   final String location;
   final String phone;
-  final List<Map<String, String>> text_reviews;
-  final List<Map<String, String>> total_sentimen;
+  final List<Map<String, dynamic>> text_reviews;
+  final List<Map<String, dynamic>> total_sentimen;
 
   const CampingSite({
     required this.id,
