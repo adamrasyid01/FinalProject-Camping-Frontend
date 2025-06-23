@@ -142,6 +142,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
   Widget _buildChart(List<SentimentBarData> sentimen) {
     return Card(
       elevation: 4,
+      color: myColor.customWhite,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
@@ -264,6 +265,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
   Widget _buildLegend() {
     return Card(
       elevation: 4,
+      color: myColor.customWhite, // <-- Disesuaikan
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -314,6 +316,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
   Widget _buildMapsCard(CampingSite site) {
     return Card(
       elevation: 4,
+      color: myColor.customWhite,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -374,6 +377,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
       return const SizedBox.shrink();
     }
     return Card(
+      color: myColor.customWhite,
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -381,35 +385,84 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Beberapa Ulasan Pengguna",
+            Text("Beberapa Ulasan Pengunjung",
                 style: AppTextStyle.semiBold18
                     .copyWith(color: myColor.customBlack)), // <-- Disesuaikan
             const SizedBox(height: 16),
             Column(
               children: site.text_reviews.map((review) {
                 final reviewText = review['text'] ?? 'Review tidak valid';
+                final sentiments = review['sentiments'] as List<dynamic>?;
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                        color: myColor.customGrey, // <-- Disesuaikan
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: myColor.secondaryColor)), // <-- Disesuaikan
-                    child: Row(
+                      color: myColor.customGrey,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: myColor.secondaryColor),
+                    ),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.chat_bubble_outline,
-                            color: myColor.darkGrey,
-                            size: 20), // <-- Disesuaikan
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(reviewText,
-                              style: AppTextStyle.regular14.copyWith(
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.chat_bubble_outline,
+                                color: myColor.darkGrey, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                reviewText,
+                                style: AppTextStyle.regular14.copyWith(
                                   color: myColor.customBlack,
-                                  height: 1.5)), // <-- Disesuaikan
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: 8),
+
+                        // BAGAN SENTIMEN DARI ULASAN PENGUNJUNG
+                        if (sentiments != null)
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: sentiments.map((sentiment) {
+                              final int id = sentiment['criteria_id'];
+                              final String hasil = sentiment['hasil_sentimen'];
+                              String label = "";
+                              Color warna = Colors.grey;
+
+                              if (id == 1) label = "Keamanan";
+                              if (id == 2) label = "Kenyamanan";
+                              if (id == 3) label = "Kebersihan";
+                              if (id == 4) label = "Kemudahan Transportasi";
+
+                              if (hasil == "Positif") warna = Colors.green;
+                              if (hasil == "Negatif") warna = Colors.red;
+                              if (hasil == "Netral") warna = myColor.darkGrey;
+
+                              return Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: warna.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: warna),
+                                ),
+                                child: Text(
+                                  "$label: $hasil",
+                                  style: AppTextStyle.medium14.copyWith(
+                                    color: warna,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
                       ],
                     ),
                   ),
