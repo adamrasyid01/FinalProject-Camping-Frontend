@@ -207,14 +207,58 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                   onTap: () async {
                     final result =
                         await context.pushNamed<bool>("prioritas_kriteria");
-                    if (result == true) {
+                    if (result == true && mounted) {
                       context
                           .read<AHPResultBloc>()
                           .add(AHPResultEventGetAHPResult());
                     }
                   },
-                  child: SvgPicture.asset(
-                    "assets/images/dapatkanRekomendasi.svg",
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: MyColor().greenCustom,
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        )
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          SvgPicture.asset(
+                            "assets/images/dapatkanRekomendasi.svg",
+                            fit: BoxFit.cover,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "Klik Disini",
+                                    style: AppTextStyle.bold14
+                                        .copyWith(color: Colors.white),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.touch_app_outlined,
+                                      color: Colors.white, size: 16),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -274,7 +318,9 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                     builder: (context, bookmarksState) {
                       // Gunakan Column di sini karena parent-nya sudah ListView (scrollable)
                       return Column(
-                        children: ahpResults.map((item) {
+                        children: ahpResults.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final item = entry.value;
                           final isBookmarked =
                               bookmarksState is BookmarksSuccess &&
                                   bookmarksState.bookmarkedSites.any(
@@ -303,6 +349,8 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                                   },
                                 );
                               },
+                              finalScore: item.final_score,
+                              ranking: index + 1, // Ranking berdasarkan posisi
                             ),
                           );
                         }).toList(),
@@ -314,7 +362,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                 if (!hasReachedMax && ahpResults.isNotEmpty)
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: CampingCardSkeleton(),
                   ),
               ],
             );

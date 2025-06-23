@@ -135,7 +135,7 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 16.0, 16.0, 12.0),
+                    padding: const EdgeInsets.fromLTRB(0, 12.0, 16.0, 12.0),
                     child: Text(
                       "Masukkan urutan prioritas kriteriamu",
                       style: AppTextStyle.bold24,
@@ -144,19 +144,30 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
                   Container(
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      // Warna latar belakang
-                      borderRadius: BorderRadius.circular(
-                          20), // Border radius sesuai gambar
-                      border: Border.all(
-                        color: myColor.customOrange, // Warna border
-                        width: 1, // Ketebalan border
-                      ),
+                      color: myColor.customOrange, // Warna latar solid
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: myColor.customOrange.withOpacity(0.3),
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      "Ada 4 kriteria dalam memilih lokasi camping. Seret dan letakkan perbandingan di posisi yang diinginkan—posisi pertama menunjukkan kriteria yang paling penting. ",
-                      style: AppTextStyle.regular12.copyWith(
-                        color: myColor.customOrange,
-                      ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.touch_app, color: Colors.white),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            "Seret dan lepas kriteria untuk menyusun urutan prioritasmu. Posisi pertama menunjukkan kriteria paling penting.",
+                            style: AppTextStyle.semiBold16.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: 8),

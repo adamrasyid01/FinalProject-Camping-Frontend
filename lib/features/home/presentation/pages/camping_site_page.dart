@@ -187,14 +187,21 @@ class _CampingSitePageState extends State<CampingSitePage> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(12.0),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: myColor.customOrange, width: 1),
+                    color: myColor.customOrange, // Warna latar solid
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: myColor.customOrange.withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
                   ),
                   child: Text(
                     "Klik pada kartu camping untuk melihat detail dan rute Google Maps.",
-                    style: AppTextStyle.regular12
-                        .copyWith(color: myColor.customOrange),
+                    style: AppTextStyle.semiBold16.copyWith(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -233,8 +240,8 @@ class _CampingSitePageState extends State<CampingSitePage> {
                           if (index >= campingData.length) {
                             // Ini adalah item loading di bagian bawah list
                             return const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Center(child: CircularProgressIndicator()),
+                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              child: CampingCardSkeleton(),
                             );
                           }
 
