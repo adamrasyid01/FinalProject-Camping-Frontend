@@ -95,7 +95,7 @@ class CampingCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      'Skor: ${finalScore!.toStringAsFixed(2)}',
+                      'Skor: ${finalScore!.toStringAsFixed(4)}',
                       style: AppTextStyle.bold14.copyWith(color: Colors.white),
                     ),
                   ),

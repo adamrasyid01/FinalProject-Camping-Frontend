@@ -450,6 +450,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
+                                  // ignore: deprecated_member_use
                                   color: warna.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(6),
                                   border: Border.all(color: warna),

@@ -85,6 +85,24 @@ class CampingSiteModel extends CampingSite {
     );
   }
 
+  // Di dalam class CampingSiteModel
+  factory CampingSiteModel.empty() {
+    return CampingSiteModel(
+      id: 0,
+      name: 'Data tidak ditemukan', // Atau teks lain yang sesuai
+      locationId: 0,
+      imageUrl: '',
+      rating: 0.0,
+      link: '',
+      total_reviews: 0,
+      phone: 'No Phone',
+      location: '',
+      text_reviews: [],
+      total_sentimen: [],
+      // ... isi semua properti lain dengan nilai default
+    );
+  }
+
   static List<CampingSiteModel> fromJsonList(List<dynamic> jsonList) {
     if (jsonList.isEmpty) return [];
     // Bungkus dengan try-catch untuk menangani jika ada satu item yang gagal parsing
