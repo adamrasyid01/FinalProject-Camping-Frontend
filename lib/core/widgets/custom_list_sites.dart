@@ -15,7 +15,7 @@ class CampingCard extends StatelessWidget {
   final VoidCallback onBookmarkPressed;
   final VoidCallback? onDetailPressed; // Tambahan untuk tombol
   final int? ranking; // opsional: 1, 2, 3 dst
-  final double? finalScore; // opsional: skor akhir
+  
 
   const CampingCard({
     super.key,
@@ -28,7 +28,7 @@ class CampingCard extends StatelessWidget {
     required this.onBookmarkPressed,
     this.onDetailPressed, // Tambahkan ini
     this.ranking,
-    this.finalScore,
+ 
   });
 
   @override
@@ -83,23 +83,7 @@ class CampingCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              // 🧮 Final Score (kanan atas)
-              if (finalScore != null)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Skor: ${finalScore!.toStringAsFixed(4)}',
-                      style: AppTextStyle.bold14.copyWith(color: Colors.white),
-                    ),
-                  ),
-                ),
+        
             ],
           ),
           Padding(

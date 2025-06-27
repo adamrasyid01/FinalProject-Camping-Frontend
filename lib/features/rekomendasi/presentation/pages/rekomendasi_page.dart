@@ -302,6 +302,36 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                 ),
                 const SizedBox(height: 8),
 
+                if (ahpResults.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: myColor.customOrange.withOpacity(0.1),
+
+                      // 2. Border dengan warna yang sesuai
+                      border: Border.all(
+                        color: myColor
+                            .customOrange, // Warna border sama dengan warna teks
+                        width: 0.5, // Ketebalan border
+                      ),
+
+                      // 3. Sudut yang melengkung (rounded corners)
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Text(
+                      // 4. Teks diganti sesuai gambar
+                      "Berikut rekomendasi perkemahan terbaik yang paling cocok untukmu.",
+
+                      // 5. Rata tengah agar terlihat lebih rapi
+                      textAlign: TextAlign.center,
+
+                      style: AppTextStyle.medium14.copyWith(
+                        color: myColor.customOrange,
+                      ),
+                    ),
+                  ),
+
                 // 3. Konten Daftar Hasil
                 if (ahpResults.isEmpty)
                   Center(
@@ -349,7 +379,7 @@ class _RekomendasiPageState extends State<RekomendasiPage> {
                                   },
                                 );
                               },
-                              finalScore: item.final_score,
+
                               ranking: index + 1, // Ranking berdasarkan posisi
                             ),
                           );

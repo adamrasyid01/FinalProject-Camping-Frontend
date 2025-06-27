@@ -431,7 +431,7 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                             spacing: 12,
                             runSpacing: 12,
                             children: sentiments.map((sentiment) {
-                              final int id = sentiment['criteria_id'];
+                              final int id = sentiment['criterion_id'];
                               final String hasil = sentiment['hasil_sentimen'];
                               String label = "";
                               Color warna = Colors.grey;
@@ -441,9 +441,9 @@ class _DetailCampingSitePageState extends State<DetailCampingSitePage> {
                               if (id == 3) label = "Kebersihan";
                               if (id == 4) label = "Kemudahan Transportasi";
 
-                              if (hasil == "Positif") warna = Colors.green;
-                              if (hasil == "Negatif") warna = Colors.red;
-                              if (hasil == "Netral") warna = myColor.darkGrey;
+                              if (hasil == "positif") warna = Colors.green;
+                              if (hasil == "negatif") warna = Colors.red;
+                              if (hasil == "netral") warna = myColor.darkGrey;
 
                               return Container(
                                 width: double.infinity,
