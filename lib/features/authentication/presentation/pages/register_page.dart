@@ -53,7 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 8.0),
             child: Column(
               children: [
                 Expanded(
@@ -63,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Bagian atas (Logo + Teks)
-                        SvgPicture.asset('assets/images/adamCampiio.svg'),
+                        SvgPicture.asset('assets/images/jateamcamp.svg'),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: Container(
