@@ -67,15 +67,13 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
     // Kirim ke Bloc
     rekomendasiBloc
         .add(RekomendasiEventSaveUserPreferenceCriteria(preferences));
-
-    context.pop(true); // Kembali ke halaman sebelumnya
   }
 
   Future<void> _loadUserPreferences() async {
     List<Map<String, dynamic>> preferences =
         await userPreference.getPreferences();
 
-    print("Data dari SharedPreferences: $preferences");
+    // print("Data dari SharedPreferences: $preferences");
     setState(() {
       myTiles = preferences;
     });
@@ -83,175 +81,183 @@ class _PrioritasKriteriaPageState extends State<PrioritasKriteriaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Prioritas Kriteria",
-          style: AppTextStyle.medium20,
-        ),
-        backgroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.info_outline, color: MyColor().customOrange),
-            onPressed: () {
-              showCustomDialog(
-                context: context,
-                onConfirm: () {},
-                title: 'Rumus yang digunakan',
-                content:
-                    '1. Sistem menetapkan nilai dari kriteriamu sebagai bobot.\n'
-                    '2. Sistem akan menormalisasi bobot untuk mendapatkan bobot setiap kriteria.\n'
-                    '3. Sistem akan menghitung bobot dari alternatif berdasarkan setiap kriteria.\n'
-                    '4. Sistem akan mengalikan bobot kriteriamu dengan bobot alternatif untuk setiap kriteria, lalu jumlahkan hasilnya untuk mendapatkan skor total setiap alternatif.',
-                icon: Icons.info_outline,
-                titleStyle: AppTextStyle.bold18,
-                contentStyle: AppTextStyle.regular14,
-                alignContent: TextAlign.justify,
-                iconBackgroundColor: MyColor().customOrange,
-              );
-            },
+    return BlocListener<RekomendasiBloc, RekomendasiState>(
+      listener: (context, state) {
+        if (state is RekomendasiStateSuccess) {
+          context.pop(true); // Kembali ke halaman sebelumnya
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Prioritas Kriteria",
+            style: AppTextStyle.medium20,
           ),
-        ],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            context.pop();
-          },
-        ),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(0.5),
-          child: Divider(
-            height: 1,
-            thickness: 1,
-            color: myColor.secondaryColor,
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 12.0, 16.0, 12.0),
-                    child: Text(
-                      "Masukkan urutan prioritas kriteriamu",
-                      style: AppTextStyle.bold24,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: myColor.customOrange, // Warna latar solid
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: myColor.customOrange.withOpacity(0.3),
-                          blurRadius: 6,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.touch_app, color: Colors.white),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            "Seret dan lepas kriteria untuk menyusun urutan prioritasmu. Posisi pertama menunjukkan kriteria paling penting.",
-                            style: AppTextStyle.semiBold16.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  SizedBox(
-                    height: 320,
-                    child: ReorderableListView(
-                      proxyDecorator: (Widget child, int index,
-                          Animation<double> animation) {
-                        return Material(
-                          elevation: 4,
-                          color: Colors.transparent,
-                          child: child,
-                        );
-                      },
-                      buildDefaultDragHandles:
-                          false, // Matikan drag handle bawaan
-                      children: [
-                        for (int i = 0; i < myTiles.length; i++)
-                          ReorderableDragStartListener(
-                            key: ValueKey(i),
-                            index: i,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 12),
-                              margin: EdgeInsets.symmetric(vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.grey.shade300),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    myTiles[i]['name'],
-                                    style: AppTextStyle.semiBold18,
-                                  ),
-                                  Text(
-                                    _getSubtitle(myTiles[i]['name']),
-                                    style: AppTextStyle.regular12,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                      onReorder: (int oldIndex, int newIndex) {
-                        setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
-                          final item = myTiles.removeAt(oldIndex);
-                          myTiles.insert(newIndex, item);
-
-                          // Update weight berdasarkan posisi baru
-                          for (int i = 0; i < myTiles.length; i++) {
-                            myTiles[i]['weight'] = 9.0 - (i * 2.0);
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            BlocBuilder<RekomendasiBloc, RekomendasiState>(
-              builder: (context, state) {
-                if (state is RekomendasiStateLoading) {
-                  return CircularProgressIndicator();
-                } else if (state is RekomendasiStateError) {
-                  return Text(
-                    "Error: ${state.message}",
-                    style: TextStyle(color: Colors.red),
-                  );
-                }
-                return CustomButton(
-                  btnText: "Temukan Rekomendasi",
-                  onPressed: _savePreferences,
+          backgroundColor: Colors.white,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.info_outline, color: MyColor().customOrange),
+              onPressed: () {
+                showCustomDialog(
+                  context: context,
+                  onConfirm: () {},
+                  title: 'Rumus yang digunakan',
+                  content:
+                      '1. Sistem menetapkan nilai dari kriteriamu sebagai bobot.\n'
+                      '2. Sistem akan menormalisasi bobot untuk mendapatkan bobot setiap kriteria.\n'
+                      '3. Sistem akan menghitung bobot dari alternatif berdasarkan setiap kriteria.\n'
+                      '4. Sistem akan mengalikan bobot kriteriamu dengan bobot alternatif untuk setiap kriteria, lalu jumlahkan hasilnya untuk mendapatkan skor total setiap alternatif.',
+                  icon: Icons.info_outline,
+                  titleStyle: AppTextStyle.bold18,
+                  contentStyle: AppTextStyle.regular14,
+                  alignContent: TextAlign.justify,
+                  iconBackgroundColor: MyColor().customOrange,
                 );
               },
             ),
-            SizedBox(height: 16),
           ],
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () {
+              context.pop();
+            },
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(0.5),
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: myColor.secondaryColor,
+            ),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 12.0, 16.0, 12.0),
+                      child: Text(
+                        "Masukkan urutan prioritas kriteriamu",
+                        style: AppTextStyle.bold24,
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: myColor.customOrange, // Warna latar solid
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: myColor.customOrange.withOpacity(0.3),
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.touch_app, color: Colors.white),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              "Seret dan lepas kriteria untuk menyusun urutan prioritasmu. Posisi pertama menunjukkan kriteria paling penting.",
+                              style: AppTextStyle.semiBold16.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    SizedBox(
+                      height: 320,
+                      child: ReorderableListView(
+                        proxyDecorator: (Widget child, int index,
+                            Animation<double> animation) {
+                          return Material(
+                            elevation: 4,
+                            color: Colors.transparent,
+                            child: child,
+                          );
+                        },
+                        buildDefaultDragHandles:
+                            false, // Matikan drag handle bawaan
+                        children: [
+                          for (int i = 0; i < myTiles.length; i++)
+                            ReorderableDragStartListener(
+                              key: ValueKey(i),
+                              index: i,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 12),
+                                margin: EdgeInsets.symmetric(vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border:
+                                      Border.all(color: Colors.grey.shade300),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      myTiles[i]['name'],
+                                      style: AppTextStyle.semiBold18,
+                                    ),
+                                    Text(
+                                      _getSubtitle(myTiles[i]['name']),
+                                      style: AppTextStyle.regular12,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
+                        onReorder: (int oldIndex, int newIndex) {
+                          setState(() {
+                            if (oldIndex < newIndex) {
+                              newIndex -= 1;
+                            }
+                            final item = myTiles.removeAt(oldIndex);
+                            myTiles.insert(newIndex, item);
+
+                            // Update weight berdasarkan posisi baru
+                            for (int i = 0; i < myTiles.length; i++) {
+                              myTiles[i]['weight'] = 9.0 - (i * 2.0);
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              BlocBuilder<RekomendasiBloc, RekomendasiState>(
+                builder: (context, state) {
+                  if (state is RekomendasiStateLoading) {
+                    return CircularProgressIndicator();
+                  } else if (state is RekomendasiStateError) {
+                    return Text(
+                      "Error: ${state.message}",
+                      style: TextStyle(color: Colors.red),
+                    );
+                  }
+                  return CustomButton(
+                    btnText: "Temukan Rekomendasi",
+                    onPressed: _savePreferences,
+                  );
+                },
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
